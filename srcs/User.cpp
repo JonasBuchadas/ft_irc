@@ -24,7 +24,7 @@ void User::kick() {
   // TODO Implement me!!
 }
 
-void User::mode() {
+void User::mode( char action ) {
   // TODO Implement me!!
 }
 

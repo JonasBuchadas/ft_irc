@@ -17,7 +17,7 @@ class User {
 
   void join();
   void kick();
-  void mode();
+  void mode( char action );
   void invite();
   void topic( std::string );
 };

@@ -1,0 +1,185 @@
+
+socket:
+	Used to create a communication endpoint and obtain a socket descriptor for subsequent communication operations.
+	int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+	Return Value: Returns a socket descriptor (an integer) on success, or -1 on error.
+	Arguments:
+		domain: The protocol family for the socket (e.g., AF_INET for IPv4).
+		type: The type of socket (e.g., SOCK_STREAM for TCP or SOCK_DGRAM for UDP).
+		protocol: The specific protocol to be used with the socket (usually 0 for default).
+
+
+close:
+	Used to close an open file descriptor, including socket descriptors.
+
+
+setsockopt:
+	Used to set options associated with a socket, such as enabling/disabling socket-level options or specifying timeout values.
+	Return Value: Returns 0 on success, or -1 on error.
+	Arguments:
+		sockfd: The socket descriptor.
+		level: The protocol level at which the option resides.
+		optname: The option to set.
+		optval: Pointer to the option value.
+		optlen: Length of the option value.
+
+
+getsockname:
+	Retrieves the local address of a bound socket.
+	Return Value: Returns 0 on success, or -1 on error.
+	Arguments:
+		sockfd: The socket descriptor.
+		addr: Pointer to a struct sockaddr to store the address.
+		addrlen: Pointer to an integer containing the size of addr.
+
+
+getprotobyname:
+	Retrieves protocol information for a given protocol name.
+	Return Value: Returns a pointer to a struct protoent on success, or NULL on error.
+	Arguments:
+		name: The name of the protocol.
+
+
+gethostbyname:
+	Retrieves host information corresponding to a hostname.
+	Return Value: Returns a pointer to a struct hostent on success, or NULL on error.
+	Arguments:
+		name: The hostname to resolve.
+
+
+getaddrinfo:
+	Provides protocol-independent translation from host name to address.
+	Return Value: Returns 0 on success, or an error code on failure.
+	Arguments:
+		node: The host name or IP address.
+		service: The service name or port number.
+		hints: A pointer to a struct addrinfo providing hints.
+		res: A pointer to the result linked list.
+
+
+freeaddrinfo:
+	Frees memory allocated by getaddrinfo.
+	Return Value: No return value.
+	Arguments:
+		res: A pointer to the addrinfo structure to be freed.
+
+
+bind:
+	Associates a socket with a specific local address.
+	Return Value: Returns 0 on success, or -1 on error.
+	Arguments:
+		sockfd: The socket descriptor.
+		addr: Pointer to the local address to bind to.
+		addrlen: The size of the address structure.
+
+
+connect:
+	Establishes a connection to a remote socket. 
+	Return Value: Returns 0 on success, or -1 on error.
+	Arguments:
+		sockfd: The socket descriptor.
+		addr: Pointer to the remote address to connect to.
+		addrlen: The size of the address structure.
+
+
+listen:
+	Marks the socket as passive, ready to accept incoming connections.
+	Return Value: Returns 0 on success, or -1 on error.
+	Arguments:
+		sockfd: The socket descriptor.
+		backlog: The maximum length to which the queue of pending connections may grow.
+
+
+accept:
+	Accepts a connection on a socket.
+	Return Value: Returns a new socket descriptor on success (representing the accepted connection), or -1 on error.
+	Arguments:
+		sockfd: The socket descriptor.
+		addr: Pointer to a struct sockaddr to store the address of the connecting entity.
+		addrlen: Pointer to an integer containing the size of addr.
+
+
+htons, htonl, ntohs, ntohl:
+	Functions for converting between host and network byte order (short and long versions).
+	Return Value: Returns the converted value.
+	Arguments:
+		hostshort or hostlong: The value in host byte order.
+
+
+inet_addr:
+	Converts an IPv4 address from text to binary form.
+	Return Value: Returns the binary representation of the IPv4 address in network byte order, or INADDR_NONE on error.
+	Arguments:
+		cp: A pointer to a string containing the IPv4 address in dotted-decimal notation.
+
+
+inet_ntoa:
+	Converts an IPv4 binary address to a text string in the Internet standard dotted format.
+	Return Value: Returns a pointer to a string containing the dotted-decimal notation of the IPv4 address.
+	Arguments:
+		in: A struct in_addr containing the binary representation of the IPv4 address.
+
+
+send:
+	Sends data on a connected socket.
+	Return Value: Returns the number of bytes sent on success, or -1 on error.
+	Arguments:
+		sockfd: The socket descriptor.
+		buf: Pointer to the data to be sent.
+		len: The length of the data in bytes.
+		flags: Additional flags.
+
+
+recv:
+	Receives data from a connected socket.
+	Return Value: Returns the number of bytes received on success, or -1 on error.
+	Arguments:
+		sockfd: The socket descriptor.
+		buf: Pointer to the buffer where the data will be stored.
+		len: The maximum length of the buffer.
+		flags: Additional flags.
+
+
+signal, sigaction:
+	Functions for handling signals.
+	Return Value: Returns 0 on success, or -1 on error.
+	Arguments:
+		signum: The signal number.
+		handler: Pointer to the signal handler function or SIG_DFL/SIG_IGN.
+		act: Pointer to a struct sigaction specifying action for the signal.
+		oldact: Pointer to a struct sigaction to store the previous action.
+
+
+lseek:
+	Repositions the file offset of an open file descriptor.
+	Return Value: Returns the resulting offset location measured in bytes from the beginning of the file, or -1 on error.
+	Arguments:
+		fd: The file descriptor.
+		offset: The offset to move the file pointer.
+		whence: The reference point for the offset.
+
+
+fstat:
+	Obtains information about an open file descriptor.
+	Return Value: Returns 0 on success, or -1 on error.
+	Arguments:
+		fd: The file descriptor.
+		buf: Pointer to a struct stat to store file information.
+
+
+fcntl:
+	Performs various operations on open file descriptors.
+	Return Value: Varies depending on the operation, typically returns -1 on error.
+	Arguments:
+		fd: The file descriptor.
+		cmd: The operation to perform.
+		arg: Additional argument depending on the operation.
+
+
+poll:
+	Polls multiple file descriptors for events.
+	Return Value: Returns the number of file descriptors with events, 0 for timeout, or -1 on error.
+	Arguments:
+		fds: An array of struct pollfd structures.
+		nfds: The number of elements in the fds array.
+		timeout: The timeout value in milliseconds (-1 for indefinite, 0 for immediate return).

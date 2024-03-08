@@ -22,15 +22,15 @@ Server::Server( char const *port, char const *password ) throw( std::exception )
 }
 
 void Server::setPassword( char const *password ) throw( std::exception ) {
-  if ( !password )
+  if ( !password[0] )
     throw Server::IncorrectPasswordException();
   _password = password;
 }
 
 void Server::setPort( char const *port ) throw( std::exception ) {
-  if ( !port )
+  if ( !port[0] )
     throw Server::IncorrectPortException();
-  for ( int i = -1; port[i]; ++i ) {
+  for ( int i = 0; port[i]; i++ ) {
     if ( !std::isdigit( port[i] ) ) {
       throw Server::IncorrectPortException();
     }

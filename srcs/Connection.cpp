@@ -11,7 +11,9 @@ Connection::Connection( Connection const &src ) {
 Connection &Connection::operator=( Connection const &src ) {
   if ( this == &src )
     return ( *this );
-  _port = src._port;
+  _port        = src._port;
+  _socketFd    = src._socketFd;
+  _server_addr = src._server_addr;
   return ( *this );
 }
 

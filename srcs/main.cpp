@@ -8,22 +8,23 @@
 int bindSocket(int port)
 {
 	int sockfd;
-    struct sockaddr_in server_addr;
+	struct sockaddr_in server_addr;
 
-    if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
-        std::cerr << "Error: failed to create socket" << std::endl;
-        return -1;
-    }
+	if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
+		std::cerr << "Error: failed to create socket" << std::endl;
+		return -1;
+	}
 
-    memset(&server_addr, 0, sizeof(server_addr));
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(port);
-    server_addr.sin_addr.s_addr = INADDR_ANY;
+	memset(&server_addr, 0, sizeof(server_addr));
+	server_addr.sin_family = AF_INET;
+	server_addr.sin_port = htons(port);
+	server_addr.sin_addr.s_addr = INADDR_ANY;
 
-    if (bind(sockfd, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1) {
-        std::cerr << "Error: failed to bind socket" << std::endl;
-        return -1;
-    }
+	if (bind(sockfd, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1) {
+		std::cerr << "Error: failed to bind socket" << std::endl;
+		return -1;
+	}
+
 	return (sockfd);
 }
 

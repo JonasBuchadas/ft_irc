@@ -2,7 +2,7 @@
 OS=			$(shell uname -s)
 
 ### EXECUTABLE ###
-NAME=		ft_irc
+NAME=		ircserv
 
 ### COMPILATION ###
 CC=			c++
@@ -15,8 +15,7 @@ OBJS_PATH=	objs/
 
 ### SOURCE FILES ###
 SRC_NAME=	main.cpp
-SRCS=		Server.cpp \
-				Connection.cpp
+SRCS=		Server.cpp
 SRCS_NAME=	$(addprefix $(SRCS_PATH), $(SRC_NAME) $(SRCS))
 ### OBJECT FILES ###
 OBJ_NAME=	$(SRC_NAME:.cpp=.o)

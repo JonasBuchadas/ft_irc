@@ -29,7 +29,6 @@ class Server {
   int                _fdSize;
   struct pollfd     *_pfds;
   struct sockaddr_in _server_addr;
-  struct sigaction   _sa;
 
   Server();
   Server &operator=( Server const &src );
@@ -37,7 +36,6 @@ class Server {
   void setPort( const char *port ) throw( std::exception );
   void setPassword( char const *password ) throw( std::exception );
   void setupListeningSocket( void ) throw( std::exception );
-  void setupSignalHandler( void ) throw( std::exception );
   void addToPfds( int newfd );
   void delFromPfds( int i );
 

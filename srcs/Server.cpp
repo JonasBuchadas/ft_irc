@@ -17,7 +17,6 @@ Server &Server::operator=( Server const &src ) {
   _password        = src._password;
   _listeningSocket = src._listeningSocket;
   _server_addr     = src._server_addr;
-  _sa              = src._sa;
   _pfds            = src._pfds;
   _fdCount         = src._fdCount;
   _fdSize          = src._fdSize;
@@ -28,7 +27,6 @@ Server::Server( char const *port, char const *password ) throw( std::exception )
   setPort( port );
   setPassword( password );
   setupListeningSocket();
-  setupSignalHandler();
   _fdCount = 0;
   _fdSize  = 5;
   _pfds    = (struct pollfd *)malloc( sizeof( *_pfds ) * _fdSize );
@@ -61,14 +59,6 @@ void Server::serve( void ) throw( std::exception ) {
   addToPfds( _listeningSocket );
   std::cout << "server: waiting for connections..." << std::endl;
   listeningLoop();
-}
-
-void Server::setupSignalHandler( void ) throw( std::exception ) {
-  _sa.sa_handler = sigchld_handler;
-  sigemptyset( &_sa.sa_mask );
-  _sa.sa_flags = SA_RESTART;
-  if ( sigaction( SIGCHLD, &_sa, NULL ) == -1 )
-    throw std::runtime_error( "sigaction" );
 }
 
 void Server::setupListeningSocket( void ) throw( std::exception ) {

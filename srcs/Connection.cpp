@@ -20,12 +20,12 @@ Connection &Connection::operator=( Connection const &src ) {
 Connection::Connection( int port ) : _port( port ) {}
 
 void Connection::socketBind() throw( std::exception ) {
-  if ( ( _socketFd = socket( AF_INET, SOCK_STREAM, 0 ) ) == -1 ) {
+  if ( ( _socketFd = socket( AF_INET6, SOCK_STREAM, 0 ) ) == -1 ) {
     throw Connection::SocketFailCreationException();
   }
 
   memset( &_server_addr, 0, sizeof( _server_addr ) );
-  _server_addr.sin_family      = AF_INET;
+  _server_addr.sin_family      = AF_INET6;
   _server_addr.sin_port        = htons( _port );
   _server_addr.sin_addr.s_addr = INADDR_ANY;
 

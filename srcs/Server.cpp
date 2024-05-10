@@ -3,7 +3,7 @@
 Server::Server() {}
 
 Server::~Server() {
-  free( _pfds );
+  
 }
 
 Server::Server( Server const &src ) {
@@ -18,7 +18,6 @@ Server &Server::operator=( Server const &src ) {
   _listeningSocket = src._listeningSocket;
   _server_addr     = src._server_addr;
   _pfds            = src._pfds;
-  _fdCount         = src._fdCount;
   _fdSize          = src._fdSize;
   return ( *this );
 }
@@ -27,9 +26,7 @@ Server::Server( char const *port, char const *password ) throw( std::exception )
   setPort( port );
   setPassword( password );
   setupListeningSocket();
-  _fdCount = 0;
   _fdSize  = 5;
-  _pfds    = (struct pollfd *)malloc( sizeof( *_pfds ) * _fdSize );
 }
 
 void Server::setPassword( char const *password ) throw( std::exception ) {
@@ -95,17 +92,16 @@ void Server::listeningLoop( void ) {
   int                     newFd;
   struct sockaddr_storage remoteaddr;
   socklen_t               addrlen;
-  int                     nbytes;
+  int                     nbytes = 0;
   char                    buf[256];
 
   while ( 1 ) {
-    int pollCount = poll( _pfds, _fdCount, -1 );
-
+    int pollCount = poll(&_pfds[0], _pfds.size(), -1 );
     if ( pollCount == -1 ) {
       perror( "poll" );
       exit( 1 );
     }
-    for ( int i = 0; i < _fdCount; i++ ) {
+    for ( int i = 0; i < (int)_pfds.size(); i++ ) {
       if ( _pfds[i].revents & POLL_IN ) {
         if ( _pfds[i].fd == _listeningSocket ) {
           addrlen = sizeof( remoteaddr );
@@ -121,14 +117,15 @@ void Server::listeningLoop( void ) {
           nbytes       = recv( senderFD, buf, sizeof( buf ), 0 );
           if ( nbytes <= 0 ) {
             if ( nbytes == 0 ) {
-              std::cout << "connection closed from " << senderFD;
+              std::cout << "connection closed from " << senderFD << std::endl;
             } else {
               perror( "recv" );
             }
             close( senderFD );
             delFromPfds( i );
+
           } else {
-            for ( int j = 0; j < _fdCount; j++ ) {
+            for ( int j = 0; j < (int)_pfds.size(); j++ ) {
               int destFD = _pfds[j].fd;
               if ( destFD != _listeningSocket && destFD != senderFD ) {
                 if ( send( destFD, buf, nbytes, 0 ) == -1 )
@@ -207,20 +204,28 @@ void Server::listeningLoop( void ) {
 
 // Add a new file descriptor to the iset
 void Server::addToPfds( int newfd ) {
-  // If we don't have room, add more space in the pfds array
-  if ( _fdCount == _fdSize ) {
-    _fdSize *= 2;  // Double it
-    _pfds = (struct pollfd *)realloc( _pfds, sizeof( *_pfds ) * _fdSize );
+  pollfd server_fd;
+  server_fd.fd = newfd;
+  server_fd.events = POLLIN;  // Check ready-to-read
+  server_fd.revents = 0;
+  std::vector<pollfd>::iterator it = _pfds.begin();
+  while (it != _pfds.end()) {
+      if (it->fd == newfd)
+          return ;
+      ++it;
   }
-  _pfds[_fdCount].fd     = newfd;
-  _pfds[_fdCount].events = POLLIN;  // Check ready-to-read
-  _fdCount++;
+  _pfds.push_back(server_fd);
 }
 
 void Server::delFromPfds( int i ) {
   // Copy the one from the end over this one
-  _pfds[i] = _pfds[_fdCount - 1];
-  _fdCount--;
+  std::vector<pollfd>::iterator it = _pfds.begin();
+  while (it != _pfds.end())
+  {
+      if (it->fd == i)
+          _pfds.erase(it);
+      ++it;
+  }
 }
 
 void *get_in_addr( struct sockaddr *sa ) {

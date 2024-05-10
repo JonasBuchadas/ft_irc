@@ -16,6 +16,7 @@
 #include <unistd.h>
 
 #include <cstring>
+#include <vector>
 #include <iostream>
 
 #define BACKLOG 10
@@ -25,9 +26,8 @@ class Server {
   const char        *_port;
   std::string        _password;
   int                _listeningSocket;
-  int                _fdCount;
   int                _fdSize;
-  struct pollfd     *_pfds;
+  std::vector<pollfd> _pfds;
   struct sockaddr_in _server_addr;
 
   Server();

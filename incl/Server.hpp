@@ -37,7 +37,7 @@ class Server {
   void setPassword( char const *password ) throw( std::exception );
   void setupListeningSocket( void ) throw( std::exception );
   void addToPfds( int newfd );
-  void delFromPfds( int i );
+  int delFromPfds( int i );
 
  public:
   Server( char const *port, char const *password ) throw( std::exception );

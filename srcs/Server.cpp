@@ -106,12 +106,10 @@ void Server::listeningLoop( void ) {
         if ( _pfds[i].fd == _listeningSocket ) {
           addrlen = sizeof( remoteaddr );
           newFd   = accept( _listeningSocket, (struct sockaddr *)&remoteaddr, &addrlen );
-          if ( newFd == -1 ) {
+          if ( newFd == -1 )
             perror( "accept" );
-          } else {
+          else
             addToPfds( newFd );
-            std::cout << "pollserver: new connection" << std::endl;
-          }
         } else {
           int senderFD = _pfds[i].fd;
           nbytes       = recv( senderFD, buf, sizeof( buf ), 0 );
@@ -122,8 +120,7 @@ void Server::listeningLoop( void ) {
               perror( "recv" );
             }
             close( senderFD );
-            delFromPfds( i );
-
+            i -= delFromPfds( senderFD );
           } else {
             for ( int j = 0; j < (int)_pfds.size(); j++ ) {
               int destFD = _pfds[j].fd;
@@ -215,17 +212,22 @@ void Server::addToPfds( int newfd ) {
       ++it;
   }
   _pfds.push_back(server_fd);
+  std::cout << "pollserver: new connection" << std::endl;
 }
 
-void Server::delFromPfds( int i ) {
+int Server::delFromPfds( int i ) {
   // Copy the one from the end over this one
   std::vector<pollfd>::iterator it = _pfds.begin();
   while (it != _pfds.end())
   {
       if (it->fd == i)
-          _pfds.erase(it);
+      {
+        _pfds.erase(it);
+        return (1);
+      }
       ++it;
   }
+  return 0;
 }
 
 void *get_in_addr( struct sockaddr *sa ) {

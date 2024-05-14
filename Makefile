@@ -6,7 +6,7 @@ NAME=		ircserv
 
 ### COMPILATION ###
 CC=			c++
-CFLAGS=		-Wall -Werror -Wextra -g -std=c++98 -fsanitize=address
+CFLAGS=		-Wall -Werror -Wextra -g -std=c++98 #-fsanitize=address
 
 ### PATHS ###
 INCL_PATH=	incl/
@@ -15,7 +15,7 @@ OBJS_PATH=	objs/
 
 ### SOURCE FILES ###
 SRC_NAME=	main.cpp
-SRCS=		Server.cpp
+SRCS=		Server.cpp User.cpp
 SRCS_NAME=	$(addprefix $(SRCS_PATH), $(SRC_NAME) $(SRCS))
 ### OBJECT FILES ###
 OBJ_NAME=	$(SRC_NAME:.cpp=.o)

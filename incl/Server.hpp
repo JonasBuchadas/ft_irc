@@ -18,6 +18,10 @@
 #include <cstring>
 #include <vector>
 #include <iostream>
+#include <map>
+#include "User.hpp"
+
+class User;
 
 #define BACKLOG 10
 
@@ -29,6 +33,7 @@ class Server {
   int                _fdSize;
   std::vector<pollfd> _pfds;
   struct sockaddr_in _server_addr;
+  std::map < int, User *> _users;
 
   Server();
   Server &operator=( Server const &src );
@@ -38,6 +43,7 @@ class Server {
   void setupListeningSocket( void ) throw( std::exception );
   void addToPfds( int newfd );
   int delFromPfds( int i );
+  void handleClient( int fd );
 
  public:
   Server( char const *port, char const *password ) throw( std::exception );

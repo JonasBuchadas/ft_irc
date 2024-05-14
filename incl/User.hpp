@@ -6,14 +6,15 @@
 
 class User {
  private:
-  std::string _serverName;
-  std::string _nickName;
-
- public:
-  User();
-  ~User();
   User( User const &src );
   User &operator=( User const &src );
+
+ public:
+  User(std::string serverName, std::string nickName);
+  ~User();
+  
+  std::string _serverName;
+  std::string _nickName;
 
   void join();
   void kick();

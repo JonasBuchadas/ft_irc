@@ -1,6 +1,6 @@
 #include "User.hpp"
 
-User::User() {}
+User::User(std::string serverName, std::string nickName) : _serverName(serverName), _nickName(nickName) {}
 
 User::~User() {}
 
@@ -25,6 +25,7 @@ void User::kick() {
 }
 
 void User::mode( char action ) {
+  (void) action;
   // TODO Implement me!!
 }
 

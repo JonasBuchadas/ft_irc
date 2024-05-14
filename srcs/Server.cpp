@@ -26,7 +26,8 @@ Server::Server( char const *port, char const *password ) throw( std::exception )
   setPort( port );
   setPassword( password );
   setupListeningSocket();
-  _fdSize  = 5;
+  _fdSize = 5;
+  _users.clear();
 }
 
 void Server::setPassword( char const *password ) throw( std::exception ) {
@@ -88,6 +89,55 @@ void Server::setupListeningSocket( void ) throw( std::exception ) {
     throw Server::BindFailException();
 }
 
+void Server::handleClient( int fd )
+{
+  char buffer[1024];
+  int valread;
+  static std::string pass, nick, name;
+
+  while ((valread = read(fd, buffer, sizeof( buffer ))) > 0) {
+      buffer[valread] = '\0';
+      std::string msg(buffer);
+      std::string message = msg.substr(0, msg.length() - 1);
+      if (message.length() > 4 && message.compare(0, 4, "PASS") == 0)
+        pass = message.substr(5);
+      else if (message.length() > 4 && message.compare(0, 4, "NICK") == 0)
+      {
+        for (std::map<int, User *>::iterator it = _users.begin(); it != _users.end(); it++)
+        {
+          if (it->second && it->second->_nickName == message.substr(5) && it->first != fd)
+          {
+            std::cout << "Nick already taken" << std::endl;
+            return ;
+          }
+        }
+        nick = message.substr(5);
+      }
+      else if (message.length() > 4 && message.compare(0, 4, "USER") == 0)
+      {
+        for (std::map<int, User *>::iterator it = _users.begin(); it != _users.end(); it++)
+        {
+          if (it->second && it->second->_serverName == message.substr(5) && it->first != fd)
+          {
+            std::cout << "Name already taken" << std::endl;
+            return ;
+          }
+        }
+        name = message.substr(5);
+      }
+      else if (_users[fd])
+        std::cout << message << std::endl;
+      if (!_users[fd] && pass == _password && !nick.empty() && !name.empty())
+      {
+        _users[fd] = new User(name, nick);
+        pass.clear();
+        nick.clear();
+        name.clear();
+      }
+  }
+  // close(fd);
+}
+
 void Server::listeningLoop( void ) {
   int                     newFd;
   struct sockaddr_storage remoteaddr;
@@ -109,7 +159,10 @@ void Server::listeningLoop( void ) {
           if ( newFd == -1 )
             perror( "accept" );
           else
+          {
             addToPfds( newFd );
+            handleClient( newFd );
+          }
         } else {
           int senderFD = _pfds[i].fd;
           nbytes       = recv( senderFD, buf, sizeof( buf ), 0 );
@@ -222,6 +275,12 @@ int Server::delFromPfds( int i ) {
   {
       if (it->fd == i)
       {
+        if (_users[it->fd])
+        {
+          std::map<int,User *>::iterator uit = _users.find(it->fd);
+          delete uit->second;
+          _users.erase(uit);
+        }
         _pfds.erase(it);
         return (1);
       }

@@ -101,57 +101,71 @@ void Server::handleClient( int fd )
 {
     char buffer[1024];
     int valread;
+    size_t start = 0;
+    std::string message = "";
     static std::string pass, nick, user;
 
     while ((valread = read(fd, buffer, sizeof( buffer ))) > 0) {
             buffer[valread] = '\0';
             std::string msg(buffer);
-            std::string message = msg.substr(0, msg.length() - 1);
-            if (message.length() > 4 && message.compare(0, 4, "PASS") == 0)
+            message = msg.substr(start, msg.find_first_of("\n\r\0", start));
+            while (message.length() > 0)
             {
-                if (isValidArg(message.substr(5)))
-                    pass = message.substr(5);
-                else
-                     std::cout << "Pass contains invalid characters" << std::endl;
-            }
-            else if (message.length() > 4 && message.compare(0, 4, "NICK") == 0)
-            {
-                for (std::map<int, User *>::iterator it = _users.begin(); it != _users.end(); it++)
+                if (message.length() > 4 && message.compare(0, 4, "PASS") == 0)
                 {
-                    if (it->second && it->second->_nickName == message.substr(5) && it->first != fd)
-                    {
-                        std::cout << "Nick already taken" << std::endl;
-                        return ;
-                    }
+                    if (isValidArg(message.substr(5)))
+                        pass = message.substr(5);
+                    else
+                        std::cout << "Pass contains invalid characters" << std::endl;
                 }
-                if (isValidArg(message.substr(5)))
-                    nick = message.substr(5);
-                else
-                     std::cout << "Nick contains invalid characters" << std::endl;
-            }
-            else if (message.length() > 4 && message.compare(0, 4, "USER") == 0)
-            {
-                for (std::map<int, User *>::iterator it = _users.begin(); it != _users.end(); it++)
+                else if (message.length() > 4 && message.compare(0, 4, "NICK") == 0)
                 {
-                    if (it->second && it->second->_serverName == message.substr(5) && it->first != fd)
+                    for (std::map<int, User *>::iterator it = _users.begin(); it != _users.end(); it++)
                     {
-                        std::cout << "User already taken" << std::endl;
-                        return ;
+                        if (it->second && it->second->getNick() == message.substr(5) && it->first != fd)
+                        {
+                            std::cout << "Nick already taken" << std::endl;
+                            return ;
+                        }
                     }
+                    if (isValidArg(message.substr(5, message.find_first_of("\n\r\0", 5) - 5)))
+                        nick = message.substr(5, message.find_first_of("\n\r\0", 5) - 5);
+                    else
+                        std::cout << "Nick contains invalid characters" << std::endl;
                 }
-                if (isValidArg(message.substr(5)))
-                    user = message.substr(5);
+                else if (message.length() > 4 && message.compare(0, 4, "USER") == 0)
+                {
+                    for (std::map<int, User *>::iterator it = _users.begin(); it != _users.end(); it++)
+                    {
+                        if (it->second && it->second->getName() == message.substr(5) && it->first != fd)
+                        {
+                            std::cout << "User already taken" << std::endl;
+                            return ;
+                        }
+                    }
+                    if (isValidArg(message.substr(5, message.find_first_of(" \n\r\0", 5) - 5)))
+                        user = message.substr(5, message.find_first_of(" \n\r\0", 5) - 5);
+                    else
+                        std::cout << "User contains invalid characters" << std::endl;
+                }
+                else if (_users[fd])
+                    std::cout << message << std::endl;
+                if (!_users[fd] && pass == _password && !nick.empty() && !user.empty())
+                {
+                    _users[fd] = new User(user, nick);
+                    pass.clear();
+                    nick.clear();
+                    user.clear();
+                    std::cout << "OK" << std::endl;
+                    std::cout << _users[fd] << std::endl;
+                }
+                start = msg.find_first_of("\n\r\0", start);
+                while (msg[start] == '\n' || msg[start] == '\r')
+                    start++;
+                if (start < msg.size())
+                    message = msg.substr(start, msg.find_first_of("\n\r\0", start) - start);
                 else
-                     std::cout << "User contains invalid characters" << std::endl;
-            }
-            else if (_users[fd])
-                std::cout << message << std::endl;
-            if (!_users[fd] && pass == _password && !nick.empty() && !user.empty())
-            {
-                _users[fd] = new User(user, nick);
-                pass.clear();
-                nick.clear();
-                user.clear();
+                    message = "";
             }
     }
     // close(fd);

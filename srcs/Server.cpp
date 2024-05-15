@@ -108,7 +108,10 @@ void Server::handleClient( int fd )
     while ((valread = read(fd, buffer, sizeof( buffer ))) > 0) {
             buffer[valread] = '\0';
             std::string msg(buffer);
-            message = msg.substr(start, msg.find_first_of("\n\r\0", start));
+            if (msg.find_first_of("\n\r", start) != std::string::npos)
+              message = msg.substr(start, msg.find_first_of("\n\r\0", start));
+            else
+              message = msg;
             while (message.length() > 0)
             {
                 if (message.length() > 4 && message.compare(0, 4, "PASS") == 0)
@@ -156,13 +159,11 @@ void Server::handleClient( int fd )
                     pass.clear();
                     nick.clear();
                     user.clear();
-                    std::cout << "OK" << std::endl;
-                    std::cout << _users[fd] << std::endl;
                 }
                 start = msg.find_first_of("\n\r\0", start);
                 while (msg[start] == '\n' || msg[start] == '\r')
                     start++;
-                if (start < msg.size())
+                if (msg[start] != '\0' && msg.find_first_of("\n\r", start) != std::string::npos)
                     message = msg.substr(start, msg.find_first_of("\n\r\0", start) - start);
                 else
                     message = "";

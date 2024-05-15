@@ -6,7 +6,7 @@ NAME=		ircserv
 
 ### COMPILATION ###
 CC=			c++
-CFLAGS=		-Wall -Werror -Wextra -g -std=c++98 #-fsanitize=address
+CFLAGS=		-Wall -Werror -Wextra -g -std=c++98 -fsanitize=address
 
 ### PATHS ###
 INCL_PATH=	incl/

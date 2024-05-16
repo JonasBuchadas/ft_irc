@@ -48,6 +48,7 @@ class Server {
 
  public:
   static bool _stopServer;
+  static int _dummyFD;
 
   Server( char const *port, char const *password ) throw( std::exception );
   ~Server();

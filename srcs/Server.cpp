@@ -1,17 +1,16 @@
 #include "Server.hpp"
 
 bool Server::_stopServer = false;
+int Server::_dummyFD = 4;
 
 Server::Server() {}
 
 Server::~Server() {
-  // std::map<int, User *>::iterator it = _users.begin();
-  // while ( it != _users.end() ) {
-  //   if ( it->second != NULL ) {
-  //     delete it->second;
-  //     it->second = NULL;
-  //   }
-  // }
+  std::map<int, User *>::iterator it = _users.begin();
+  while ( it != _users.end() ) {
+      delete it->second;
+      it->second = NULL;
+  }
   _users.clear();
 }
 
@@ -176,12 +175,12 @@ void Server::listeningLoop( void ) {
 
   signal( SIGINT, sigchld_handler );
   signal( SIGQUIT, sigchld_handler );
-  while ( !_stopServer ) {
+  _dummyFD = _listeningSocket + 1;
+  addToPfds( _dummyFD );
+  while (1) {
     int pollCount = poll( &_pfds[0], _pfds.size(), -1 );
-    if ( pollCount == -1 ) {
-      perror( "poll" );
-      exit( 1 );
-    }
+    if ( pollCount == -1 || _stopServer)
+      break ;
     for ( int i = 0; i < (int)_pfds.size(); i++ ) {
       if ( _pfds[i].revents & POLL_IN ) {
         if ( _pfds[i].fd == _listeningSocket ) {
@@ -327,4 +326,5 @@ void sigchld_handler( int s ) {
   (void)s;
   std::cout << "Signal terminate" << std::endl;
   Server::_stopServer = true;
+  close( Server::_dummyFD );
 }

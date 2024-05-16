@@ -1,17 +1,12 @@
 #include "Server.hpp"
 
 bool Server::_stopServer = false;
-int Server::_dummyFD = 4;
+int  Server::_dummyFD    = 4;
 
 Server::Server() {}
 
 Server::~Server() {
-  std::map<int, User *>::iterator it = _users.begin();
-  while ( it != _users.end() ) {
-      delete it->second;
-      it->second = NULL;
-  }
-  _users.clear();
+  clearUsers();
 }
 
 Server::Server( Server const &src ) {
@@ -177,10 +172,11 @@ void Server::listeningLoop( void ) {
   signal( SIGQUIT, sigchld_handler );
   _dummyFD = _listeningSocket + 1;
   addToPfds( _dummyFD );
-  while (1) {
+  while ( 1 ) {
     int pollCount = poll( &_pfds[0], _pfds.size(), -1 );
-    if ( pollCount == -1 || _stopServer)
-      break ;
+    if ( pollCount == -1 || _stopServer ) {
+      break;
+    }
     for ( int i = 0; i < (int)_pfds.size(); i++ ) {
       if ( _pfds[i].revents & POLL_IN ) {
         if ( _pfds[i].fd == _listeningSocket ) {
@@ -217,69 +213,6 @@ void Server::listeningLoop( void ) {
     }
   }
 }
-
-// void Server::listeningLoop( void ) {
-//   while ( 1 ) {
-//     sin_size = sizeof their_addr;
-//     newFd    = accept( _listeningSocket, (struct sockaddr *)&their_addr, &sin_size );
-//     if ( newFd == -1 ) {
-//       perror( "accept" );
-//       continue;
-//     }
-//     send( newFd, "Welcome to our IRC server. Please input username, nickname and server password.\n", 80, 0 );
-//     inet_ntop( their_addr.ss_family, get_in_addr( (struct sockaddr *)&their_addr ), s, sizeof s );
-//     std::cout << "server: got connection from " << s << std::endl;
-//     _readFds = _master;
-//     if ( select( _maxFd + 1, &_readFds, NULL, NULL, NULL ) == -1 ) {
-//       perror( "select" );
-//       exit( 4 );
-//     }
-//     std::cout << "For loop" << std::endl;
-//     for ( int i = 0; i <= _maxFd; i++ ) {
-//       if ( FD_ISSET( i, &_readFds ) ) {
-//         if ( i == _listeningSocket ) {
-//           addrlen = sizeof( remoteaddr );
-//           newFd   = accept( _listeningSocket, (struct sockaddr *)&remoteaddr, &addrlen );
-//           if ( newFd == -1 )
-//             perror( "accept" );
-//         } else {
-//           FD_SET( newFd, &_master );
-//           if ( newFd > _maxFd )
-//             _maxFd = newFd;
-//         }
-//       } else {
-//         nbytes = recv( i, buf, sizeof( buf ), 0 );
-//         if ( nbytes <= 0 ) {
-//           if ( nbytes == 0 )
-//             std::cout << "selectserver: socket " << i << " hung up" << std::endl;
-//           if ( nbytes < 0 )
-//             perror( "recv" );
-//           close( i );
-//           FD_CLR( i, &_master );
-//         } else {
-//           std::cout << "message from user: " << buf << std::endl;
-//           for ( int j = 0; j < _maxFd; j++ ) {
-//             if ( FD_ISSET( j, &_master ) ) {
-//               if ( j != _listeningSocket && j != i ) {
-//                 if ( send( j, buf, nbytes, 0 ) == -1 )
-//                   perror( "send" );
-//               }
-//             }
-//           }
-//         }
-//       }
-//     }
-//     // sin_size = sizeof their_addr;
-//     // newFd    = accept( _listeningSocket, (struct sockaddr *)&their_addr, &sin_size );
-//     // if ( newFd == -1 ) {
-//     //   perror( "accept" );
-//     //   continue;
-//     // }
-//     // send( newFd, "Welcome to our IRC server. Please input username, nickname and server password.\n", 80, 0 );
-//     // inet_ntop( their_addr.ss_family, get_in_addr( (struct sockaddr *)&their_addr ), s, sizeof s );
-//     // std::cout << "server: got connection from " << s << std::endl;
-//   }
-// }
 
 // Add a new file descriptor to the iset
 void Server::addToPfds( int newfd ) {
@@ -322,9 +255,17 @@ void *get_in_addr( struct sockaddr *sa ) {
   return &( ( (struct sockaddr_in6 *)sa )->sin6_addr );
 }
 
+void Server::clearUsers() {
+  std::map<int, User *>::iterator it;
+  for ( it = _users.begin(); it != _users.end(); it++ ) {
+    delete it->second;
+    it->second = NULL;
+  }
+  _users.clear();
+}
+
 void sigchld_handler( int s ) {
   (void)s;
-  std::cout << "Signal terminate" << std::endl;
   Server::_stopServer = true;
   close( Server::_dummyFD );
 }

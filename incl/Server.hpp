@@ -45,10 +45,11 @@ class Server {
   void addToPfds( int newfd );
   int  delFromPfds( int i );
   void handleClient( int fd );
+  void clearUsers();
 
  public:
   static bool _stopServer;
-  static int _dummyFD;
+  static int  _dummyFD;
 
   Server( char const *port, char const *password ) throw( std::exception );
   ~Server();

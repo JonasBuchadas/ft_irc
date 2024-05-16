@@ -16,9 +16,10 @@
 #include <unistd.h>
 
 #include <cstring>
-#include <vector>
 #include <iostream>
 #include <map>
+#include <vector>
+
 #include "User.hpp"
 
 class User;
@@ -27,13 +28,13 @@ class User;
 
 class Server {
  private:
-  const char        *_port;
-  std::string        _password;
-  int                _listeningSocket;
-  int                _fdSize;
-  std::vector<pollfd> _pfds;
-  struct sockaddr_in _server_addr;
-  std::map < int, User *> _users;
+  const char           *_port;
+  std::string           _password;
+  int                   _listeningSocket;
+  int                   _fdSize;
+  std::vector<pollfd>   _pfds;
+  struct sockaddr_in    _server_addr;
+  std::map<int, User *> _users;
 
   Server();
   Server &operator=( Server const &src );
@@ -42,10 +43,12 @@ class Server {
   void setPassword( char const *password ) throw( std::exception );
   void setupListeningSocket( void ) throw( std::exception );
   void addToPfds( int newfd );
-  int delFromPfds( int i );
+  int  delFromPfds( int i );
   void handleClient( int fd );
 
  public:
+  static bool _stopServer;
+
   Server( char const *port, char const *password ) throw( std::exception );
   ~Server();
   Server( Server const &src );

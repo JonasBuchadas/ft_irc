@@ -1,0 +1,22 @@
+name: Run test
+
+on:
+  push:
+    branches:
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up CPP
+        uses: aminya/setup-cpp@v1
+
+      - name: Run build
+        run: make all
+
+      - name: Test
+        run: make test

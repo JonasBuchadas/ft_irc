@@ -110,7 +110,7 @@ void Server::handleClient( int fd )
     while ((valread = read(fd, buffer, 512)) > 0) {
             buffer[valread] = '\0';
             valread--;
-            while (valread > 0 && (buffer[valread] == '\n' || buffer[valread] == '\r'))
+            while (valread >= 0 && (buffer[valread] == '\n' || buffer[valread] == '\r'))
             {
                 buffer[valread] = '\0';
                 valread--;

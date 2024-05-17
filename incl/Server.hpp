@@ -44,7 +44,7 @@ class Server {
   void setupListeningSocket( void ) throw( std::exception );
   void addToPfds( int newfd );
   int  delFromPfds( int i );
-  void handleClient( int fd, std::string msg );
+  std::string processMsg( int fd, std::string msg, std::vector<int> &recipients);
   void clearUsers();
 
  public:

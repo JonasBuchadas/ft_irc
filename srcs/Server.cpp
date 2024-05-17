@@ -182,7 +182,6 @@ void Server::handleClient( int fd )
             msg = "";
             msg.clear();
     }
-  }
   // close(fd);
 }
 

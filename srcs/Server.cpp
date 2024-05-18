@@ -1,7 +1,6 @@
 #include "Server.hpp"
 
 bool Server::_stopServer = false;
-int  Server::_dummyFD    = 4;
 
 Server::Server() {}
 
@@ -187,13 +186,12 @@ void Server::listeningLoop( void ) {
   struct sockaddr_storage remoteaddr;
   socklen_t               addrlen;
   int                     nbytes = 0;
-  char                    buf[513];
+  char                    buf[514];
+  char                    extra[4];
   std::vector<int>        recipients;
 
   signal( SIGINT, sigchld_handler );
   signal( SIGQUIT, sigchld_handler );
-  _dummyFD = _listeningSocket + 1;
-  addToPfds( _dummyFD );
   while ( 1 ) {
     int pollCount = poll( &_pfds[0], _pfds.size(), -1 );
     if ( pollCount == -1 || _stopServer ) {
@@ -221,7 +219,17 @@ void Server::listeningLoop( void ) {
             close( senderFD );
             i -= delFromPfds( senderFD );
           } else {
-            std::string resp = processMsg( _pfds[i].fd, buf, recipients ).c_str();
+            std::string resp;
+            if (nbytes >= 512)
+            {
+              int times = 1;
+              while (nbytes > 0)
+                nbytes = recv( senderFD, extra, 512, nbytes + 512 * times++ );
+              recipients.push_back( senderFD );
+              resp = "Message will be ignored due to size constraints\n\0";
+            }
+            else
+             resp = processMsg( senderFD, buf, recipients ).c_str();
             for ( int j = 0; j < (int)recipients.size(); j++ ) {
               int destFD = recipients[j];
               if ( destFD != _listeningSocket ) {
@@ -284,11 +292,16 @@ void Server::clearUsers() {
     delete it->second;
     it->second = NULL;
   }
+  
+  std::vector<pollfd>::iterator fit = _pfds.begin();
+  for ( fit = _pfds.begin(); fit != _pfds.end(); fit++ ) {
+    close(fit->fd);
+  }
   _users.clear();
 }
 
 void sigchld_handler( int s ) {
   (void)s;
   Server::_stopServer = true;
-  close( Server::_dummyFD );
+  close( 3 );
 }

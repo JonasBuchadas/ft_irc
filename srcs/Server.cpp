@@ -2,13 +2,13 @@
 
 bool Server::_stopServer = false;
 
-Server::Server() :_commands(*this) {}
+Server::Server() {}
 
 Server::~Server() {
   clearUsers();
 }
 
-Server::Server( Server const &src ) : _commands(*this) {
+Server::Server( Server const &src ) {
   *this = src;
 }
 
@@ -24,14 +24,27 @@ Server &Server::operator=( Server const &src ) {
   return ( *this );
 }
 
-Server::Server( char const *port, char const *password ) throw( std::exception ) : 
-  _commands(*this) {
+Server::Server( char const *port, char const *password ) throw( std::exception ) {
   setPort( port );
   setPassword( password );
   setupListeningSocket();
   _fdSize = 5;
   _users.clear();
   _recipients.clear();
+  _passlist.clear();
+  _nicklist.clear();
+  _namelist.clear();
+  _command.clear();
+  _command["PASS"] =  &Server::checkPasswd;
+  _command["NICK"] =  &Server::setNickname;
+  _command["USER"] =  &Server::setUsername;
+  _command["JOIN"] =  &Server::joinChannel;
+  _command["PART"] =  &Server::partChannel;
+  _command["MODE"] =  &Server::changeModes;
+  _command["KICK"] =  &Server::kickoutUser;
+  _command["TOPIC"] = &Server::changeTopic;
+  _command["INVITE"] = &Server::inviteUser;
+  _command["PRIVMSG"] = &Server::directMsg;
 }
 
 void Server::setPassword( char const *password ) throw( std::exception ) {
@@ -122,7 +135,7 @@ std::string Server::processMsg( int fd, std::string msg)
             }
             resp = message + "\n\0";
         }
-        if (!_users[fd] && _commands.authenticateUser(fd))
+        if (!_users[fd] && authenticateUser(fd))
         {
             _users[fd] = new User(user, nick);
             resp += "Successfully logged in!\n\0";
@@ -225,7 +238,7 @@ int Server::delFromPfds( int i ) {
         delete uit->second;
         _users.erase( uit );
       }
-      _commands.releaseUserInfo( i );
+      releaseUserInfo( i );
       _pfds.erase( it );
       return ( 1 );
     }
@@ -259,18 +272,4 @@ void sigchld_handler( int s ) {
   (void)s;
   Server::_stopServer = true;
   close( 3 );
-}
-
-std::string Server::executeCommand(const std::string& command, const std::string& message, int fd) {
-    return _commands.executeCommand(command, message, fd);
-}
-
-std::map<int, User *>Server::getUsers() const
-{
-  return _users;
-}
-
-std::string Server::getPass() const
-{
-  return _password;
 }

@@ -1,37 +1,4 @@
-#include "Commands.hpp"
 #include "Server.hpp"
-
-Commands::Commands(Server &server) : _server(server)
-{
-    _passlist.clear();
-    _nicklist.clear();
-    _namelist.clear();
-    _command.clear();
-    _command["PASS"] =  &Commands::checkPasswd;
-    _command["NICK"] =  &Commands::setNickname;
-    _command["USER"] =  &Commands::setUsername;
-    _command["JOIN"] =  &Commands::joinChannel;
-    _command["PART"] =  &Commands::partChannel;
-    _command["MODE"] =  &Commands::changeModes;
-    _command["KICK"] =  &Commands::kickoutUser;
-    _command["TOPIC"] = &Commands::changeTopic;
-    _command["INVITE"] = &Commands::inviteUser;
-    _command["PRIVMSG"] = &Commands::directMsg;
-}
-
-Commands::~Commands() {}
-
-Commands::Commands( Commands const &src ) : _server(src._server) {
-  *this = src;
-}
-
-Commands &Commands::operator=( Commands const &src ) {
-  if ( this == &src )
-    return ( *this );
-  _command = src._command;
-  return ( *this );
-}
-
 
 static bool isValidArg( std::string str ) {
   for ( size_t i = 0; i < str.length(); i++ )
@@ -40,7 +7,7 @@ static bool isValidArg( std::string str ) {
   return 1;
 }
 
-std::string Commands::checkPasswd( const std::string& message, int fd )
+std::string Server::checkPasswd( const std::string& message, int fd )
 {
     if (message.length() <= 1)
         return "Invalid string\n\0";
@@ -59,15 +26,14 @@ std::string Commands::checkPasswd( const std::string& message, int fd )
         return "Password contains invalid characters\n\0";
 }
 
-std::string Commands::setNickname( const std::string& message, int fd )
+std::string Server::setNickname( const std::string& message, int fd )
 {
     if (message.length() <= 1)
         return "Invalid string\n\0";
     std::string str = message.substr(1, message.find_first_of("\n\r\0", 1) - 1);
     if (!_nicklist[fd].empty() && isValidArg(str))
     {
-        std::map<int, User*> users = _server.getUsers();
-        for (std::map<int, User *>::iterator it = users.begin(); it != users.end(); it++)
+        for (std::map<int, User *>::iterator it = _users.begin(); it != _users.end(); it++)
         {
             if (it->first != fd && it->second->getNick() == str)
                 return "Nickname already taken\n\0";
@@ -84,15 +50,14 @@ std::string Commands::setNickname( const std::string& message, int fd )
         return "Nickname contains invalid characters\n\0";
 }
 
-std::string Commands::setUsername( const std::string& message, int fd )
+std::string Server::setUsername( const std::string& message, int fd )
 {
     if (message.length() <= 1)
         return "Invalid string\n\0";
     std::string str = message.substr(1, message.find_first_of("\n\r\0", 1) - 1);
     if (!_namelist[fd].empty() && isValidArg(str))
     {
-        std::map<int, User*> users = _server.getUsers();
-        for (std::map<int, User *>::iterator it = users.begin(); it != users.end(); it++)
+        for (std::map<int, User *>::iterator it = _users.begin(); it != _users.end(); it++)
         {
             if (it->first != fd && it->second->getName() == str)
                 return "Username already taken\n\0";
@@ -109,50 +74,50 @@ std::string Commands::setUsername( const std::string& message, int fd )
         return "Username contains invalid characters\n\0";
 }
 
-std::string Commands::joinChannel( const std::string& message, int fd )
+std::string Server::joinChannel( const std::string& message, int fd )
 {
     (void)fd;
     return message;
 }
 
-std::string Commands::partChannel( const std::string& message, int fd )
+std::string Server::partChannel( const std::string& message, int fd )
 {
     (void)fd;
     return message;
 }
 
-std::string Commands::changeModes( const std::string& message, int fd )
+std::string Server::changeModes( const std::string& message, int fd )
 {
     (void)fd;
     return message;
 }
 
-std::string Commands::kickoutUser(const std::string& message, int fd)
+std::string Server::kickoutUser(const std::string& message, int fd)
 {
     (void)fd;
     return message;
 }
 
-std::string Commands::changeTopic(const std::string& message, int fd)
+std::string Server::changeTopic(const std::string& message, int fd)
 {
     (void)fd;
     return message;
 }
 
-std::string Commands::inviteUser(const std::string& message, int fd)
+std::string Server::inviteUser(const std::string& message, int fd)
 {
     (void)fd;
     return message;
 }
 
-std::string Commands::directMsg(const std::string& message, int fd)
+std::string Server::directMsg(const std::string& message, int fd)
 {
     (void)fd;
     return message;
 }
 
 
-std::string Commands::executeCommand(const std::string& command, const std::string& message, int fd) {
+std::string Server::executeCommand(const std::string& command, const std::string& message, int fd) {
     std::map<std::string, CommandFunction>::iterator it = _command.find(command);
     if (it != _command.end()) {
         return (this->*(it->second))(message, fd);
@@ -161,11 +126,11 @@ std::string Commands::executeCommand(const std::string& command, const std::stri
     }
 }
 
-int Commands::authenticateUser(int fd)
+int Server::authenticateUser(int fd)
 {
     int pass = 0, nick = 0, user = 0;
 
-    if (!_passlist[fd].empty() && _passlist[fd] == _server.getPass())
+    if (!_passlist[fd].empty() && _passlist[fd] == _password)
         pass = 1;
     if (!_nicklist[fd].empty())
         nick = 1;
@@ -177,7 +142,7 @@ int Commands::authenticateUser(int fd)
     return 0;
 }
 
-void Commands::releaseUserInfo(int fd)
+void Server::releaseUserInfo(int fd)
 {
     if (!_passlist[fd].empty())
         _passlist.erase(fd);

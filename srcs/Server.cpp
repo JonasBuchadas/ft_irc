@@ -2,13 +2,13 @@
 
 bool Server::_stopServer = false;
 
-Server::Server() {}
+Server::Server() :_commands(*this) {}
 
 Server::~Server() {
   clearUsers();
 }
 
-Server::Server( Server const &src ) {
+Server::Server( Server const &src ) : _commands(*this) {
   *this = src;
 }
 
@@ -24,12 +24,14 @@ Server &Server::operator=( Server const &src ) {
   return ( *this );
 }
 
-Server::Server( char const *port, char const *password ) throw( std::exception ) {
+Server::Server( char const *port, char const *password ) throw( std::exception ) : 
+  _commands(*this) {
   setPort( port );
   setPassword( password );
   setupListeningSocket();
   _fdSize = 5;
   _users.clear();
+  _recipients.clear();
 }
 
 void Server::setPassword( char const *password ) throw( std::exception ) {
@@ -91,16 +93,9 @@ void Server::setupListeningSocket( void ) throw( std::exception ) {
     throw Server::BindFailException();
 }
 
-static bool isValidArg( std::string str ) {
-  for ( size_t i = 0; i < str.length(); i++ )
-    if ( !isdigit( str[i] ) && !isalpha( str[i] ) )
-      return 0;
-  return 1;
-}
-
-std::string Server::processMsg( int fd, std::string msg, std::vector<int> &recipients )
+std::string Server::processMsg( int fd, std::string msg)
 {
-    std::string resp;
+    std::string resp = "";
     size_t start = 0;
     std::string message;
     static std::string pass, nick, user;
@@ -111,64 +106,26 @@ std::string Server::processMsg( int fd, std::string msg, std::vector<int> &recip
       message = msg;
     while (!message.empty())
     {
-        if (recipients.empty())
-          recipients.push_back(fd);
-        if (message.length() > 4 && message.compare(0, 4, "PASS") == 0)
+        if (_recipients.empty())
+          _recipients.push_back(fd);
+        std::string word;
+        std::stringstream ss(message);
+        ss >> word;
+        resp = executeCommand(word, message.substr(word.length()), fd);
+        if (_users[fd])
         {
-            if (isValidArg(message.substr(5, message.find_first_of("\n\r\0", 5))))
-                pass = message.substr(5, message.find_first_of("\n\r\0", 5));
-            else
-                resp = "Pass contains invalid characters\n\0";
-        }
-        else if (message.length() > 4 && message.compare(0, 4, "NICK") == 0)
-        {
-            for (std::map<int, User *>::iterator it = _users.begin(); it != _users.end(); it++)
-            {
-                if (it->second && it->second->getNick() == message.substr(5) && it->first != fd)
-                {
-                    nick.clear();
-                    resp = "Nick already taken\n\0";
-                    return resp;
-                }
-            }
-            if (isValidArg(message.substr(5, message.find_first_of("\n\r\0", 5) - 5)))
-                nick = message.substr(5, message.find_first_of("\n\r\0", 5) - 5);
-            else
-                resp = "Nick contains invalid characters\n\0";
-        }
-        else if (message.length() > 4 && message.compare(0, 4, "USER") == 0)
-        {
-            for (std::map<int, User *>::iterator it = _users.begin(); it != _users.end(); it++)
-            {
-                if (it->second && it->second->getName() == message.substr(5) && it->first != fd)
-                {
-                    user.clear();
-                    resp = "User already taken\n\0";
-                    return resp;
-                }
-            }
-            if (isValidArg(message.substr(5, message.find_first_of(" \n\r\0", 5) - 5)))
-                user = message.substr(5, message.find_first_of(" \n\r\0", 5) - 5);
-            else
-                resp = "User contains invalid characters\n\0";
-        }
-        else if (_users[fd])
-        {
-            recipients.clear();
+            _recipients.clear();
             for (int i = 0; i < (int)_pfds.size(); i++)
             {
               if (_pfds[i].fd != fd)
-                recipients.push_back(_pfds[i].fd);
+                _recipients.push_back(_pfds[i].fd);
             }
             resp = message + "\n\0";
         }
-        if (!_users[fd] && pass == _password && !nick.empty() && !user.empty())
+        if (!_users[fd] && _commands.authenticateUser(fd))
         {
             _users[fd] = new User(user, nick);
-            pass.clear();
-            nick.clear();
-            user.clear();
-            resp = "Successfully logged in!\n\0";
+            resp += "Successfully logged in!\n\0";
         }
         start = msg.find_first_of("\n\r\0", start);
         while (start < msg.size() && (msg[start] == '\n' || msg[start] == '\r'))
@@ -187,8 +144,6 @@ void Server::listeningLoop( void ) {
   socklen_t               addrlen;
   int                     nbytes = 0;
   char                    buf[514];
-  char                    extra[4];
-  std::vector<int>        recipients;
 
   signal( SIGINT, sigchld_handler );
   signal( SIGQUIT, sigchld_handler );
@@ -222,22 +177,21 @@ void Server::listeningLoop( void ) {
             std::string resp;
             if (nbytes >= 512)
             {
-              int times = 1;
-              while (nbytes > 0)
-                nbytes = recv( senderFD, extra, 512, nbytes + 512 * times++ );
-              recipients.push_back( senderFD );
+              while (recv( senderFD, buf, 512, MSG_DONTWAIT) > 0)
+                ;
+              _recipients.push_back( senderFD );
               resp = "Message will be ignored due to size constraints\n\0";
             }
             else
-             resp = processMsg( senderFD, buf, recipients ).c_str();
-            for ( int j = 0; j < (int)recipients.size(); j++ ) {
-              int destFD = recipients[j];
+             resp = processMsg( senderFD, buf).c_str();
+            for ( int j = 0; j < (int)_recipients.size(); j++ ) {
+              int destFD = _recipients[j];
               if ( destFD != _listeningSocket ) {
                 if ( send( destFD, resp.c_str(), resp.size(), 0 ) == -1 )
                   perror( "send" );
               }
             }
-            recipients.clear();
+            _recipients.clear();
           }
         }
       }
@@ -271,6 +225,7 @@ int Server::delFromPfds( int i ) {
         delete uit->second;
         _users.erase( uit );
       }
+      _commands.releaseUserInfo( i );
       _pfds.erase( it );
       return ( 1 );
     }
@@ -304,4 +259,18 @@ void sigchld_handler( int s ) {
   (void)s;
   Server::_stopServer = true;
   close( 3 );
+}
+
+std::string Server::executeCommand(const std::string& command, const std::string& message, int fd) {
+    return _commands.executeCommand(command, message, fd);
+}
+
+std::map<int, User *>Server::getUsers() const
+{
+  return _users;
+}
+
+std::string Server::getPass() const
+{
+  return _password;
 }

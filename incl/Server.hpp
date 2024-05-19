@@ -16,11 +16,13 @@
 #include <unistd.h>
 
 #include <cstring>
+#include <sstream>
 #include <iostream>
 #include <map>
 #include <vector>
 
 #include "User.hpp"
+#include "Commands.hpp"
 
 class User;
 
@@ -35,6 +37,8 @@ class Server {
   std::vector<pollfd>   _pfds;
   struct sockaddr_in    _server_addr;
   std::map<int, User *> _users;
+  Commands              _commands;
+  std::vector<int>      _recipients;
 
   Server();
   Server &operator=( Server const &src );
@@ -44,7 +48,7 @@ class Server {
   void setupListeningSocket( void ) throw( std::exception );
   void addToPfds( int newfd );
   int  delFromPfds( int i );
-  std::string processMsg( int fd, std::string msg, std::vector<int> &recipients);
+  std::string processMsg( int fd, std::string msg);
   void clearUsers();
 
  public:
@@ -55,6 +59,10 @@ class Server {
   Server( Server const &src );
   void serve( void ) throw( std::exception );
   void listeningLoop( void );
+  std::string executeCommand(const std::string& command, const std::string& message, int fd);
+
+  std::map<int, User *>getUsers() const;
+  std::string getPass() const;
 
   class IncorrectPortException : public std::exception {
    public:

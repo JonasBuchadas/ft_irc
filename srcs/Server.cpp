@@ -111,7 +111,6 @@ std::string Server::processMsg( int fd, std::string msg)
     std::string resp = "";
     size_t start = 0;
     std::string message;
-    static std::string pass, nick, user;
 
     if (!msg.empty() && msg.find_first_of("\n\r", start) != std::string::npos)
       message = msg.substr(start, msg.find_first_of("\n\r", start));
@@ -137,7 +136,7 @@ std::string Server::processMsg( int fd, std::string msg)
         }
         if (!_users[fd] && authenticateUser(fd))
         {
-            _users[fd] = new User(user, nick);
+            _users[fd] = new User(_namelist[fd], _nicklist[fd]);
             resp += "Successfully logged in!\n\0";
         }
         start = msg.find_first_of("\n\r\0", start);
@@ -190,8 +189,7 @@ void Server::listeningLoop( void ) {
             std::string resp;
             if (nbytes >= 512)
             {
-              while (recv( senderFD, buf, 512, MSG_DONTWAIT) > 0)
-                ;
+              while (recv( senderFD, buf, 512, MSG_DONTWAIT) > 0);
               _recipients.push_back( senderFD );
               resp = "Message will be ignored due to size constraints\n\0";
             }

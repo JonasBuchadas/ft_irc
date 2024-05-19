@@ -31,13 +31,13 @@ std::string Server::setNickname( const std::string& message, int fd )
     if (message.length() <= 1)
         return "Invalid string\n\0";
     std::string str = message.substr(1, message.find_first_of("\n\r\0", 1) - 1);
+    for (std::map<int, std::string>::iterator it = _nicklist.begin(); it != _nicklist.end(); it++)
+    {
+        if (it->first != fd && it->second == str)
+            return "Nickname already taken. Nickname not updated\n\0";
+    }
     if (!_nicklist[fd].empty() && isValidArg(str))
     {
-        for (std::map<int, User *>::iterator it = _users.begin(); it != _users.end(); it++)
-        {
-            if (it->first != fd && it->second->getNick() == str)
-                return "Nickname already taken\n\0";
-        }
         _nicklist[fd] = str;
         return "Nickname successfully updated\n\0";
     }
@@ -54,14 +54,14 @@ std::string Server::setUsername( const std::string& message, int fd )
 {
     if (message.length() <= 1)
         return "Invalid string\n\0";
-    std::string str = message.substr(1, message.find_first_of("\n\r\0", 1) - 1);
+    std::string str = message.substr(1, message.find_first_of(" \n\r\0", 1) - 1);
+    for (std::map<int, std::string>::iterator it = _namelist.begin(); it != _namelist.end(); it++)
+    {
+        if (it->first != fd && it->second == str)
+            return "Username already taken. Username not updated\n\0";
+    }
     if (!_namelist[fd].empty() && isValidArg(str))
     {
-        for (std::map<int, User *>::iterator it = _users.begin(); it != _users.end(); it++)
-        {
-            if (it->first != fd && it->second->getName() == str)
-                return "Username already taken\n\0";
-        }
         _namelist[fd] = str;
         return "Username successfully updated\n\0";
     }
@@ -122,7 +122,7 @@ std::string Server::executeCommand(const std::string& command, const std::string
     if (it != _command.end()) {
         return (this->*(it->second))(message, fd);
     } else {
-        return "Unknown command\n\0";
+        return "";
     }
 }
 

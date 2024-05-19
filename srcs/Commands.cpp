@@ -152,3 +152,4 @@ void Server::releaseUserInfo(int fd)
     if (!_namelist[fd].empty())
         _namelist.erase(fd);
 }
+*/

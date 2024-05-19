@@ -42,39 +42,27 @@ static bool isValidArg( std::string str ) {
 
 std::string Commands::checkPasswd( const std::string& message, int fd )
 {
-    std::string resp;
-
     if (message.length() <= 1)
-    {
-        resp = "Invalid string\n\0";
-        return resp;
-    }
+        return "Invalid string\n\0";
     std::string str = message.substr(1, message.find_first_of("\n\r\0", 1) - 1);
     if (!_passlist[fd].empty() && isValidArg(str))
     {
         _passlist[fd] = str;
-        resp = "Password successfully updated\n\0";
-        return resp;
+        return "Password successfully updated\n\0";
     }
     if (isValidArg(str))
     {
         _passlist[fd] = str;
-        resp = "Registered password\n\0";
+        return "Registered password\n\0";
     }
     else
-        resp = "Password contains invalid characters\n\0";
-    return resp;
+        return "Password contains invalid characters\n\0";
 }
 
 std::string Commands::setNickname( const std::string& message, int fd )
 {
-    std::string resp;
-
     if (message.length() <= 1)
-    {
-        resp = "Invalid string\n\0";
-        return resp;
-    }
+        return "Invalid string\n\0";
     std::string str = message.substr(1, message.find_first_of("\n\r\0", 1) - 1);
     if (!_nicklist[fd].empty() && isValidArg(str))
     {
@@ -82,34 +70,24 @@ std::string Commands::setNickname( const std::string& message, int fd )
         for (std::map<int, User *>::iterator it = users.begin(); it != users.end(); it++)
         {
             if (it->first != fd && it->second->getNick() == str)
-            {
-                resp = "Nickname already taken\n\0";
-                return resp;
-            }
+                return "Nickname already taken\n\0";
         }
         _nicklist[fd] = str;
-        resp = "Nickname successfully updated\n\0";
-        return resp;
+        return "Nickname successfully updated\n\0";
     }
     if (isValidArg(str))
     {
         _nicklist[fd] = str;
-        resp = "Registered your nickname \n\0";
+        return "Registered your nickname \n\0";
     }
     else
-        resp = "Nickname contains invalid characters\n\0";
-    return resp;
+        return "Nickname contains invalid characters\n\0";
 }
 
 std::string Commands::setUsername( const std::string& message, int fd )
 {
-    std::string resp;
-
     if (message.length() <= 1)
-    {
-        resp = "Invalid string\n\0";
-        return resp;
-    }
+        return "Invalid string\n\0";
     std::string str = message.substr(1, message.find_first_of("\n\r\0", 1) - 1);
     if (!_namelist[fd].empty() && isValidArg(str))
     {
@@ -117,23 +95,18 @@ std::string Commands::setUsername( const std::string& message, int fd )
         for (std::map<int, User *>::iterator it = users.begin(); it != users.end(); it++)
         {
             if (it->first != fd && it->second->getName() == str)
-            {
-                resp = "Username already taken\n\0";
-                return resp;
-            }
+                return "Username already taken\n\0";
         }
         _namelist[fd] = str;
-        resp = "Username successfully updated\n\0";
-        return resp;
+        return "Username successfully updated\n\0";
     }
     if (isValidArg(str))
     {
         _namelist[fd] = str;
-        resp = "Registered your username\n\0";
+        return "Registered your username\n\0";
     }
     else
-        resp = "Username contains invalid characters\n\0";
-    return resp;
+        return "Username contains invalid characters\n\0";
 }
 
 std::string Commands::joinChannel( const std::string& message, int fd )

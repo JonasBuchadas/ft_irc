@@ -117,7 +117,7 @@ std::string Server::processMsg( int fd, std::string msg)
             _recipients.clear();
             for (int i = 0; i < (int)_pfds.size(); i++)
             {
-              if (_pfds[i].fd != fd)
+              if (_pfds[i].fd != fd && _users[_pfds[i].fd])
                 _recipients.push_back(_pfds[i].fd);
             }
             resp = message + "\n\0";

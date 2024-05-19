@@ -22,8 +22,10 @@
 #include <vector>
 
 #include "User.hpp"
+#include "Authenticator.hpp"
 
 class User;
+class Authenticator;
 
 #define BACKLOG 10
 
@@ -37,11 +39,15 @@ class Server {
   struct sockaddr_in    _server_addr;
   std::map<int, User *> _users;
   std::vector<int>      _recipients;
+  Authenticator         _authenticator;
+  
   typedef std::string (Server::*CommandFunction)( const std::string&, int fd );
   std::map<std::string, CommandFunction> _command;
+  /*
   std::map<int, std::string>_passlist;
   std::map<int, std::string>_nicklist;
   std::map<int, std::string>_namelist;
+  */
 
   Server();
   Server &operator=( Server const &src );
@@ -55,12 +61,14 @@ class Server {
   void clearUsers();
 
   std::string executeCommand(const std::string& command, const std::string& message, int fd);
+  /*
   int authenticateUser( int fd );
   void releaseUserInfo( int fd );
 
   std::string checkPasswd( const std::string& message, int fd );
   std::string setNickname( const std::string& message, int fd );
   std::string setUsername( const std::string& message, int fd );
+  */
   std::string joinChannel( const std::string& message, int fd );
   std::string partChannel( const std::string& message, int fd );
   std::string changeModes( const std::string& message, int fd );

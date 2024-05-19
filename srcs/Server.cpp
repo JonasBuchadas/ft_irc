@@ -31,6 +31,7 @@ Server::Server( char const *port, char const *password ) throw( std::exception )
   _fdSize = 5;
   _users.clear();
   _recipients.clear();
+  /*
   _passlist.clear();
   _nicklist.clear();
   _namelist.clear();
@@ -38,6 +39,7 @@ Server::Server( char const *port, char const *password ) throw( std::exception )
   _command["PASS"] =  &Server::checkPasswd;
   _command["NICK"] =  &Server::setNickname;
   _command["USER"] =  &Server::setUsername;
+  */
   _command["JOIN"] =  &Server::joinChannel;
   _command["PART"] =  &Server::partChannel;
   _command["MODE"] =  &Server::changeModes;
@@ -123,7 +125,7 @@ std::string Server::processMsg( int fd, std::string msg)
         std::string word;
         std::stringstream ss(message);
         ss >> word;
-        resp = executeCommand(word, message.substr(word.length()), fd);
+        resp = _authenticator.executeCommand(word, message.substr(word.length()), fd);
         if (_users[fd])
         {
             _recipients.clear();
@@ -134,9 +136,9 @@ std::string Server::processMsg( int fd, std::string msg)
             }
             resp = message + "\n\0";
         }
-        if (!_users[fd] && authenticateUser(fd))
+        if (!_users[fd] && _authenticator.authenticateUser(_password, fd))
         {
-            _users[fd] = new User(_namelist[fd], _nicklist[fd]);
+            _users[fd] = new User(_authenticator.getUser(fd), _authenticator.getNick(fd));
             resp += "Successfully logged in!\n\0";
         }
         start = msg.find_first_of("\n\r\0", start);
@@ -236,7 +238,7 @@ int Server::delFromPfds( int i ) {
         delete uit->second;
         _users.erase( uit );
       }
-      releaseUserInfo( i );
+      _authenticator.releaseUserInfo( i );
       _pfds.erase( it );
       return ( 1 );
     }

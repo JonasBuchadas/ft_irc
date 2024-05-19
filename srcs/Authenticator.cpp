@@ -1,6 +1,31 @@
-#include "Server.hpp"
+#include "Authenticator.hpp"
 
-/*
+Authenticator::Authenticator()
+{
+  _passlist.clear();
+  _nicklist.clear();
+  _namelist.clear();
+  _command.clear();
+  _command["PASS"] =  &Authenticator::checkPasswd;
+  _command["NICK"] =  &Authenticator::setNickname;
+  _command["USER"] =  &Authenticator::setUsername;
+}
+
+Authenticator::~Authenticator() {}
+
+Authenticator::Authenticator( Authenticator const &src ) {
+  *this = src;
+}
+
+Authenticator &Authenticator::operator=( Authenticator const &src ) {
+  if ( this == &src )
+    return ( *this );
+  _passlist = src._passlist;
+  _nicklist = src._nicklist;
+  _namelist = src._namelist;
+  return ( *this );
+}
+
 static bool isValidArg( std::string str ) {
   for ( size_t i = 0; i < str.length(); i++ )
     if ( !isdigit( str[i] ) && !isalpha( str[i] ) )
@@ -8,7 +33,7 @@ static bool isValidArg( std::string str ) {
   return 1;
 }
 
-std::string Server::checkPasswd( const std::string& message, int fd )
+std::string Authenticator::checkPasswd( const std::string& message, int fd )
 {
     if (message.length() <= 1)
         return "Invalid string\n\0";
@@ -27,7 +52,7 @@ std::string Server::checkPasswd( const std::string& message, int fd )
         return "Password contains invalid characters\n\0";
 }
 
-std::string Server::setNickname( const std::string& message, int fd )
+std::string Authenticator::setNickname( const std::string& message, int fd )
 {
     if (message.length() <= 1)
         return "Invalid string\n\0";
@@ -51,7 +76,7 @@ std::string Server::setNickname( const std::string& message, int fd )
         return "Nickname contains invalid characters\n\0";
 }
 
-std::string Server::setUsername( const std::string& message, int fd )
+std::string Authenticator::setUsername( const std::string& message, int fd )
 {
     if (message.length() <= 1)
         return "Invalid string\n\0";
@@ -74,64 +99,24 @@ std::string Server::setUsername( const std::string& message, int fd )
     else
         return "Username contains invalid characters\n\0";
 }
-*/
-std::string Server::joinChannel( const std::string& message, int fd )
-{
-    (void)fd;
-    return message;
+
+std::string Authenticator::getPass(int fd){
+    return _passlist[fd];
 }
 
-std::string Server::partChannel( const std::string& message, int fd )
-{
-    (void)fd;
-    return message;
+std::string Authenticator::getNick(int fd){
+    return _nicklist[fd];
 }
 
-std::string Server::changeModes( const std::string& message, int fd )
-{
-    (void)fd;
-    return message;
+std::string Authenticator::getUser(int fd){
+    return _namelist[fd];
 }
 
-std::string Server::kickoutUser(const std::string& message, int fd)
-{
-    (void)fd;
-    return message;
-}
-
-std::string Server::changeTopic(const std::string& message, int fd)
-{
-    (void)fd;
-    return message;
-}
-
-std::string Server::inviteUser(const std::string& message, int fd)
-{
-    (void)fd;
-    return message;
-}
-
-std::string Server::directMsg(const std::string& message, int fd)
-{
-    (void)fd;
-    return message;
-}
-
-
-std::string Server::executeCommand(const std::string& command, const std::string& message, int fd) {
-    std::map<std::string, CommandFunction>::iterator it = _command.find(command);
-    if (it != _command.end()) {
-        return (this->*(it->second))(message, fd);
-    } else {
-        return "";
-    }
-}
-/*
-int Server::authenticateUser(int fd)
+int Authenticator::authenticateUser(std::string password, int fd)
 {
     int pass = 0, nick = 0, user = 0;
 
-    if (!_passlist[fd].empty() && _passlist[fd] == _password)
+    if (!_passlist[fd].empty() && _passlist[fd] == password)
         pass = 1;
     if (!_nicklist[fd].empty())
         nick = 1;
@@ -143,7 +128,7 @@ int Server::authenticateUser(int fd)
     return 0;
 }
 
-void Server::releaseUserInfo(int fd)
+void Authenticator::releaseUserInfo(int fd)
 {
     if (!_passlist[fd].empty())
         _passlist.erase(fd);
@@ -151,4 +136,13 @@ void Server::releaseUserInfo(int fd)
         _nicklist.erase(fd);
     if (!_namelist[fd].empty())
         _namelist.erase(fd);
+}
+
+std::string Authenticator::executeCommand(const std::string& command, const std::string& message, int fd) {
+    std::map<std::string, CommandFunction>::iterator it = _command.find(command);
+    if (it != _command.end()) {
+        return (this->*(it->second))(message, fd);
+    } else {
+        return "";
+    }
 }

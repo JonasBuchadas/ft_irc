@@ -74,7 +74,7 @@ std::string Server::setUsername( const std::string& message, int fd )
     else
         return "Username contains invalid characters\n\0";
 }
-*/
+
 std::string Server::joinChannel( const std::string& message, int fd )
 {
     (void)fd;
@@ -126,7 +126,7 @@ std::string Server::executeCommand(const std::string& command, const std::string
         return "";
     }
 }
-/*
+
 int Server::authenticateUser(int fd)
 {
     int pass = 0, nick = 0, user = 0;

@@ -1,15 +1,14 @@
 #include "Server.hpp"
+
 #include "GenResponse.hpp"
 
 bool Server::_stopServer = false;
 
-Server::Server() {}
+Server::Server() : _connector( *this ) {}
 
-Server::~Server() {
-  clearUsers();
-}
+Server::~Server() {}
 
-Server::Server( Server const &src ) {
+Server::Server( Server const &src ) : _connector( *this ) {
   *this = src;
 }
 
@@ -19,35 +18,15 @@ Server &Server::operator=( Server const &src ) {
   _port            = src._port;
   _password        = src._password;
   _listeningSocket = src._listeningSocket;
-  _server_addr     = src._server_addr;
-  _pfds            = src._pfds;
   _fdSize          = src._fdSize;
   return ( *this );
 }
 
-Server::Server( char const *port, char const *password ) throw( std::exception ) {
+Server::Server( char const *port, char const *password ) throw( std::exception ) : _connector( *this ) {
   setPort( port );
   setPassword( password );
   setupListeningSocket();
   _fdSize = 5;
-  _users.clear();
-  _recipients.clear();
-  /*
-  _passlist.clear();
-  _nicklist.clear();
-  _namelist.clear();
-  _command.clear();
-  _command["PASS"] =  &Server::checkPasswd;
-  _command["NICK"] =  &Server::setNickname;
-  _command["USER"] =  &Server::setUsername;
-  */
-  _command["JOIN"] =  &Server::joinChannel;
-  _command["PART"] =  &Server::partChannel;
-  _command["MODE"] =  &Server::changeModes;
-  _command["KICK"] =  &Server::kickoutUser;
-  _command["TOPIC"] = &Server::changeTopic;
-  _command["INVITE"] = &Server::inviteUser;
-  _command["PRIVMSG"] = &Server::directMsg;
 }
 
 void Server::setPassword( char const *password ) throw( std::exception ) {
@@ -71,11 +50,10 @@ void Server::setPort( char const *port ) throw( std::exception ) {
 
 void Server::serve( void ) throw( std::exception ) {
   if ( listen( _listeningSocket, BACKLOG ) == -1 ) {
-    perror( "listen" );
-    exit( 1 );
+    perror( "listen" );  // Single throw plz!
+    exit( 1 );           // Single throw plz!
   }
-  addToPfds( _listeningSocket );
-  std::cout << "server: waiting for connections..." << std::endl;
+  _connector.initListener();
   listeningLoop();
 }
 
@@ -109,168 +87,24 @@ void Server::setupListeningSocket( void ) throw( std::exception ) {
     throw Server::BindFailException();
 }
 
-std::string Server::processMsg( int fd, std::string msg)
-{
-    std::string resp = "";
-    size_t start = 0;
-    std::string message;
-
-    if (!msg.empty() && msg.find_first_of("\n\r", start) != std::string::npos)
-      message = msg.substr(start, msg.find_first_of("\n\r", start));
-    else
-      message = msg;
-    while (!message.empty())
-    {
-        if (_recipients.empty())
-          _recipients.push_back(fd);
-        std::string word;
-        std::stringstream ss(message);
-        ss >> word;
-        resp = _authenticator.executeCommand(word, message.substr(word.length()), fd);
-        if (_users[fd])
-        {
-            _recipients.clear();
-            for (int i = 0; i < (int)_pfds.size(); i++)
-            {
-              if (_pfds[i].fd != fd && _users[_pfds[i].fd])
-                _recipients.push_back(_pfds[i].fd);
-            }
-            resp = genMsg(_users[fd], "PRIVMSG nuno :" + message + "");
-        }
-        if (!_users[fd] && _authenticator.authenticateUser(_password, fd))
-        {
-            _users[fd] = new User(_authenticator.getUser(fd), _authenticator.getNick(fd));
-            resp += genMsg(RPL_WELCOME, NULL);
-        }
-        start = msg.find_first_of("\n\r\0", start);
-        while (start < msg.size() && (msg[start] == '\n' || msg[start] == '\r'))
-            start++;
-        if (start < msg.size() && msg.find_first_of("\n\r", start) != std::string::npos)
-            message = msg.substr(start, msg.find_first_of("\n\r", start) - start);
-        else
-          break ;
-    }
-    return resp;
-}
-
 void Server::listeningLoop( void ) {
-  int                     newFd;
-  struct sockaddr_storage remoteaddr;
-  socklen_t               addrlen;
-  int                     nbytes = 0;
-  char                    buf[514];
-
   signal( SIGINT, sigchld_handler );
   signal( SIGQUIT, sigchld_handler );
-  while ( 1 ) {
-    int pollCount = poll( &_pfds[0], _pfds.size(), -1 );
-    if ( pollCount == -1 || _stopServer ) {
-      break;
-    }
-    for ( int i = 0; i < (int)_pfds.size(); i++ ) {
-      if ( _pfds[i].revents & POLL_IN ) {
-        if ( _pfds[i].fd == _listeningSocket ) {
-          addrlen = sizeof( remoteaddr );
-          newFd   = accept( _listeningSocket, (struct sockaddr *)&remoteaddr, &addrlen );
-          if ( newFd == -1 )
-            perror( "accept" );
-          else
-            addToPfds( newFd );
-        } else {
-          int senderFD = _pfds[i].fd;
-          nbytes       = recv( senderFD, buf, 512, 0 );
-          buf[nbytes] = '\0';
-          if ( nbytes <= 0 ) {
-            if ( nbytes == 0 ) {
-              std::cout << "connection closed from " << senderFD << std::endl;
-            } else {
-              perror( "recv" );
-            }
-            close( senderFD );
-            i -= delFromPfds( senderFD );
-          } else {
-            std::string resp;
-            if (nbytes >= 512)
-            {
-              while (recv( senderFD, buf, 512, MSG_DONTWAIT) > 0);
-              _recipients.push_back( senderFD );
-              resp = "Message will be ignored due to size constraints\n\0";
-            }
-            else
-             resp = processMsg( senderFD, buf).c_str();
-            for ( int j = 0; j < (int)_recipients.size(); j++ ) {
-              int destFD = _recipients[j];
-              if ( destFD != _listeningSocket ) {
-                if ( send( destFD, resp.c_str(), resp.size(), 0 ) == -1 )
-                  perror( "send" );
-              }
-            }
-            _recipients.clear();
-          }
-        }
-      }
-    }
+  while ( !_stopServer ) {
+    _connector.monitorChanges( _stopServer );
   }
-}
-
-// Add a new file descriptor to the iset
-void Server::addToPfds( int newfd ) {
-  pollfd server_fd;
-  server_fd.fd                     = newfd;
-  server_fd.events                 = POLLIN;  // Check ready-to-read
-  server_fd.revents                = 0;
-  std::vector<pollfd>::iterator it = _pfds.begin();
-  while ( it != _pfds.end() ) {
-    if ( it->fd == newfd )
-      return;
-    ++it;
-  }
-  _pfds.push_back( server_fd );
-  std::cout << "pollserver: new connection" << std::endl;
-}
-
-int Server::delFromPfds( int i ) {
-  // Copy the one from the end over this one
-  std::vector<pollfd>::iterator it = _pfds.begin();
-  while ( it != _pfds.end() ) {
-    if ( it->fd == i ) {
-      if ( _users[it->fd] ) {
-        std::map<int, User *>::iterator uit = _users.find( it->fd );
-        delete uit->second;
-        _users.erase( uit );
-      }
-      _authenticator.releaseUserInfo( i );
-      _pfds.erase( it );
-      return ( 1 );
-    }
-    ++it;
-  }
-  return 0;
-}
-
-void *get_in_addr( struct sockaddr *sa ) {
-  if ( sa->sa_family == AF_INET ) {
-    return &( ( (struct sockaddr_in *)sa )->sin_addr );
-  }
-  return &( ( (struct sockaddr_in6 *)sa )->sin6_addr );
-}
-
-void Server::clearUsers() {
-  std::map<int, User *>::iterator it;
-  for ( it = _users.begin(); it != _users.end(); it++ ) {
-    delete it->second;
-    it->second = NULL;
-  }
-  
-  std::vector<pollfd>::iterator fit = _pfds.begin();
-  for ( fit = _pfds.begin(); fit != _pfds.end(); fit++ ) {
-    close(fit->fd);
-  }
-  _users.clear();
 }
 
 void sigchld_handler( int s ) {
   (void)s;
   Server::_stopServer = true;
   close( 3 );
+}
+
+std::string Server::getPasswd() const {
+  return _password;
+}
+
+int Server::getListeningSocket() const {
+  return _listeningSocket;
 }

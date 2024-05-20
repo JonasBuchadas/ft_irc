@@ -20,9 +20,13 @@
 #include <map>
 #include <vector>
 
-#include "Connector.hpp"
+#include "User.hpp"
+#include "Authenticator.hpp"
+#include "Messenger.hpp"
 
-class Connector;
+class User;
+class Messenger;
+class Authenticator;
 
 #define BACKLOG 10
 
@@ -32,7 +36,13 @@ class Server {
   std::string           _password;
   int                   _listeningSocket;
   int                   _fdSize;
-  Connector             _connector;
+  std::vector<pollfd>   _pfds;
+  std::map<int, User *> _users;
+  Authenticator         _authenticator;
+  
+  void addToPfds( int fd );
+  int  delFromPfds( int fd );
+  void clearUsers();
 
   /*
   std::map<int, User *> _users;
@@ -72,6 +82,14 @@ class Server {
   void listeningLoop( void );
   std::string getPasswd() const;
   int getListeningSocket() const;
+
+  std::string executeCommand( const std::string& command, const std::string& message, int fd );
+  std::string getPass( int fd );
+  std::string getNick( int fd );
+  std::string getUser( int fd );
+  int authenticateUser( std::string password, int fd );
+  void releaseUserInfo( int fd );
+
 
   class IncorrectPortException : public std::exception {
    public:

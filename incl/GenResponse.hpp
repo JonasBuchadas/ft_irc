@@ -63,9 +63,12 @@ std::string getFixedParam(T type, C command)
 }
 
 template <typename P>
-std::string getFixedParam(int code, P param)
+std::string getFixedParam(int code, P text)
 {
-    (void) param;
+    std::ostringstream s;
+    s << text;
+    std::string param = s.str();
+
     switch (code)
     {
     // Dunno if we need them
@@ -124,7 +127,7 @@ std::string getFixedParam(int code, P param)
     case RPL_TOPIC:
         return ": Channel topic set to '" + param + "'\n\0";
     case ERR_UNKNOWNMODE:
-        return ": Unknown flag '" + param "' in MODE command\n\0";
+        return ": Unknown flag '" + param + "' in MODE command\n\0";
     case ERR_NOTEXTTOSEND:
         return ": Message content not provided\n\0";
     default:
@@ -152,7 +155,7 @@ std::string genMsg(int code, C param)
 
 
 template <typename C>
-std::string genMsg(User *userinfo, std::string msg)
+std::string genMsg(User *userinfo, C msg)
 {
     /* ___Expected_msg_structure___:
     NICK + newNickname
@@ -164,7 +167,7 @@ std::string genMsg(User *userinfo, std::string msg)
     MODE + #channel + signal_and_flag + targetNickname
     */
 
-    return ":" + userinfo->getNick() + "!~" + userinfo->getName() + "@* " + msg;
+    return ":" + userinfo->getNick() + "!~" + userinfo->getName() + "@* " + msg + "\n\0";
 }
 
 #endif

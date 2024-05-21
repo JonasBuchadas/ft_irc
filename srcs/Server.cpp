@@ -1,4 +1,5 @@
 #include "Server.hpp"
+#include "GenResponse.hpp"
 
 bool Server::_stopServer = false;
 
@@ -134,12 +135,12 @@ std::string Server::processMsg( int fd, std::string msg)
               if (_pfds[i].fd != fd && _users[_pfds[i].fd])
                 _recipients.push_back(_pfds[i].fd);
             }
-            resp = message + "\n\0";
+            resp = genMsg(_users[fd], "PRIVMSG nuno :" + message + "");
         }
         if (!_users[fd] && _authenticator.authenticateUser(_password, fd))
         {
             _users[fd] = new User(_authenticator.getUser(fd), _authenticator.getNick(fd));
-            resp += "Successfully logged in!\n\0";
+            resp += genMsg(RPL_WELCOME, NULL);
         }
         start = msg.find_first_of("\n\r\0", start);
         while (start < msg.size() && (msg[start] == '\n' || msg[start] == '\r'))

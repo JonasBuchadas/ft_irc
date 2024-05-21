@@ -1,6 +1,8 @@
 #include "User.hpp"
 
-User::User(std::string serverName, std::string nickName) : _serverName(serverName), _nickName(nickName) {}
+User::User( void ) {}
+
+User::User( std::string serverName, std::string nickName ) : _serverName( serverName ), _nickName( nickName ) {}
 
 User::~User() {}
 
@@ -16,24 +18,28 @@ User &User::operator=( User const &src ) {
   return ( *this );
 }
 
-void User::setNick(std::string &nick)
-{
+void User::setNick( std::string &nick ) {
   _nickName = nick;
 }
 
-void User::setName(std::string &name)
-{
+void User::setName( std::string &name ) {
   _serverName = name;
 }
 
-std::string User::getNick(void) const
-{
+void User::setPassword( std::string &password ) {
+  _password = password;
+}
+
+std::string User::getNick( void ) const {
   return _nickName;
 }
 
-std::string User::getName(void) const
-{
+std::string User::getName( void ) const {
   return _serverName;
+}
+
+std::string User::getPassword( void ) const {
+  return _password;
 }
 
 void User::join() {
@@ -45,7 +51,7 @@ void User::kick() {
 }
 
 void User::mode( char action ) {
-  (void) action;
+  (void)action;
   // TODO Implement me!!
 }
 

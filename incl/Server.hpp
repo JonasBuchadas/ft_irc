@@ -18,11 +18,14 @@
 #include <cstring>
 #include <iostream>
 #include <map>
+#include <sstream>
 #include <vector>
 
-#include "User.hpp"
+#include "ACommand.hpp"
 #include "Authenticator.hpp"
+#include "CommandFactory.hpp"
 #include "Messenger.hpp"
+#include "User.hpp"
 
 class User;
 class Messenger;
@@ -39,7 +42,7 @@ class Server {
   std::vector<pollfd>   _pfds;
   std::map<int, User *> _users;
   Authenticator         _authenticator;
-  
+
   void addToPfds( int fd );
   int  delFromPfds( int fd );
   void clearUsers();
@@ -48,8 +51,9 @@ class Server {
   std::map<int, User *> _users;
   std::vector<int>      _recipients;
   Authenticator         _authenticator;
-  
-  typedef std::string (Server::*CommandFunction)( const std::string&, int fd );
+  CommandFactory        _commandFactory;
+
+  typedef std::string ( Server::*CommandFunction )( const std::string &, int fd );
   std::map<std::string, CommandFunction> _command;
   */
 
@@ -59,7 +63,6 @@ class Server {
   void setPort( const char *port ) throw( std::exception );
   void setPassword( char const *password ) throw( std::exception );
   void setupListeningSocket( void ) throw( std::exception );
-
 
   /*
   std::string executeCommand(const std::string& command, const std::string& message, int fd);
@@ -78,18 +81,17 @@ class Server {
   Server( char const *port, char const *password ) throw( std::exception );
   ~Server();
   Server( Server const &src );
-  void serve( void ) throw( std::exception );
-  void listeningLoop( void );
+  void        serve( void ) throw( std::exception );
+  void        listeningLoop( void );
   std::string getPasswd() const;
-  int getListeningSocket() const;
+  int         getListeningSocket() const;
 
-  std::string executeCommand( const std::string& command, const std::string& message, int fd );
+  std::string executeCommand( const std::string &command, const std::string &message, int fd );
   std::string getPass( int fd );
   std::string getNick( int fd );
   std::string getUser( int fd );
-  int authenticateUser( std::string password, int fd );
-  void releaseUserInfo( int fd );
-
+  int         authenticateUser( std::string password, int fd );
+  void        releaseUserInfo( int fd );
 
   class IncorrectPortException : public std::exception {
    public:
@@ -120,6 +122,6 @@ class Server {
   };
 };
 
-void  sigchld_handler( int s );
+void sigchld_handler( int s );
 
 #endif

@@ -136,7 +136,7 @@ void Server::listeningLoop( void ) {
             } else
               msg.getValidMsg( _authenticator, _pfds, _users, senderFD, buf );
             if ( !_users[senderFD] && _authenticator.authenticateUser( _password, senderFD ) ) {
-              _users[senderFD] = new User( _authenticator.getUser( senderFD ), _authenticator.getNick( senderFD ) );
+              _users[senderFD] = new User( _authenticator.getUser( senderFD )->getName(), _authenticator.getNick( senderFD ) );
               msg.LoggedInUser( senderFD );
             }
           }
@@ -168,7 +168,6 @@ int Server::delFromPfds( int fd ) {
       if ( _users[it->fd] ) {
         std::map<int, User *>::iterator uit = _users.find( it->fd );
         delete uit->second;
-        _users.erase( uit );
       }
       _authenticator.releaseUserInfo( fd );
       _pfds.erase( it );
@@ -202,7 +201,7 @@ std::string Server::getNick( int fd ) {
 }
 
 std::string Server::getUser( int fd ) {
-  return _authenticator.getUser( fd );
+  return _authenticator.getUser( fd )->getName();
 }
 
 std::string Server::executeCommand( const std::string &command, const std::string &message, int fd ) {

@@ -12,22 +12,22 @@ class Authenticator {
  private:
   Authenticator();
   std::map<int, User*> _users;
-  const char          *_password;
+  const char*          _password;
 
   typedef std::string ( Authenticator::*CommandFunction )( const std::string&, int fd );
   std::map<std::string, CommandFunction> _command;
 
-  std::string checkPasswd( const std::string& message, int fd );
-  std::string setNickname( const std::string& message, int fd );
-  std::string setUsername( const std::string& message, int fd );
+  // std::string checkPasswd( const std::string& message, int fd );
+  // std::string setNickname( const std::string& message, int fd );
+  // std::string setUsername( const std::string& message, int fd );
 
  public:
   Authenticator( Authenticator const& src );
   Authenticator& operator=( Authenticator const& src );
-  Authenticator( const char *password );
+  Authenticator( const char* password );
   ~Authenticator();
 
-  std::string executeCommand( const std::string& command, const std::string& message, int fd );
+  // std::string executeCommand( const std::string& command, const std::string& message, int fd );
 
   User*                getUser( int fd );
   bool                 getPass( int fd );

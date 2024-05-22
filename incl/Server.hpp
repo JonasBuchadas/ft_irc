@@ -82,7 +82,7 @@ class Server {
   void listeningLoop( void );
   int  getListeningSocket() const;
 
-  std::string executeCommand( const std::string &command, const std::string &message, int fd );
+  // std::string executeCommand( const std::string &command, const std::string &message, int fd );
 
   class IncorrectPortException : public std::exception {
    public:

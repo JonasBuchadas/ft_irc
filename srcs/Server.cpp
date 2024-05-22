@@ -183,9 +183,9 @@ void Server::clearUsers() {
   _pfds.clear();
 }
 
-std::string Server::executeCommand( const std::string &command, const std::string &message, int fd ) {
-  return _authenticator->executeCommand( command, message, fd );
-}
+// std::string Server::executeCommand( const std::string &command, const std::string &message, int fd ) {
+//   return _authenticator->executeCommand( command, message, fd );
+// }
 
 void sigchld_handler( int s ) {
   (void)s;

@@ -18,25 +18,21 @@ PassCommand &PassCommand::operator=( PassCommand const &src ) {
 
 std::string PassCommand::execute() const {
   if ( _args.length() <= 1 )
-    return "Invalid string\n\0";
+    return "Invalid string";
   std::string str = _args.substr( 1, _args.find_first_of( " \n\r\0", 1 ) - 1 );
 
   if ( !_authenticator.isValidArg( str ) )
-    return "Password contains invalid characters\n\0";
+    return "Password contains invalid characters";
 
   User *user = _authenticator.getUser( _userFD );
   if ( user == NULL ) {
     user = new User();
-    user->setPassword( str );
+    if (str == _authenticator.getServerPass())
+      user->setPassword( true );
     _authenticator.addUser( _userFD, user );
-    return "Registered your password\n\0";
   }
-
-  if ( user->getPassword().empty() ) {
-    user->setPassword( str );
-    return "Registered your password\n\0";
-  }
-
-  user->setPassword( str );
-  return "Password successfully updated\n\0";
+  if ( !user->getPassword() && str == _authenticator.getServerPass())
+    user->setPassword( true );
+    
+  return "Password registered";
 }

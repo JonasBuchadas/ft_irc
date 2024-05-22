@@ -1,17 +1,19 @@
 #include "Authenticator.hpp"
 
-Authenticator::Authenticator() {
+Authenticator::Authenticator( const char *password ) : _password(password) {
   _users.clear();
-  _passlist.clear();
-  _nicklist.clear();
-  _namelist.clear();
   _command.clear();
   _command["PASS"] = &Authenticator::checkPasswd;
   _command["NICK"] = &Authenticator::setNickname;
   _command["USER"] = &Authenticator::setUsername;
 }
 
-Authenticator::~Authenticator() {}
+Authenticator::~Authenticator() {
+  for ( std::map<int, User*>::iterator it = _users.begin(); it != _users.end(); it++ ) {
+    delete it->second;
+    it->second = NULL;
+  }
+}
 
 Authenticator::Authenticator( Authenticator const& src ) {
   *this = src;
@@ -21,9 +23,6 @@ Authenticator& Authenticator::operator=( Authenticator const& src ) {
   if ( this == &src )
     return ( *this );
   _users    = src._users;
-  _passlist = src._passlist;
-  _nicklist = src._nicklist;
-  _namelist = src._namelist;
   return ( *this );
 }
 
@@ -38,13 +37,14 @@ std::string Authenticator::checkPasswd( const std::string& message, int fd ) {
   if ( message.length() <= 1 )
     return "Invalid string\n\0";
   std::string str = message.substr( 1, message.find_first_of( "\n\r\0", 1 ) - 1 );
-  if ( !_passlist[fd].empty() && isValidArg( str ) ) {
-    _passlist[fd] = str;
-    return "Password successfully updated\n\0";
-  }
   if ( isValidArg( str ) ) {
-    _passlist[fd] = str;
-    return "Registered password\n\0";
+    if ( _users.find( fd ) == _users.end() )
+      _users[fd] = new User;
+    if (str == _password)
+      _users[fd]->setPassword( true );
+    else
+      _users[fd]->setPassword( false );
+    return "Password was registered\n\0";
   } else
     return "Password contains invalid characters\n\0";
 }
@@ -53,16 +53,17 @@ std::string Authenticator::setNickname( const std::string& message, int fd ) {
   if ( message.length() <= 1 )
     return "Invalid string\n\0";
   std::string str = message.substr( 1, message.find_first_of( "\n\r\0", 1 ) - 1 );
-  for ( std::map<int, std::string>::iterator it = _nicklist.begin(); it != _nicklist.end(); it++ ) {
-    if ( it->first != fd && it->second == str )
+  for ( std::map<int, User *>::iterator it = _users.begin(); it != _users.end(); it++ ) {
+    if ( it->first != fd && it->second->getNick() == str )
       return "Nickname already taken. Nickname not updated\n\0";
   }
-  if ( !_nicklist[fd].empty() && isValidArg( str ) ) {
-    _nicklist[fd] = str;
+  if ( _users[fd] && isValidArg( str ) ) {
+    _users[fd]->setNick(str);
     return "Nickname successfully updated\n\0";
   }
-  if ( isValidArg( str ) ) {
-    _nicklist[fd] = str;
+  else if ( isValidArg( str ) ) {
+    _users[fd] = new User;
+    _users[fd]->setNick( str );
     return "Registered your nickname \n\0";
   } else
     return "Nickname contains invalid characters\n\0";
@@ -88,27 +89,28 @@ std::string Authenticator::setUsername( const std::string& message, int fd ) {
   if ( message.length() <= 1 )
     return "Invalid string\n\0";
   std::string str = message.substr( 1, message.find_first_of( " \n\r\0", 1 ) - 1 );
-  for ( std::map<int, std::string>::iterator it = _namelist.begin(); it != _namelist.end(); it++ ) {
-    if ( it->first != fd && it->second == str )
+  for ( std::map<int, User *>::iterator it = _users.begin(); it != _users.end(); it++ ) {
+    if ( it->first != fd && it->second->getName() == str )
       return "Username already taken. Username not updated\n\0";
   }
-  if ( !_namelist[fd].empty() && isValidArg( str ) ) {
-    _namelist[fd] = str;
+  if ( _users[fd] && isValidArg( str ) ) {
+    _users[fd]->setName( str );
     return "Username successfully updated\n\0";
   }
-  if ( isValidArg( str ) ) {
-    _namelist[fd] = str;
+  else if ( isValidArg( str ) ) {
+    _users[fd] = new User;
+    _users[fd]->setName( str );
     return "Registered your username\n\0";
   } else
     return "Username contains invalid characters\n\0";
 }
 
-std::string Authenticator::getPass( int fd ) {
-  return _passlist[fd];
+bool Authenticator::getPass( int fd ) {
+  return _users[fd]->getPassword();
 }
 
 std::string Authenticator::getNick( int fd ) {
-  return _nicklist[fd];
+  return _users[fd]->getNick();
 }
 
 User* Authenticator::getUser( int fd ) {
@@ -118,33 +120,35 @@ User* Authenticator::getUser( int fd ) {
   return it->second;
 }
 
+std::string Authenticator::getServerPass()
+{
+  return _password;
+}
+
+std::map<int, User*> Authenticator::getAllUsers() {
+  return _users;
+}
+
 void Authenticator::addUser( int fd, User* user ) {
   _users[fd] = user;
 }
 
-bool Authenticator::authenticateUser( std::string password, int fd ) {
-  int pass = false, nick = false, user = false;
-
-  if ( !_passlist[fd].empty() && _passlist[fd] == password )
-    pass = true;
-  if ( !_nicklist[fd].empty() )
-    nick = true;
-  if ( !_namelist[fd].empty() )
-    user = true;
-
-  if ( pass && nick && user )
+bool Authenticator::authenticateUser( int fd ) {
+  if ( _users[fd] && !_users[fd]->getLoggedIn() && _users[fd]->getPassword() \
+  && !_users[fd]->getNick().empty() && !_users[fd]->getName().empty() )
+  {
+    _users[fd]->setLoggedIn( true );
     return true;
+  }
   return false;
 }
 
 void Authenticator::releaseUserInfo( int fd ) {
-  // _users.erase( fd );
-  if ( !_passlist[fd].empty() )
-    _passlist.erase( fd );
-  if ( !_nicklist[fd].empty() )
-    _nicklist.erase( fd );
-  if ( !_namelist[fd].empty() )
-    _namelist.erase( fd );
+  if ( _users.find( fd ) != _users.end() )
+  {
+    delete _users[fd];
+    _users.erase( fd );
+  }
 }
 
 std::string Authenticator::executeCommand( const std::string& command, const std::string& message, int fd ) {

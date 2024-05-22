@@ -10,13 +10,12 @@
 
 class Authenticator {
  private:
-  std::map<int, std::string> _passlist;
-  std::map<int, std::string> _nicklist;
-  std::map<int, std::string> _namelist;
+  Authenticator();
+  std::map<int, User*> _users;
+  const char          *_password;
+
   typedef std::string ( Authenticator::*CommandFunction )( const std::string&, int fd );
   std::map<std::string, CommandFunction> _command;
-
-  std::map<int, User*> _users;
 
   std::string checkPasswd( const std::string& message, int fd );
   std::string setNickname( const std::string& message, int fd );
@@ -25,22 +24,24 @@ class Authenticator {
  public:
   Authenticator( Authenticator const& src );
   Authenticator& operator=( Authenticator const& src );
-  Authenticator();
+  Authenticator( const char *password );
   ~Authenticator();
 
   std::string executeCommand( const std::string& command, const std::string& message, int fd );
 
-  std::string getPass( int fd );
-  std::string getNick( int fd );
-  std::string getUserName( int fd );
-  User*       getUser( int fd );
-  void        addUser( int fd, User* user );
-  bool        userNameExists( int fd, std::string userName );
-  bool        nickNameExists( int fd, std::string nickName );
+  User*                getUser( int fd );
+  bool                 getPass( int fd );
+  std::string          getNick( int fd );
+  std::string          getServerPass();
+  std::string          getUserName( int fd );
+  std::map<int, User*> getAllUsers();
+  void                 addUser( int fd, User* user );
+  bool                 userNameExists( int fd, std::string userName );
+  bool                 nickNameExists( int fd, std::string nickName );
 
   bool isValidArg( std::string str );
 
-  bool authenticateUser( std::string password, int fd );
+  bool authenticateUser( int fd );
   void releaseUserInfo( int fd );
   void clearUsers( void );
 };

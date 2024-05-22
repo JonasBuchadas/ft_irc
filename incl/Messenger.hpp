@@ -21,10 +21,7 @@
 #include <iostream>
 #include <sstream>
 
-#include "User.hpp"
 #include "Authenticator.hpp"
-
-class Authenticator;
 
 class Messenger {
     private:
@@ -35,7 +32,6 @@ class Messenger {
         std::string           _response;
         int                   _listeningSocket;
         
-        std::string processMsg( int fd, std::string msg );
         void respond();
 
         /*
@@ -53,8 +49,7 @@ class Messenger {
         ~Messenger();
 
         void tooLargeAMsg( int senderFD );
-        void getValidMsg( Authenticator &auth, std::vector<pollfd> _pfds, \
-        std::map<int, User *> _users, int fd, std::string msg );
+        void getValidMsg( Authenticator &auth, int fd, std::string msg );
         void LoggedInUser( int senderFD );
 };
 

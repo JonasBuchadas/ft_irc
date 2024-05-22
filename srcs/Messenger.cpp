@@ -3,9 +3,6 @@
 Messenger::Messenger( int listeningSocket )
 {
   _listeningSocket = listeningSocket;
-  _recipients.clear();
-  _response = "";
-  _response.clear();
 }
 
 Messenger::~Messenger() {}
@@ -32,8 +29,7 @@ void Messenger::respond()
   }
 }
 
-void Messenger::getValidMsg(Authenticator &auth, \
-std::vector<pollfd> _pfds, std::map<int, User *> _users,int fd, std::string msg)
+void Messenger::getValidMsg(Authenticator &auth, int fd, std::string msg)
 {
     size_t start = 0;
     std::string message;
@@ -50,15 +46,16 @@ std::vector<pollfd> _pfds, std::map<int, User *> _users,int fd, std::string msg)
         std::stringstream ss(message);
         ss >> word;
         _response = auth.executeCommand(word, message.substr(word.length()), fd);
-        if (_users[fd])
+        if (auth.getUser( fd ) && auth.getUser( fd )->getLoggedIn())
         {
             _recipients.clear();
-            for (int i = 0; i < (int)_pfds.size(); i++)
+            std::map<int, User*> users = auth.getAllUsers();
+            for ( std::map<int, User*>::iterator it = users.begin(); it != users.end(); it++ )
             {
-              if (_pfds[i].fd != fd && _users[_pfds[i].fd])
-                _recipients.push_back(_pfds[i].fd);
+              if (it->first && it->first != fd && it->second->getLoggedIn())
+                _recipients.push_back(it->first);
             }
-            _response = message + "\n\0";
+            _response = message + "\n";
         }
         start = msg.find_first_of("\n\r\0", start);
         while (start < msg.size() && (msg[start] == '\n' || msg[start] == '\r'))

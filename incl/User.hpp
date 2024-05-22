@@ -10,21 +10,22 @@ class User {
   User       &operator=( User const &src );
   std::string _serverName;
   std::string _nickName;
-  std::string _password;
+  bool        _passOK;
   bool        _loggedIn;
 
  public:
-  User( void );
-  User( std::string serverName, std::string nickName );
+  User();
   ~User();
 
   void setNick( std::string &nick );
   void setName( std::string &name );
-  void setPassword( std::string &password );
+  void setPassword( bool password );
+  void setLoggedIn( bool loggedin );
 
   std::string getNick( void ) const;
   std::string getName( void ) const;
-  std::string getPassword( void ) const;
+  bool getPassword( void ) const;
+  bool getLoggedIn( void ) const;
 
   void join();
   void kick();

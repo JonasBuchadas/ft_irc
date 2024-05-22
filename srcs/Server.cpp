@@ -4,15 +4,13 @@
 
 bool Server::_stopServer = false;
 
-Server::Server() {
-  _pfds.clear();
-}
+Server::Server() : _authenticator("invalid") {}
 
 Server::~Server() {
   clearUsers();
 }
 
-Server::Server( Server const &src ) {
+Server::Server( Server const &src ) : _authenticator(src._authenticator) {
   *this = src;
 }
 
@@ -27,7 +25,7 @@ Server &Server::operator=( Server const &src ) {
   return ( *this );
 }
 
-Server::Server( char const *port, char const *password ) throw( std::exception ) {
+Server::Server( char const *port, char const *password ) throw( std::exception ) : _authenticator( _password.c_str() ) {
   setPort( port );
   setPassword( password );
   setupListeningSocket();
@@ -134,10 +132,9 @@ void Server::listeningLoop( void ) {
                 ;
               msg.tooLargeAMsg( senderFD );
             } else
-              msg.getValidMsg( _authenticator, _pfds, _users, senderFD, buf );
-            if ( !_users[senderFD] && _authenticator.authenticateUser( _password, senderFD ) ) {
-              _users[senderFD] = new User( _authenticator.getUser( senderFD )->getName(), _authenticator.getNick( senderFD ) );
-              msg.LoggedInUser( senderFD );
+              msg.getValidMsg( _authenticator, senderFD, buf );
+            if ( _authenticator.authenticateUser( senderFD ) ) {
+                msg.LoggedInUser( senderFD );
             }
           }
         }
@@ -165,10 +162,6 @@ int Server::delFromPfds( int fd ) {
   std::vector<pollfd>::iterator it = _pfds.begin();
   while ( it != _pfds.end() ) {
     if ( it->fd == fd ) {
-      if ( _users[it->fd] ) {
-        std::map<int, User *>::iterator uit = _users.find( it->fd );
-        delete uit->second;
-      }
       _authenticator.releaseUserInfo( fd );
       _pfds.erase( it );
       return ( 1 );
@@ -179,41 +172,15 @@ int Server::delFromPfds( int fd ) {
 }
 
 void Server::clearUsers() {
-  std::map<int, User *>::iterator it;
-  for ( it = _users.begin(); it != _users.end(); it++ ) {
-    delete it->second;
-    it->second = NULL;
-  }
-
   std::vector<pollfd>::iterator fit = _pfds.begin();
   for ( fit = _pfds.begin(); fit != _pfds.end(); fit++ ) {
     close( fit->fd );
   }
-  _users.clear();
-}
-
-std::string Server::getPass( int fd ) {
-  return _authenticator.getPass( fd );
-}
-
-std::string Server::getNick( int fd ) {
-  return _authenticator.getNick( fd );
-}
-
-std::string Server::getUser( int fd ) {
-  return _authenticator.getUser( fd )->getName();
+  _pfds.clear();
 }
 
 std::string Server::executeCommand( const std::string &command, const std::string &message, int fd ) {
   return _authenticator.executeCommand( command, message, fd );
-}
-
-int Server::authenticateUser( std::string password, int fd ) {
-  return _authenticator.authenticateUser( password, fd );
-}
-
-void Server::releaseUserInfo( int fd ) {
-  _authenticator.releaseUserInfo( fd );
 }
 
 void sigchld_handler( int s ) {

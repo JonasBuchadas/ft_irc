@@ -1,8 +1,6 @@
 #include "User.hpp"
 
-User::User( void ) {}
-
-User::User( std::string serverName, std::string nickName ) : _serverName( serverName ), _nickName( nickName ) {}
+User::User() : _passOK(false), _loggedIn(false) {}
 
 User::~User() {}
 
@@ -26,8 +24,12 @@ void User::setName( std::string &name ) {
   _serverName = name;
 }
 
-void User::setPassword( std::string &password ) {
-  _password = password;
+void User::setPassword( bool password ) {
+  _passOK = password;
+}
+
+void User::setLoggedIn( bool loggedIn ) {
+  _loggedIn = loggedIn;
 }
 
 std::string User::getNick( void ) const {
@@ -38,8 +40,12 @@ std::string User::getName( void ) const {
   return _serverName;
 }
 
-std::string User::getPassword( void ) const {
-  return _password;
+bool User::getPassword( void ) const {
+  return _passOK;
+}
+
+bool User::getLoggedIn( void ) const {
+  return _loggedIn;
 }
 
 void User::join() {

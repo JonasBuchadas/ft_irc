@@ -19,6 +19,7 @@ SRCS=		Server.cpp \
 				User.cpp \
 				Commands.cpp \
 				Authenticator.cpp \
+				GenResponse.cpp \
 				Messenger.cpp \
 				ACommand.cpp \
 				CommandFactory.cpp \

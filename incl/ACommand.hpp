@@ -17,7 +17,7 @@ class ACommand {
   std::string    _args;
 
  public:
-  ACommand( Authenticator authenticator );
+  ACommand( Authenticator &authenticator );
   ACommand( std::string name, Authenticator &authenticator, std::string args, int fd );
   virtual ~ACommand();
   ACommand( ACommand const &src );

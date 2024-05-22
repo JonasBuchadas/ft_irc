@@ -9,7 +9,7 @@
 class NickCommand : public ACommand {
  private:
  public:
-  NickCommand( Authenticator &authenticator, std::string args, int fd );
+  NickCommand( Authenticator *authenticator, std::string args, int fd );
   ~NickCommand();
   NickCommand( NickCommand const &src );
   NickCommand &operator=( NickCommand const &src );

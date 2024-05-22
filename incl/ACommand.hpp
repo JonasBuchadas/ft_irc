@@ -12,13 +12,13 @@ class ACommand {
   const std::string _name;
 
  protected:
-  Authenticator &_authenticator;
+  Authenticator *_authenticator;
   int            _userFD;
   std::string    _args;
 
  public:
-  ACommand( Authenticator &authenticator );
-  ACommand( std::string name, Authenticator &authenticator, std::string args, int fd );
+  ACommand( Authenticator *authenticator );
+  ACommand( std::string name, Authenticator *authenticator, std::string args, int fd );
   virtual ~ACommand();
   ACommand( ACommand const &src );
   ACommand &operator=( ACommand const &src );

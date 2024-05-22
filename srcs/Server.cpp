@@ -4,13 +4,16 @@
 
 bool Server::_stopServer = false;
 
-Server::Server() : _authenticator("invalid") {}
+Server::Server() {
+  _authenticator = new Authenticator( "invalid" );
+}
 
 Server::~Server() {
   clearUsers();
+  delete _authenticator;
 }
 
-Server::Server( Server const &src ) : _authenticator(src._authenticator) {
+Server::Server( Server const &src ) : _authenticator( src._authenticator ) {
   *this = src;
 }
 
@@ -25,11 +28,12 @@ Server &Server::operator=( Server const &src ) {
   return ( *this );
 }
 
-Server::Server( char const *port, char const *password ) throw( std::exception ) : _authenticator( _password.c_str() ) {
+Server::Server( char const *port, char const *password ) throw( std::exception ) {
   setPort( port );
   setPassword( password );
   setupListeningSocket();
-  _fdSize = 5;
+  _authenticator = new Authenticator( _password.c_str() );
+  _fdSize        = 5;
 }
 
 void Server::setPassword( char const *password ) throw( std::exception ) {
@@ -133,8 +137,8 @@ void Server::listeningLoop( void ) {
               msg.tooLargeAMsg( senderFD );
             } else
               msg.getValidMsg( _authenticator, senderFD, buf );
-            if ( _authenticator.authenticateUser( senderFD ) ) {
-                msg.LoggedInUser( senderFD );
+            if ( _authenticator->authenticateUser( senderFD ) ) {
+              msg.LoggedInUser( senderFD );
             }
           }
         }
@@ -162,7 +166,7 @@ int Server::delFromPfds( int fd ) {
   std::vector<pollfd>::iterator it = _pfds.begin();
   while ( it != _pfds.end() ) {
     if ( it->fd == fd ) {
-      _authenticator.releaseUserInfo( fd );
+      _authenticator->releaseUserInfo( fd );
       _pfds.erase( it );
       return ( 1 );
     }
@@ -180,7 +184,7 @@ void Server::clearUsers() {
 }
 
 std::string Server::executeCommand( const std::string &command, const std::string &message, int fd ) {
-  return _authenticator.executeCommand( command, message, fd );
+  return _authenticator->executeCommand( command, message, fd );
 }
 
 void sigchld_handler( int s ) {

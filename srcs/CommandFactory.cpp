@@ -15,19 +15,19 @@ CommandFactory &CommandFactory::operator=( CommandFactory const &src ) {
   return ( *this );
 }
 
-ACommand *makeUserCommand( Authenticator &authenticator, std::string args, int fd ) {
+ACommand *makeUserCommand( Authenticator *authenticator, std::string args, int fd ) {
   return new UserCommand( authenticator, args, fd );
 }
 
-ACommand *makePassCommand( Authenticator &authenticator, std::string args, int fd ) {
+ACommand *makePassCommand( Authenticator *authenticator, std::string args, int fd ) {
   return new PassCommand( authenticator, args, fd );
 }
 
-ACommand *makeNickCommand( Authenticator &authenticator, std::string args, int fd ) {
+ACommand *makeNickCommand( Authenticator *authenticator, std::string args, int fd ) {
   return new NickCommand( authenticator, args, fd );
 }
 
-ACommand *CommandFactory::makeCommand( std::string commandName, Authenticator authenticator, std::string args, int fd ) {
+ACommand *CommandFactory::makeCommand( std::string commandName, Authenticator *authenticator, std::string args, int fd ) {
   const std::string enumCommand[] = { "USER", "PASS", "NICK" };
   const funcPtr     enumFunc[]    = {
       &makeUserCommand,

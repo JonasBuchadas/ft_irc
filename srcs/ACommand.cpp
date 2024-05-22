@@ -1,10 +1,13 @@
 #include "ACommand.hpp"
 
-ACommand::ACommand( Authenticator &authenticator ) : _authenticator( authenticator ) {}
+ACommand::ACommand( Authenticator *authenticator ) {
+  _authenticator = authenticator;
+}
 
-ACommand::ACommand( std::string name, Authenticator &authenticator, std::string args, int fd ) : _name( name ), _authenticator( authenticator ) {
-  _args   = args;
-  _userFD = fd;
+ACommand::ACommand( std::string name, Authenticator *authenticator, std::string args, int fd ) : _name( name ) {
+  _authenticator = authenticator;
+  _args          = args;
+  _userFD        = fd;
 }
 
 ACommand::~ACommand() {

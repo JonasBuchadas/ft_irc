@@ -1,6 +1,6 @@
 #include "UserCommand.hpp"
 
-UserCommand::UserCommand( Authenticator &authenticator, std::string args, int fd ) : ACommand( "USER", authenticator, args, fd ) {}
+UserCommand::UserCommand( Authenticator *authenticator, std::string args, int fd ) : ACommand( "USER", authenticator, args, fd ) {}
 
 UserCommand::~UserCommand() {
 }
@@ -22,18 +22,18 @@ std::string UserCommand::execute() const {
 
   std::string str = _args.substr( 1, _args.find_first_of( " \n\r\0", 1 ) - 1 );
 
-  if ( !_authenticator.isValidArg( str ) )
+  if ( !_authenticator->isValidArg( str ) )
     return "Username contains invalid characters\n\0";
 
-  if ( _authenticator.userNameExists( _userFD, str ) ) {
+  if ( _authenticator->userNameExists( _userFD, str ) ) {
     return "Username already taken. Username not updated\n\0";
   }
 
-  User *user = _authenticator.getUser( _userFD );
+  User *user = _authenticator->getUser( _userFD );
   if ( user == NULL ) {
     user = new User();
     user->setName( str );
-    _authenticator.addUser( _userFD, user );
+    _authenticator->addUser( _userFD, user );
     return "Registered your username\n\0";
   }
 

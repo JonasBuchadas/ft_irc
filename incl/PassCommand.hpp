@@ -9,7 +9,7 @@
 class PassCommand : public ACommand {
  private:
  public:
-  PassCommand( Authenticator &authenticator, std::string args, int fd );
+  PassCommand( Authenticator *authenticator, std::string args, int fd );
   ~PassCommand();
   PassCommand( PassCommand const &src );
   PassCommand &operator=( PassCommand const &src );

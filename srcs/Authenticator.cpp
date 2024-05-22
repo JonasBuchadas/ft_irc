@@ -1,6 +1,6 @@
 #include "Authenticator.hpp"
 
-Authenticator::Authenticator( const char *password ) : _password(password) {
+Authenticator::Authenticator( const char* password ) : _password( password ) {
   _users.clear();
   _command.clear();
   _command["PASS"] = &Authenticator::checkPasswd;
@@ -9,10 +9,10 @@ Authenticator::Authenticator( const char *password ) : _password(password) {
 }
 
 Authenticator::~Authenticator() {
-  for ( std::map<int, User*>::iterator it = _users.begin(); it != _users.end(); it++ ) {
-    delete it->second;
-    it->second = NULL;
-  }
+  // for ( std::map<int, User*>::iterator it = _users.begin(); it != _users.end(); it++ ) {
+  //   delete it->second;
+  //   it->second = NULL;
+  // }
 }
 
 Authenticator::Authenticator( Authenticator const& src ) {
@@ -22,7 +22,7 @@ Authenticator::Authenticator( Authenticator const& src ) {
 Authenticator& Authenticator::operator=( Authenticator const& src ) {
   if ( this == &src )
     return ( *this );
-  _users    = src._users;
+  _users = src._users;
   return ( *this );
 }
 
@@ -40,7 +40,7 @@ std::string Authenticator::checkPasswd( const std::string& message, int fd ) {
   if ( isValidArg( str ) ) {
     if ( _users.find( fd ) == _users.end() )
       _users[fd] = new User;
-    if (str == _password)
+    if ( str == _password )
       _users[fd]->setPassword( true );
     else
       _users[fd]->setPassword( false );
@@ -53,15 +53,14 @@ std::string Authenticator::setNickname( const std::string& message, int fd ) {
   if ( message.length() <= 1 )
     return "Invalid string\n\0";
   std::string str = message.substr( 1, message.find_first_of( "\n\r\0", 1 ) - 1 );
-  for ( std::map<int, User *>::iterator it = _users.begin(); it != _users.end(); it++ ) {
+  for ( std::map<int, User*>::iterator it = _users.begin(); it != _users.end(); it++ ) {
     if ( it->first != fd && it->second->getNick() == str )
       return "Nickname already taken. Nickname not updated\n\0";
   }
   if ( _users[fd] && isValidArg( str ) ) {
-    _users[fd]->setNick(str);
+    _users[fd]->setNick( str );
     return "Nickname successfully updated\n\0";
-  }
-  else if ( isValidArg( str ) ) {
+  } else if ( isValidArg( str ) ) {
     _users[fd] = new User;
     _users[fd]->setNick( str );
     return "Registered your nickname \n\0";
@@ -89,15 +88,14 @@ std::string Authenticator::setUsername( const std::string& message, int fd ) {
   if ( message.length() <= 1 )
     return "Invalid string\n\0";
   std::string str = message.substr( 1, message.find_first_of( " \n\r\0", 1 ) - 1 );
-  for ( std::map<int, User *>::iterator it = _users.begin(); it != _users.end(); it++ ) {
+  for ( std::map<int, User*>::iterator it = _users.begin(); it != _users.end(); it++ ) {
     if ( it->first != fd && it->second->getName() == str )
       return "Username already taken. Username not updated\n\0";
   }
   if ( _users[fd] && isValidArg( str ) ) {
     _users[fd]->setName( str );
     return "Username successfully updated\n\0";
-  }
-  else if ( isValidArg( str ) ) {
+  } else if ( isValidArg( str ) ) {
     _users[fd] = new User;
     _users[fd]->setName( str );
     return "Registered your username\n\0";
@@ -120,8 +118,7 @@ User* Authenticator::getUser( int fd ) {
   return it->second;
 }
 
-std::string Authenticator::getServerPass()
-{
+std::string Authenticator::getServerPass() {
   return _password;
 }
 
@@ -134,9 +131,7 @@ void Authenticator::addUser( int fd, User* user ) {
 }
 
 bool Authenticator::authenticateUser( int fd ) {
-  if ( _users[fd] && !_users[fd]->getLoggedIn() && _users[fd]->getPassword() \
-  && !_users[fd]->getNick().empty() && !_users[fd]->getName().empty() )
-  {
+  if ( _users[fd] && !_users[fd]->getLoggedIn() && _users[fd]->getPassword() && !_users[fd]->getNick().empty() && !_users[fd]->getName().empty() ) {
     _users[fd]->setLoggedIn( true );
     return true;
   }
@@ -144,8 +139,7 @@ bool Authenticator::authenticateUser( int fd ) {
 }
 
 void Authenticator::releaseUserInfo( int fd ) {
-  if ( _users.find( fd ) != _users.end() )
-  {
+  if ( _users.find( fd ) != _users.end() ) {
     delete _users[fd];
     _users.erase( fd );
   }

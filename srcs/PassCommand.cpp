@@ -1,6 +1,6 @@
 #include "PassCommand.hpp"
 
-PassCommand::PassCommand( Authenticator &authenticator, std::string args, int fd ) : ACommand( "PASS", authenticator, args, fd ) {}
+PassCommand::PassCommand( Authenticator *authenticator, std::string args, int fd ) : ACommand( "PASS", authenticator, args, fd ) {}
 
 PassCommand::~PassCommand() {
 }
@@ -21,18 +21,18 @@ std::string PassCommand::execute() const {
     return "Invalid string";
   std::string str = _args.substr( 1, _args.find_first_of( " \n\r\0", 1 ) - 1 );
 
-  if ( !_authenticator.isValidArg( str ) )
+  if ( !_authenticator->isValidArg( str ) )
     return "Password contains invalid characters";
 
-  User *user = _authenticator.getUser( _userFD );
+  User *user = _authenticator->getUser( _userFD );
   if ( user == NULL ) {
     user = new User();
-    if (str == _authenticator.getServerPass())
+    if ( str == _authenticator->getServerPass() )
       user->setPassword( true );
-    _authenticator.addUser( _userFD, user );
+    _authenticator->addUser( _userFD, user );
   }
-  if ( !user->getPassword() && str == _authenticator.getServerPass())
+  if ( !user->getPassword() && str == _authenticator->getServerPass() )
     user->setPassword( true );
-    
+
   return "Password registered";
 }

@@ -1,6 +1,6 @@
 #include "NickCommand.hpp"
 
-NickCommand::NickCommand( Authenticator &authenticator, std::string args, int fd ) : ACommand( "NICK", authenticator, args, fd ) {}
+NickCommand::NickCommand( Authenticator *authenticator, std::string args, int fd ) : ACommand( "NICK", authenticator, args, fd ) {}
 
 NickCommand::~NickCommand() {
 }
@@ -21,18 +21,18 @@ std::string NickCommand::execute() const {
     return "Invalid string\n\0";
   std::string str = _args.substr( 1, _args.find_first_of( " \n\r\0", 1 ) - 1 );
 
-  if ( !_authenticator.isValidArg( str ) )
+  if ( !_authenticator->isValidArg( str ) )
     return "Nickname contains invalid characters\n\0";
 
-  if ( _authenticator.userNameExists( _userFD, str ) ) {
+  if ( _authenticator->userNameExists( _userFD, str ) ) {
     return "Nickname already taken. Nickname not updated\n\0";
   }
 
-  User *user = _authenticator.getUser( _userFD );
+  User *user = _authenticator->getUser( _userFD );
   if ( user == NULL ) {
     user = new User();
     user->setNick( str );
-    _authenticator.addUser( _userFD, user );
+    _authenticator->addUser( _userFD, user );
     return "Registered your nickname\n\0";
   }
 

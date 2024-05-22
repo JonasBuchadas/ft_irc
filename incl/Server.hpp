@@ -33,12 +33,12 @@ class Authenticator;
 
 class Server {
  private:
-  const char           *_port;
-  std::string           _password;
-  int                   _listeningSocket;
-  int                   _fdSize;
-  std::vector<pollfd>   _pfds;
-  Authenticator         _authenticator;
+  const char         *_port;
+  std::string         _password;
+  int                 _listeningSocket;
+  int                 _fdSize;
+  std::vector<pollfd> _pfds;
+  Authenticator      *_authenticator;
 
   void addToPfds( int fd );
   int  delFromPfds( int fd );
@@ -78,9 +78,9 @@ class Server {
   Server( char const *port, char const *password ) throw( std::exception );
   ~Server();
   Server( Server const &src );
-  void        serve( void ) throw( std::exception );
-  void        listeningLoop( void );
-  int         getListeningSocket() const;
+  void serve( void ) throw( std::exception );
+  void listeningLoop( void );
+  int  getListeningSocket() const;
 
   std::string executeCommand( const std::string &command, const std::string &message, int fd );
 

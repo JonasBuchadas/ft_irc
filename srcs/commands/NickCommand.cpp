@@ -1,4 +1,4 @@
-#include "NickCommand.hpp"
+#include "commands/NickCommand.hpp"
 
 NickCommand::NickCommand( Authenticator *authenticator, std::string args, int fd ) : ACommand( "NICK", authenticator, args, fd ) {}
 

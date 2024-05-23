@@ -1,6 +1,5 @@
 #include "Server.hpp"
-
-#include "GenResponse.hpp"
+#include "Message.hpp"
 
 bool Server::_stopServer = false;
 

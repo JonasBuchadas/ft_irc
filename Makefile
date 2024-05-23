@@ -17,16 +17,15 @@ OBJS_PATH=	objs/
 SRC_NAME=	main.cpp
 SRCS=		Server.cpp \
 				User.cpp \
-				Commands.cpp \
 				Authenticator.cpp \
-				GenResponse.cpp \
+				Message.cpp \
 				Messenger.cpp \
 				ACommand.cpp \
 				CommandFactory.cpp \
-				NoCommand.cpp \
-				UserCommand.cpp \
-				PassCommand.cpp \
-				NickCommand.cpp
+				commands/NoCommand.cpp \
+				commands/UserCommand.cpp \
+				commands/PassCommand.cpp \
+				commands/NickCommand.cpp
 SRCS_NAME=	$(addprefix $(SRCS_PATH), $(SRC_NAME) $(SRCS))
 ### OBJECT FILES ###
 OBJ_NAME=	$(SRC_NAME:.cpp=.o)
@@ -66,7 +65,7 @@ $(NAME): $(OBJS_PATH) $(OBJS_NAME)
 	@$(GREEN)$(NAME) Program created$(DEFAULT)
 
 $(OBJS_PATH):
-	@mkdir -p $@
+	@mkdir -p $@/commands
 
 $(OBJS_BT_PATH):
 	@mkdir -p $@

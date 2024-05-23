@@ -7,10 +7,10 @@
 
 #include "ACommand.hpp"
 #include "Authenticator.hpp"
-#include "NickCommand.hpp"
-#include "NoCommand.hpp"
-#include "PassCommand.hpp"
-#include "UserCommand.hpp"
+#include "commands/NickCommand.hpp"
+#include "commands/NoCommand.hpp"
+#include "commands/PassCommand.hpp"
+#include "commands/UserCommand.hpp"
 
 typedef ACommand *( *funcPtr )( Authenticator *authenticator, std::string _args, int fd );
 

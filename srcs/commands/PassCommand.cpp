@@ -1,4 +1,4 @@
-#include "PassCommand.hpp"
+#include "commands/PassCommand.hpp"
 
 PassCommand::PassCommand( Authenticator *authenticator, std::string args, int fd ) : ACommand( "PASS", authenticator, args, fd ) {}
 

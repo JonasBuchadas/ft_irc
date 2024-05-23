@@ -1,4 +1,4 @@
-#include "UserCommand.hpp"
+#include "commands/UserCommand.hpp"
 
 UserCommand::UserCommand( Authenticator *authenticator, std::string args, int fd ) : ACommand( "USER", authenticator, args, fd ) {}
 

@@ -1,4 +1,4 @@
-#include "JoinCommand.hpp"
+#include "commands/JoinCommand.hpp"
 
 JoinCommand::JoinCommand() : ACommand() {}
 

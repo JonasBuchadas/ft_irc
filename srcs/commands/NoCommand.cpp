@@ -1,4 +1,4 @@
-#include "NoCommand.hpp"
+#include "commands/NoCommand.hpp"
 
 NoCommand::NoCommand( Authenticator *authenticator, std::string args, int fd ) : ACommand( "PASS", authenticator, args, fd ) {}
 

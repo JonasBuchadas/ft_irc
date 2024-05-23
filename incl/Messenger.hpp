@@ -51,6 +51,13 @@ class Messenger {
   void tooLargeAMsg( int senderFD );
   void getValidMsg( Authenticator *auth, int fd, std::string msg );
   void LoggedInUser( int senderFD );
+
+  class BadRespondException : public std::exception {
+    public:
+    virtual const char *what() const throw() {
+      return "Bad response.";
+    }
+  };
 };
 
 #endif

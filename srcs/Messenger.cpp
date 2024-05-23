@@ -22,7 +22,7 @@ void Messenger::respond() {
     int destFD = _recipients[j];
     if ( destFD != _listeningSocket ) {
       if ( send( destFD, _response.c_str(), _response.size(), 0 ) == -1 )
-        perror( "send" );
+        throw BadRespondException();
     }
   }
 }
@@ -56,7 +56,12 @@ void Messenger::getValidMsg( Authenticator *auth, int fd, std::string msg ) {
       }
       _response = message + "\n";
     }
-    respond();
+    try {
+      respond();
+    }
+    catch (std::exception &e) {
+      std::cerr << "Error: " << e.what() << std::endl;
+    }
     _recipients.clear();
     start = msg.find_first_of( "\n\r\0", start );
     while ( start < msg.size() && ( msg[start] == '\n' || msg[start] == '\r' ) )

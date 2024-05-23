@@ -57,8 +57,7 @@ void Server::setPort( char const *port ) throw( std::exception ) {
 
 void Server::serve( void ) throw( std::exception ) {
   if ( listen( _listeningSocket, BACKLOG ) == -1 ) {
-    perror( "listen" );  // Single throw plz!
-    exit( 1 );           // Single throw plz!
+    throw ListenFailException();           // Single throw plz!
   }
   addToPfds( _listeningSocket );
   std::cout << "server: waiting for connections..." << std::endl;
@@ -76,17 +75,20 @@ void Server::setupListeningSocket( void ) throw( std::exception ) {
     throw Server::AddrInfoFailException();
   for ( p = res; p != NULL; p = p->ai_next ) {
     if ( ( _listeningSocket = socket( p->ai_family, p->ai_socktype, p->ai_protocol ) ) == -1 ) {
-      perror( "server: socket" );
-      continue;
+      throw Server::SocketSetupException();
+      //perror( "server: socket" );
+      //continue;
     }
     if ( setsockopt( _listeningSocket, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof( int ) ) == -1 ) {
-      perror( "setsockopt" );
-      return;
+      throw Server::SocketSetupException();
+      // perror( "setsockopt" );
+      // return;
     }
     if ( bind( _listeningSocket, p->ai_addr, p->ai_addrlen ) == -1 ) {
       close( _listeningSocket );
-      perror( "server: bind" );
-      continue;
+      throw Server::BindFailException();
+      //perror( "server: bind" );
+      //continue;
     }
     break;
   }
@@ -112,17 +114,25 @@ void Server::listeningLoop( void ) {
       if ( _pfds[i].revents & POLL_IN ) {
         if ( _pfds[i].fd == _listeningSocket ) {
           addrlen = sizeof( remoteaddr );
-          newFd   = accept( _listeningSocket, (struct sockaddr *)&remoteaddr, &addrlen );
-          if ( newFd == -1 )
-            perror( "accept" );
-          else
-            addToPfds( newFd );
+          try {
+            newFd   = accept( _listeningSocket, (struct sockaddr *)&remoteaddr, &addrlen );
+            if ( newFd == -1 )
+              throw Server::NewConnectionException();
+              //perror( "accept" );
+            else
+              addToPfds( newFd );
+          }
+          catch ( std::exception &e ) {
+            std::cerr << "Error: " << e.what() << std::endl;
+            continue;
+          }
         } else {
           int senderFD = _pfds[i].fd;
-          nbytes       = recv( senderFD, buf, 512, 0 );
-          buf[nbytes]  = '\0';
-          if ( nbytes <= 0 ) {
-            if ( nbytes == 0 ) {
+          try {
+            nbytes = recv( senderFD, buf, 512, 0 );
+            if ( nbytes < 0 ) {
+              throw Server::RecvFailException();
+            } else if ( nbytes == 0 ) {
               std::cout << "connection closed from " << senderFD << std::endl;
             } else {
               perror( "recv" );

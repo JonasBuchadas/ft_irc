@@ -8,6 +8,7 @@
 #include "ACommand.hpp"
 #include "Authenticator.hpp"
 #include "NickCommand.hpp"
+#include "NoCommand.hpp"
 #include "PassCommand.hpp"
 #include "UserCommand.hpp"
 

@@ -23,6 +23,7 @@ SRCS=		Server.cpp \
 				Messenger.cpp \
 				ACommand.cpp \
 				CommandFactory.cpp \
+				NoCommand.cpp \
 				UserCommand.cpp \
 				PassCommand.cpp \
 				NickCommand.cpp

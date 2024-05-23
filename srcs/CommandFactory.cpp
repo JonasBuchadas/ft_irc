@@ -40,5 +40,5 @@ ACommand *CommandFactory::makeCommand( std::string commandName, Authenticator *a
       return c;
     }
   }
-  return NULL;
+  return new NoCommand( authenticator, args, fd );
 }

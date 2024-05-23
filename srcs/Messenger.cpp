@@ -47,7 +47,7 @@ void Messenger::getValidMsg( Authenticator *auth, int fd, std::string msg ) {
     _response              = command->execute();
     delete command;
     // _response              = auth.executeCommand( word, message.substr( word.length() ), fd );
-    if ( auth->getUser( fd ) && auth->getUser( fd )->getLoggedIn() ) {
+    if ( _response.length() <= 1 && auth->getUser( fd ) && auth->getUser( fd )->getLoggedIn() ) {
       _recipients.clear();
       std::map<int, User *> users = auth->getAllUsers();
       for ( std::map<int, User *>::iterator it = users.begin(); it != users.end(); it++ ) {
@@ -56,6 +56,8 @@ void Messenger::getValidMsg( Authenticator *auth, int fd, std::string msg ) {
       }
       _response = message + "\n";
     }
+    respond();
+    _recipients.clear();
     start = msg.find_first_of( "\n\r\0", start );
     while ( start < msg.size() && ( msg[start] == '\n' || msg[start] == '\r' ) )
       start++;
@@ -64,8 +66,6 @@ void Messenger::getValidMsg( Authenticator *auth, int fd, std::string msg ) {
     else
       break;
   }
-  respond();
-  _recipients.clear();
 }
 
 void Messenger::tooLargeAMsg( int senderFD ) {

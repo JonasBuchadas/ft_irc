@@ -9,6 +9,7 @@ Authenticator::Authenticator( const char* password ) : _password( password ) {
 }
 
 Authenticator::~Authenticator() {
+  clearUsers();
   // for ( std::map<int, User*>::iterator it = _users.begin(); it != _users.end(); it++ ) {
   //   delete it->second;
   //   it->second = NULL;

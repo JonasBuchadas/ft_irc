@@ -58,6 +58,7 @@ void Server::setPort( char const *port ) throw( std::exception ) {
 void Server::serve( void ) throw( std::exception ) {
   if ( listen( _listeningSocket, BACKLOG ) == -1 ) {
     throw ListenFailException();           // Single throw plz!
+    throw ListenFailException();           // Single throw plz!
   }
   addToPfds( _listeningSocket );
   std::cout << "server: waiting for connections..." << std::endl;
@@ -78,14 +79,23 @@ void Server::setupListeningSocket( void ) throw( std::exception ) {
       throw Server::SocketSetupException();
       //perror( "server: socket" );
       //continue;
+      throw Server::SocketSetupException();
+      //perror( "server: socket" );
+      //continue;
     }
     if ( setsockopt( _listeningSocket, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof( int ) ) == -1 ) {
+      throw Server::SocketSetupException();
+      // perror( "setsockopt" );
+      // return;
       throw Server::SocketSetupException();
       // perror( "setsockopt" );
       // return;
     }
     if ( bind( _listeningSocket, p->ai_addr, p->ai_addrlen ) == -1 ) {
       close( _listeningSocket );
+      throw Server::BindFailException();
+      //perror( "server: bind" );
+      //continue;
       throw Server::BindFailException();
       //perror( "server: bind" );
       //continue;
@@ -126,8 +136,25 @@ void Server::listeningLoop( void ) {
             std::cerr << "Error: " << e.what() << std::endl;
             continue;
           }
+          try {
+            newFd   = accept( _listeningSocket, (struct sockaddr *)&remoteaddr, &addrlen );
+            if ( newFd == -1 )
+              throw Server::NewConnectionException();
+              //perror( "accept" );
+            else
+              addToPfds( newFd );
+          }
+          catch ( std::exception &e ) {
+            std::cerr << "Error: " << e.what() << std::endl;
+            continue;
+          }
         } else {
           int senderFD = _pfds[i].fd;
+          try {
+            nbytes = recv( senderFD, buf, 512, 0 );
+            if ( nbytes < 0 ) {
+              throw Server::RecvFailException();
+            } else if ( nbytes == 0 ) {
           try {
             nbytes = recv( senderFD, buf, 512, 0 );
             if ( nbytes < 0 ) {

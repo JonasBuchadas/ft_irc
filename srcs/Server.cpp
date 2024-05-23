@@ -10,6 +10,7 @@ Server::Server() {
 
 Server::~Server() {
   clearUsers();
+  _authenticator->clearUsers();
   delete _authenticator;
 }
 

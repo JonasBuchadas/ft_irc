@@ -24,7 +24,7 @@ std::string NickCommand::execute() const {
   if ( !_authenticator->isValidArg( str ) )
     return "Nickname contains invalid characters\n\0";
 
-  if ( _authenticator->userNameExists( _userFD, str ) ) {
+  if ( _authenticator->nickNameExists( _userFD, str ) ) {
     return "Nickname already taken. Nickname not updated\n\0";
   }
 

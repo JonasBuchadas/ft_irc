@@ -111,6 +111,34 @@ class Server {
       return "failed to get address info";
     }
   };
+
+  class ListenFailException : public std::exception {
+   public:
+    virtual const char *what() const throw() {
+      return "failed to listen on socket";
+    }
+  };
+
+  class SocketSetupException : public std::exception {
+   public:
+    virtual const char *what() const throw() {
+      return "failed to setup socket";
+    }
+  };
+
+  class NewConnectionException : public std::exception {
+   public:
+    virtual const char *what() const throw() {
+      return "failed to accept new connection";
+    }
+  };
+
+  class RecvFailException : public std::exception {
+   public:
+    virtual const char *what() const throw() {
+      return "failed to receive message";
+    }
+  };
 };
 
 void sigchld_handler( int s );

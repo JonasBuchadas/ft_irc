@@ -73,12 +73,6 @@ void Messenger::getValidMsg( Authenticator *auth, int fd, std::string msg ) {
   }
 }
 
-void Messenger::tooLargeAMsg( int senderFD ) {
-  _recipients.push_back( senderFD );
-  _response = "Message will be ignored due to size constraints\n\0";
-  respond();
-}
-
 void Messenger::LoggedInUser( int senderFD ) {
   _recipients.push_back( senderFD );
   _response = "Successfully logged in!\n\0";

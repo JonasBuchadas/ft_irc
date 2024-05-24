@@ -134,15 +134,21 @@ void Server::listeningLoop( void ) {
             }
             else {
             Messenger msg( _listeningSocket );
+            std::string str;
             if ( nbytes >= 512 ) {
+              str = buf;
+              memset(buf, '\0', sizeof(buf));
               while ( recv( senderFD, buf, 512, MSG_DONTWAIT ) > 0 )
-                ;
-              msg.tooLargeAMsg( senderFD );
-            } else {
-              msg.getValidMsg( _authenticator, senderFD, buf );
-              if ( _authenticator->authenticateUser( senderFD ) )
-                msg.LoggedInUser( senderFD );
+              {
+                str += buf;
+                memset(buf, '\0', sizeof(buf));
+              }
             }
+            else
+             str = buf;
+            msg.getValidMsg( _authenticator, senderFD, str );
+            if ( _authenticator->authenticateUser( senderFD ) )
+              msg.LoggedInUser( senderFD );
           }
           } catch ( std::exception &e ) {
             std::cerr << "Error: " << e.what() << std::endl;

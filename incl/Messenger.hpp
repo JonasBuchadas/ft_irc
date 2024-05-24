@@ -48,7 +48,6 @@ class Messenger {
   Messenger( int listeningSocket );
   ~Messenger();
 
-  void tooLargeAMsg( int senderFD );
   void getValidMsg( Authenticator *auth, int fd, std::string msg );
   void LoggedInUser( int senderFD );
 

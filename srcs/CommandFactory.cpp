@@ -27,14 +27,19 @@ ACommand *makeNickCommand( Authenticator *authenticator, std::string args, int f
   return new NickCommand( authenticator, args, fd );
 }
 
-ACommand *CommandFactory::makeCommand( Authenticator *authenticator, int fd, std::string commandName, std::string args ) {
-  const std::string enumCommand[] = { "USER", "PASS", "NICK" };
+ACommand *makePrivCommand( Authenticator *authenticator, std::string args, int fd ) {
+  return new PrivCommand( authenticator, args, fd );
+}
+
+ACommand *CommandFactory::makeCommand( std::string commandName, Authenticator *authenticator, std::string args, int fd ) {
+  const std::string enumCommand[] = { "USER", "PASS", "NICK", "PRIVMSG" };
   const funcPtr     enumFunc[]    = {
       &makeUserCommand,
       &makePassCommand,
       &makeNickCommand,
+      &makePrivCommand,
   };
-  for ( int i = 0; i < 3; i++ ) {
+  for ( int i = 0; i < 4; i++ ) {
     if ( commandName == enumCommand[i] ) {
       ACommand *c = ( enumFunc[i]( authenticator, args, fd ) );
       return c;

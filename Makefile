@@ -26,7 +26,8 @@ SRCS=		Server.cpp \
 				commands/NoCommand.cpp \
 				commands/UserCommand.cpp \
 				commands/PassCommand.cpp \
-				commands/NickCommand.cpp
+				commands/NickCommand.cpp \
+				commands/PrivCommand.cpp
 SRCS_NAME=	$(addprefix $(SRCS_PATH), $(SRC_NAME) $(SRCS))
 ### OBJECT FILES ###
 OBJ_NAME=	$(SRC_NAME:.cpp=.o)

@@ -52,4 +52,7 @@
 // PRIVMSG Cmd
 #define ERR_NOTEXTTOSEND 412              // Use when: the PRIVMSG has no message
 
+std::string genServerMsg(int code, std::string param);
+std::string genUserMsg(User *userinfo, std::string msg);
+
 #endif

@@ -32,6 +32,10 @@ void User::setLoggedIn( bool loggedIn ) {
   _loggedIn = loggedIn;
 }
 
+void User::setIp( uint32_t ip ) {
+  _ip = ip;
+}
+
 std::string User::getNick( void ) const {
   return _nickName;
 }
@@ -46,6 +50,10 @@ bool User::getPassword( void ) const {
 
 bool User::getLoggedIn( void ) const {
   return _loggedIn;
+}
+
+uint32_t User::getIp( void ) const {
+  return _ip;
 }
 
 void User::join() {

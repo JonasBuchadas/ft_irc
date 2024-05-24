@@ -42,6 +42,13 @@ bool Authenticator::nickNameExists( int fd, std::string nickName ) {
   }
   return false;
 }
+int Authenticator::getFdFromNick( std::string str ){
+  for ( std::map<int, User*>::iterator it = _users.begin(); it != _users.end(); it++ ) {
+    if ( it->second && it->second->getNick() == str )
+      return it->first;
+  }
+  return -1;
+}
 
 bool Authenticator::getPass( int fd ) {
   return _users[fd]->getPassword();

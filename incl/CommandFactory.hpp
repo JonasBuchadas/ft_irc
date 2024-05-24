@@ -11,6 +11,7 @@
 #include "commands/NoCommand.hpp"
 #include "commands/PassCommand.hpp"
 #include "commands/UserCommand.hpp"
+#include "commands/PrivCommand.hpp"
 
 typedef ACommand *( *funcPtr )( Authenticator *authenticator, std::string _args, int fd );
 

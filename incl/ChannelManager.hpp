@@ -25,9 +25,26 @@ class ChannelManager {
     void                    removeChannel( std::string channelName );
     bool                    channelExists( std::string channelName );
     
+    User*                   getUser( std::string channelName, std::string user );
+    //User*                   getOperator( std::string channelName );
+
     bool isValidArg( std::string str );
     
     void clearChannels( void );
+
+    class ChannelExistsException : public std::exception {
+        public:
+        virtual const char* what() const throw() {
+            return "Channel already exists\n\0";
+        }
+    };
+
+    class ChannelDoesNotExistException : public std::exception {
+        public:
+        virtual const char* what() const throw() {
+            return "Channel does not exist\n\0";
+        }
+    };
 };
 
 

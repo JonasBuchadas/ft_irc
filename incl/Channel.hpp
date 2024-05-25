@@ -17,6 +17,8 @@ class Channel {
   ~Channel();
   Channel( Channel const &src );
   Channel &operator=( Channel const &src );
+
+  User *getUser( std::string user );
 };
 
 #endif

@@ -17,3 +17,9 @@ Channel &Channel::operator=( Channel const &src ) {
   _users     = src._users;
   return ( *this );
 }
+
+User *Channel::getUser( std::string user ) {
+  if ( _users.find( user ) != _users.end() )
+    return &_users[user];
+  return NULL;
+}

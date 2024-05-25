@@ -56,7 +56,41 @@ User *ChannelManager::getUser( std::string channelName, std::string user ) {
     return NULL;
 }
 
+User *ChannelManager::getOperator( std::string channelName ) {
+    if ( _channels.find( channelName ) != _channels.end() )
+        return _channels[channelName]->getOperator();
+    return NULL;
+}
 
+bool ChannelManager::isInviteOnly( std::string channelName ) {
+    if ( _channels.find( channelName ) != _channels.end() )
+        return _channels[channelName]->isInviteOnly();
+    return 0;
+}
+
+bool ChannelManager::isTopicProtected( std::string channelName ) {
+    if ( _channels.find( channelName ) != _channels.end() )
+        return _channels[channelName]->isTopicProtected();
+    return 0;
+}
+
+std::string ChannelManager::getTopic( std::string channelName ) {
+    if ( _channels.find( channelName ) != _channels.end() )
+        return _channels[channelName]->getTopic();
+    return "";
+}
+
+std::string ChannelManager::getPassword( std::string channelName ) {
+    if ( _channels.find( channelName ) != _channels.end() )
+        return _channels[channelName]->getPassword();
+    return "";
+}
+
+unsigned int ChannelManager::getMaxUsers( std::string channelName ) {
+    if ( _channels.find( channelName ) != _channels.end() )
+        return _channels[channelName]->getMaxUsers();
+    return 0;
+}
 
 bool ChannelManager::isValidArg( std::string str ) {
     for ( size_t i = 0; i < str.length(); i++ )

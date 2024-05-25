@@ -8,13 +8,13 @@
 
 class ChannelManager {
     private:
-    ChannelManager();
     std::map<std::string, Channel*> _channels;
     
     typedef std::string ( ChannelManager::*CommandFunction )( const std::string&, int fd );
     std::map<std::string, CommandFunction> _command;
     
     public:
+    ChannelManager();
     ChannelManager( ChannelManager const& src );
     ChannelManager& operator=( ChannelManager const& src );
     ~ChannelManager();
@@ -26,7 +26,12 @@ class ChannelManager {
     bool                    channelExists( std::string channelName );
     
     User*                   getUser( std::string channelName, std::string user );
-    //User*                   getOperator( std::string channelName );
+    User*                   getOperator( std::string channelName );
+    bool                    isInviteOnly( std::string channelName );
+    bool                    isTopicProtected( std::string channelName );
+    std::string             getTopic( std::string channelName );
+    std::string             getPassword( std::string channelName );
+    unsigned int            getMaxUsers( std::string channelName );
 
     bool isValidArg( std::string str );
     

@@ -23,3 +23,31 @@ User *Channel::getUser( std::string user ) {
     return &_users[user];
   return NULL;
 }
+
+User *Channel::getOperator( void ) {
+  return _operators;
+}
+
+bool Channel::isInviteOnly( void ) {
+  return _inviteOnly;
+}
+
+bool Channel::isTopicProtected( void ) {
+  return _topicProtected;
+}
+
+std::string Channel::getTopic( void ) {
+  return _topic;
+}
+
+std::string Channel::getName( void ) {
+  return _name;
+}
+
+std::string Channel::getPassword( void ) {
+  return _password;
+}
+
+unsigned int Channel::getMaxUsers( void ) {
+  return _maxUsers;
+}

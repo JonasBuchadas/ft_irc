@@ -12,6 +12,13 @@ class Channel {
   std::map<std::string, User> _users;
   User                       *_operators;
 
+  bool                        _inviteOnly;
+  bool                        _topicProtected;
+  std::string                 _topic;
+  std::string                 _name;
+  std::string                 _password;
+  unsigned int                _maxUsers;
+
  public:
   Channel();
   ~Channel();
@@ -19,6 +26,13 @@ class Channel {
   Channel &operator=( Channel const &src );
 
   User *getUser( std::string user );
+  User *getOperator( void );
+  bool  isInviteOnly( void );
+  bool  isTopicProtected( void );
+  std::string getTopic( void );
+  std::string getName( void );
+  std::string getPassword( void );
+  unsigned int getMaxUsers( void );
 };
 
 #endif

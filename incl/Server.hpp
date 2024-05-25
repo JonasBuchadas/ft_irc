@@ -24,6 +24,7 @@
 #include "ACommand.hpp"
 #include "Authenticator.hpp"
 #include "Messenger.hpp"
+#include "Parser.hpp"
 #include "User.hpp"
 
 class User;
@@ -38,7 +39,11 @@ class Server {
   int                 _listeningSocket;
   int                 _fdSize;
   std::vector<pollfd> _pfds;
-  Authenticator      *_authenticator;
+
+  Parser         _parser;
+  Authenticator *_authenticator;
+  CommandFactory _commandFactory;
+  Messenger      _messenger;
 
   void addToPfds( int fd );
   int  delFromPfds( int fd );
@@ -57,9 +62,13 @@ class Server {
   Server();
   Server &operator=( Server const &src );
 
-  void setPort( const char *port ) throw( std::exception );
-  void setPassword( char const *password ) throw( std::exception );
-  void setupListeningSocket( void ) throw( std::exception );
+  void        setPort( const char *port ) throw( std::exception );
+  void        setPassword( char const *password ) throw( std::exception );
+  void        setupListeningSocket( void ) throw( std::exception );
+  bool        isServerConnection( int i );
+  bool        isServerReceivingMessage( int i );
+  void        acceptConnection( void ) throw( std::exception );
+  std::string receiveMessage( int i, int senderFD ) throw( std::exception );
 
   /*
   std::string executeCommand(const std::string& command, const std::string& message, int fd);

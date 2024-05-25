@@ -20,6 +20,7 @@ SRCS=		Server.cpp \
 				Authenticator.cpp \
 				Message.cpp \
 				Messenger.cpp \
+				Parser.cpp \
 				ACommand.cpp \
 				CommandFactory.cpp \
 				commands/NoCommand.cpp \

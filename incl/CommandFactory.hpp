@@ -21,7 +21,7 @@ class CommandFactory {
   ~CommandFactory();
   CommandFactory( CommandFactory const &src );
   CommandFactory &operator=( CommandFactory const &src );
-  ACommand       *makeCommand( std::string commandName, Authenticator *authenticator, std::string args, int fd );
+  ACommand       *makeCommand( Authenticator *authenticator, int fd, std::string commandName, std::string args );
 };
 
 #endif

@@ -25,9 +25,6 @@
 
 class Messenger {
  private:
-  Messenger( Messenger const &src );
-  Messenger &operator=( Messenger const &src );
-
   std::vector<int> _recipients;
   std::string      _response;
   int              _listeningSocket;
@@ -45,14 +42,17 @@ class Messenger {
   */
 
  public:
+  Messenger();
   Messenger( int listeningSocket );
   ~Messenger();
+  Messenger( Messenger const &src );
+  Messenger &operator=( Messenger const &src );
 
   void getValidMsg( Authenticator *auth, int fd, std::string msg );
   void LoggedInUser( int senderFD );
 
   class BadRespondException : public std::exception {
-    public:
+   public:
     virtual const char *what() const throw() {
       return "Bad response.";
     }

@@ -1,5 +1,7 @@
 #include "Messenger.hpp"
 
+Messenger::Messenger() {}
+
 Messenger::Messenger( int listeningSocket ) {
   _listeningSocket = listeningSocket;
 }
@@ -43,10 +45,10 @@ void Messenger::getValidMsg( Authenticator *auth, int fd, std::string msg ) {
     ss >> word;
 
     CommandFactory cf      = CommandFactory();
-    ACommand      *command = cf.makeCommand( word, auth, message.substr( word.length() ), fd );
+    ACommand      *command = cf.makeCommand( auth, fd, word, message.substr( word.length() ) );
     _response              = command->execute();
     delete command;
-    // _response              = auth.executeCommand( word, message.substr( word.length() ), fd );
+    // _response = auth.executeCommand( word, message.substr( word.length() ), fd );
     if ( _response.length() <= 1 && auth->getUser( fd ) && auth->getUser( fd )->getLoggedIn() ) {
       _recipients.clear();
       std::map<int, User *> users = auth->getAllUsers();
@@ -58,8 +60,7 @@ void Messenger::getValidMsg( Authenticator *auth, int fd, std::string msg ) {
     }
     try {
       respond();
-    }
-    catch (std::exception &e) {
+    } catch ( std::exception &e ) {
       std::cerr << "Error: " << e.what() << std::endl;
     }
     _recipients.clear();

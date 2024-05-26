@@ -16,17 +16,24 @@ UserCommand &UserCommand::operator=( UserCommand const &src ) {
   return ( *this );
 }
 
-std::string UserCommand::execute() const {
-  if ( _args.length() <= 1 )
-    return "Invalid string\n\0";
-
+PreparedResponse UserCommand::execute() const {
+  PreparedResponse pr = PreparedResponse();
+  if ( _authenticator->getUser( _userFD ) && _authenticator->getUser( _userFD )->getLoggedIn() )
+    pr.recipients.push_back( _userFD );
+  if ( _args.length() <= 1 ) {
+    pr.response = "Invalid string\n\0";
+    return pr;
+  }
   std::string str = _args.substr( 1, _args.find_first_of( " \n\r\0", 1 ) - 1 );
 
-  if ( !_authenticator->isValidArg( str ) )
-    return "Username contains invalid characters\n\0";
+  if ( !_authenticator->isValidArg( str ) ) {
+    pr.response = "Username contains invalid characters\n\0";
+    return pr;
+  }
 
   if ( _authenticator->userNameExists( _userFD, str ) ) {
-    return "Username already taken. Username not updated\n\0";
+    pr.response = "Username already taken. Username not updated\n\0";
+    return pr;
   }
 
   User *user = _authenticator->getUser( _userFD );
@@ -34,14 +41,21 @@ std::string UserCommand::execute() const {
     user = new User();
     user->setName( str );
     _authenticator->addUser( _userFD, user );
-    return "Registered your username\n\0";
+    pr.response = "Registered your username\n\0";
+    return pr;
   }
 
   if ( user->getName().empty() ) {
     user->setName( str );
-    return "Registered your username\n\0";
+    pr.response = "Registered your username\n\0";
+    if ( _authenticator->authenticateUser( _userFD ) ) {
+      pr.response += "Successfully logged in!\n\0";
+      pr.recipients.push_back( _userFD );
+    }
+    return pr;
   }
 
   user->setName( str );
-  return "Username successfully updated\n\0";
+  pr.response = "Username successfully updated\n\0";
+  return pr;
 }

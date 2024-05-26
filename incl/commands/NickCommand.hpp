@@ -12,8 +12,8 @@ class NickCommand : public ACommand {
   NickCommand( Authenticator *authenticator, std::string args, int fd );
   ~NickCommand();
   NickCommand( NickCommand const &src );
-  NickCommand &operator=( NickCommand const &src );
-  std::string  execute() const;
+  NickCommand     &operator=( NickCommand const &src );
+  PreparedResponse execute() const;
 };
 
 #endif

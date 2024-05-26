@@ -16,16 +16,24 @@ NickCommand &NickCommand::operator=( NickCommand const &src ) {
   return ( *this );
 }
 
-std::string NickCommand::execute() const {
-  if ( _args.length() <= 1 )
-    return "Invalid string\n\0";
+PreparedResponse NickCommand::execute() const {
+  PreparedResponse pr = PreparedResponse();
+  if ( _authenticator->getUser( _userFD ) && _authenticator->getUser( _userFD )->getLoggedIn() )
+    pr.recipients.push_back( _userFD );
+  if ( _args.length() <= 1 ) {
+    pr.response = "Invalid string\n\0";
+    return pr;
+  }
   std::string str = _args.substr( 1, _args.find_first_of( " \n\r\0", 1 ) - 1 );
 
-  if ( !_authenticator->isValidArg( str ) )
-    return "Nickname contains invalid characters\n\0";
+  if ( !_authenticator->isValidArg( str ) ) {
+    pr.response = "Nickname contains invalid characters\n\0";
+    return pr;
+  }
 
   if ( _authenticator->nickNameExists( _userFD, str ) ) {
-    return "Nickname already taken. Nickname not updated\n\0";
+    pr.response = "Nickname already taken. Nickname not updated\n\0";
+    return pr;
   }
 
   User *user = _authenticator->getUser( _userFD );
@@ -33,14 +41,21 @@ std::string NickCommand::execute() const {
     user = new User();
     user->setNick( str );
     _authenticator->addUser( _userFD, user );
-    return "Registered your nickname\n\0";
+    pr.response = "Registered your nickname\n\0";
+    return pr;
   }
 
   if ( user->getNick().empty() ) {
     user->setNick( str );
-    return "Registered your nickname\n\0";
+    pr.response = "Registered your nickname\n\0";
+    if ( _authenticator->authenticateUser( _userFD ) ) {
+      pr.response += "Successfully logged in!\n\0";
+      pr.recipients.push_back( _userFD );
+    }
+    return pr;
   }
 
   user->setNick( str );
-  return "Nickname successfully updated\n\0";
+  pr.response = "Nickname successfully updated\n\0";
+  return pr;
 }

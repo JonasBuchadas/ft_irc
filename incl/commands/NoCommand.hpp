@@ -12,8 +12,8 @@ class NoCommand : public ACommand {
   NoCommand( Authenticator *authenticator, std::string args, int fd );
   ~NoCommand();
   NoCommand( NoCommand const &src );
-  NoCommand  &operator=( NoCommand const &src );
-  std::string execute() const;
+  NoCommand       &operator=( NoCommand const &src );
+  PreparedResponse execute() const;
 };
 
 #endif

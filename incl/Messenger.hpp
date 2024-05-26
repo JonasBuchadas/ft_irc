@@ -48,6 +48,7 @@ class Messenger {
   Messenger( Messenger const &src );
   Messenger &operator=( Messenger const &src );
 
+  void respond( PreparedResponse pr ) throw( std::exception );
   void getValidMsg( Authenticator *auth, int fd, std::string msg );
   void LoggedInUser( int senderFD );
 

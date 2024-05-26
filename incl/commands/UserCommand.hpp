@@ -12,8 +12,8 @@ class UserCommand : public ACommand {
   UserCommand( Authenticator *authenticator, std::string args, int fd );
   ~UserCommand();
   UserCommand( UserCommand const &src );
-  UserCommand &operator=( UserCommand const &src );
-  std::string  execute() const;
+  UserCommand     &operator=( UserCommand const &src );
+  PreparedResponse execute() const;
 };
 
 #endif

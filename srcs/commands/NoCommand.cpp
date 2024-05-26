@@ -16,6 +16,6 @@ NoCommand &NoCommand::operator=( NoCommand const &src ) {
   return ( *this );
 }
 
-std::string NoCommand::execute() const {
-  return "";
+PreparedResponse NoCommand::execute() const {
+  return PreparedResponse();
 }

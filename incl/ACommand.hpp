@@ -7,6 +7,11 @@
 
 #include "Authenticator.hpp"
 
+struct PreparedResponse {
+  std::string      response;
+  std::vector<int> recipients;
+};
+
 class ACommand {
  private:
   const std::string _name;
@@ -23,7 +28,7 @@ class ACommand {
   ACommand( ACommand const &src );
   ACommand &operator=( ACommand const &src );
 
-  virtual std::string execute() const = 0;
+  virtual PreparedResponse execute() const = 0;
 };
 
 #endif

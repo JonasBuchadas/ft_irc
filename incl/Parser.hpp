@@ -3,8 +3,8 @@
 #define __PARSER_HPP__
 
 #include <iostream>
-#include <map>
 #include <sstream>
+#include <vector>
 
 #include "User.hpp"
 
@@ -19,8 +19,8 @@ class Parser {
   Parser();
   ~Parser();
   Parser( Parser const &src );
-  Parser   &operator=( Parser const &src );
-  ParsedMsg parseMsg( std::string str );
+  Parser                &operator=( Parser const &src );
+  std::vector<ParsedMsg> parseMsg( std::string str );
 };
 
 #endif

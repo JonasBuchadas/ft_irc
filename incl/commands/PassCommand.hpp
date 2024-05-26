@@ -12,8 +12,8 @@ class PassCommand : public ACommand {
   PassCommand( Authenticator *authenticator, std::string args, int fd );
   ~PassCommand();
   PassCommand( PassCommand const &src );
-  PassCommand &operator=( PassCommand const &src );
-  std::string  execute() const;
+  PassCommand     &operator=( PassCommand const &src );
+  PreparedResponse execute() const;
 };
 
 #endif

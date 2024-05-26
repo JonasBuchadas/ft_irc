@@ -33,6 +33,13 @@ class ChannelManager {
     std::string             getPassword( std::string channelName );
     unsigned int            getMaxUsers( std::string channelName );
 
+    void                    setOperator( std::string channelName, User* user ); // it will be more like void addOperator( User *user );
+    void                    setInviteOnly( std::string channelName, bool inviteOnly );
+    void                    setTopicProtected( std::string channelName, bool topicProtected );
+    void                    setTopic( std::string channelName, std::string topic );
+    void                    setPassword( std::string channelName, std::string password );
+    void                    setMaxUsers( std::string channelName, unsigned int maxUsers );
+
     bool isValidArg( std::string str );
     
     void clearChannels( void );

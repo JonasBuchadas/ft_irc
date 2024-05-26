@@ -10,7 +10,7 @@
 class Channel {
  private:
   std::map<std::string, User> _users;
-  User                       *_operators;
+  User                       *_operators; // Should be a vector or list
 
   bool                        _inviteOnly;
   bool                        _topicProtected;
@@ -33,6 +33,13 @@ class Channel {
   std::string getName( void );
   std::string getPassword( void );
   unsigned int getMaxUsers( void );
+
+  void setOperator( User *user );  // it will be more like void addOperator( User *user );
+  void setInviteOnly( bool inviteOnly );
+  void setTopicProtected( bool topicProtected );
+  void setTopic( std::string topic );
+  void setPassword( std::string password );
+  void setMaxUsers( unsigned int maxUsers );
 };
 
 #endif

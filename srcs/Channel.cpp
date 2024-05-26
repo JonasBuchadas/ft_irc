@@ -51,3 +51,27 @@ std::string Channel::getPassword( void ) {
 unsigned int Channel::getMaxUsers( void ) {
   return _maxUsers;
 }
+
+void Channel::setOperator( User *user ) {  // Placeholder function
+  _operators = user;
+}
+
+void Channel::setInviteOnly( bool inviteOnly ) {
+  _inviteOnly = inviteOnly;
+}
+
+void Channel::setTopicProtected( bool topicProtected ) {
+  _topicProtected = topicProtected;
+}
+
+void Channel::setTopic( std::string topic ) {
+  _topic = topic;
+}
+
+void Channel::setPassword( std::string password ) {
+  _password = password;
+}
+
+void Channel::setMaxUsers( unsigned int maxUsers ) {
+  _maxUsers = maxUsers;
+}

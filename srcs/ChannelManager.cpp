@@ -92,6 +92,36 @@ unsigned int ChannelManager::getMaxUsers( std::string channelName ) {
     return 0;
 }
 
+void ChannelManager::setOperator( std::string channelName, User* user ) { // Placeholder function
+    if ( _channels.find( channelName ) != _channels.end() )
+        _channels[channelName]->setOperator( user );
+}
+
+void ChannelManager::setInviteOnly( std::string channelName, bool inviteOnly ) {
+    if ( _channels.find( channelName ) != _channels.end() )
+        _channels[channelName]->setInviteOnly( inviteOnly );
+}
+
+void ChannelManager::setTopicProtected( std::string channelName, bool topicProtected ) {
+    if ( _channels.find( channelName ) != _channels.end() )
+        _channels[channelName]->setTopicProtected( topicProtected );
+}
+
+void ChannelManager::setTopic( std::string channelName, std::string topic ) {
+    if ( _channels.find( channelName ) != _channels.end() )
+        _channels[channelName]->setTopic( topic );
+}
+
+void ChannelManager::setPassword( std::string channelName, std::string password ) {
+    if ( _channels.find( channelName ) != _channels.end() )
+        _channels[channelName]->setPassword( password );
+}
+
+void ChannelManager::setMaxUsers( std::string channelName, unsigned int maxUsers ) {
+    if ( _channels.find( channelName ) != _channels.end() )
+        _channels[channelName]->setMaxUsers( maxUsers );
+}
+
 bool ChannelManager::isValidArg( std::string str ) {
     for ( size_t i = 0; i < str.length(); i++ )
         if ( !isdigit( str[i] ) && !isalpha( str[i] ) )

@@ -20,8 +20,12 @@ ChannelManager& ChannelManager::operator=( ChannelManager const& src ) {
     return ( *this );
 }
 
+bool ChannelManager::channelExists( std::string channelName ) {
+    return ( _channels.find( channelName ) != _channels.end() );
+}
+
 Channel* ChannelManager::getChannel( std::string channelName ) {
-    if ( _channels.find( channelName ) != _channels.end() )
+    if ( channelExists( channelName ) )
         return _channels[channelName];
     return NULL;
 }
@@ -31,14 +35,14 @@ std::map<std::string, Channel*> ChannelManager::getAllChannels() {
 }
 
 void ChannelManager::addChannel( std::string channelName, Channel* channel ) {
-    if ( _channels.find( channelName ) == _channels.end() )
+    if ( !channelExists( channelName ) )
         _channels[channelName] = channel;
     else    
         throw ChannelExistsException();
 }
 
 void ChannelManager::removeChannel( std::string channelName ) {
-    if ( _channels.find( channelName ) != _channels.end() ) {
+    if ( channelExists( channelName ) ) {
         delete _channels[channelName];
         _channels.erase( channelName );
     }
@@ -46,79 +50,75 @@ void ChannelManager::removeChannel( std::string channelName ) {
         throw ChannelDoesNotExistException();
 }
 
-bool ChannelManager::channelExists( std::string channelName ) {
-    return ( _channels.find( channelName ) != _channels.end() );
-}
-
 User *ChannelManager::getUser( std::string channelName, std::string user ) {
-    if ( _channels.find( channelName ) != _channels.end() )
+    if ( channelExists( channelName ) )
         return _channels[channelName]->getUser( user );
     return NULL;
 }
 
 User *ChannelManager::getOperator( std::string channelName ) {
-    if ( _channels.find( channelName ) != _channels.end() )
+    if ( channelExists( channelName ) )
         return _channels[channelName]->getOperator();
     return NULL;
 }
 
 bool ChannelManager::isInviteOnly( std::string channelName ) {
-    if ( _channels.find( channelName ) != _channels.end() )
+    if ( channelExists( channelName ) )
         return _channels[channelName]->isInviteOnly();
     return 0;
 }
 
 bool ChannelManager::isTopicProtected( std::string channelName ) {
-    if ( _channels.find( channelName ) != _channels.end() )
+    if ( channelExists( channelName ) )
         return _channels[channelName]->isTopicProtected();
     return 0;
 }
 
 std::string ChannelManager::getTopic( std::string channelName ) {
-    if ( _channels.find( channelName ) != _channels.end() )
+    if ( channelExists( channelName ) )
         return _channels[channelName]->getTopic();
     return "";
 }
 
 std::string ChannelManager::getPassword( std::string channelName ) {
-    if ( _channels.find( channelName ) != _channels.end() )
+    if ( channelExists( channelName ) )
         return _channels[channelName]->getPassword();
     return "";
 }
 
 unsigned int ChannelManager::getMaxUsers( std::string channelName ) {
-    if ( _channels.find( channelName ) != _channels.end() )
+    if ( channelExists( channelName ) )
         return _channels[channelName]->getMaxUsers();
     return 0;
 }
 
 void ChannelManager::setOperator( std::string channelName, User* user ) { // Placeholder function
-    if ( _channels.find( channelName ) != _channels.end() )
+    if ( channelExists( channelName ) )
         _channels[channelName]->setOperator( user );
 }
 
 void ChannelManager::setInviteOnly( std::string channelName, bool inviteOnly ) {
-    if ( _channels.find( channelName ) != _channels.end() )
+    if ( channelExists( channelName ) )
         _channels[channelName]->setInviteOnly( inviteOnly );
 }
 
 void ChannelManager::setTopicProtected( std::string channelName, bool topicProtected ) {
-    if ( _channels.find( channelName ) != _channels.end() )
+    if ( channelExists( channelName ) )
         _channels[channelName]->setTopicProtected( topicProtected );
 }
 
 void ChannelManager::setTopic( std::string channelName, std::string topic ) {
-    if ( _channels.find( channelName ) != _channels.end() )
+    if ( channelExists( channelName ) )
         _channels[channelName]->setTopic( topic );
 }
 
 void ChannelManager::setPassword( std::string channelName, std::string password ) {
-    if ( _channels.find( channelName ) != _channels.end() )
+    if ( channelExists( channelName ) )
         _channels[channelName]->setPassword( password );
 }
 
 void ChannelManager::setMaxUsers( std::string channelName, unsigned int maxUsers ) {
-    if ( _channels.find( channelName ) != _channels.end() )
+    if ( channelExists( channelName ) )
         _channels[channelName]->setMaxUsers( maxUsers );
 }
 

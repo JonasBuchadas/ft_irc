@@ -19,11 +19,12 @@ class ChannelManager {
     ChannelManager& operator=( ChannelManager const& src );
     ~ChannelManager();
     
+    bool                    channelExists( std::string channelName );
+    
     Channel*                getChannel( std::string channelName );
     std::map<std::string, Channel*> getAllChannels();
     void                    addChannel( std::string channelName, Channel* channel );
     void                    removeChannel( std::string channelName );
-    bool                    channelExists( std::string channelName );
     
     User*                   getUser( std::string channelName, std::string user );
     User*                   getOperator( std::string channelName );

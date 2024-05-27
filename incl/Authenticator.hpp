@@ -7,12 +7,14 @@
 #include <vector>
 
 #include "User.hpp"
+#include "BotManager.hpp"
 
 class Authenticator {
  private:
   Authenticator();
   std::map<int, User*> _users;
   const char*          _password;
+  BotManager          *_bots;
 
   typedef std::string ( Authenticator::*CommandFunction )( const std::string&, int fd );
   std::map<std::string, CommandFunction> _command;
@@ -38,6 +40,12 @@ class Authenticator {
   void                 addUser( int fd, User* user );
   bool                 userNameExists( int fd, std::string userName );
   bool                 nickNameExists( int fd, std::string nickName );
+
+  BotManager*                 getBotManager();
+  std::map<std::string, Bot*> getAllBots();
+  Bot*                        getBot( std::string &name );
+  void                        addBot( std::string &name, Bot* bot );
+  void                        delBot( std::string &name );
 
   bool isValidArg( std::string str );
   int getFdFromNick( std::string str );

@@ -32,7 +32,7 @@ ACommand *makePrivCommand( Authenticator *authenticator, std::string args, int f
 }
 
 
-ACommand *CommandFactory::makeCommand( std::string commandName, Authenticator *authenticator, std::string args, int fd ) {
+ACommand *CommandFactory::makeCommand( Authenticator *authenticator, int fd, std::string commandName, std::string args ) {
   const std::string enumCommand[] = { "USER", "PASS", "NICK", "PRIVMSG" };
   const funcPtr     enumFunc[]    = {
       &makeUserCommand,

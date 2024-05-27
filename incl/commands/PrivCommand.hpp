@@ -15,7 +15,7 @@ class PrivCommand : public ACommand {
   ~PrivCommand();
   PrivCommand( PrivCommand const &src );
   PrivCommand  &operator=( PrivCommand const &src );
-  std::string execute() const;
+  PreparedResponse execute() const;
 };
 
 #endif

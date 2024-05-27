@@ -85,6 +85,13 @@ bool Authenticator::authenticateUser( int fd ) {
   return false;
 }
 
+void Authenticator::setUserIp( int fd ) {
+  struct sockaddr_in addr;
+  socklen_t          userlen = sizeof(addr);
+  if (getpeername( fd , (struct sockaddr *)&addr, &userlen ) != -1 )
+    _users[fd]->setIp(ntohl(addr.sin_addr.s_addr));
+}
+
 void Authenticator::releaseUserInfo( int fd ) {
   if ( _users.find( fd ) != _users.end() ) {
     delete _users[fd];

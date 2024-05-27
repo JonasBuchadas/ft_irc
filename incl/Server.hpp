@@ -58,6 +58,7 @@ class Server {
   bool        isServerConnection( int i );
   bool        isServerReceivingMessage( int i );
   void        acceptConnection( void ) throw( std::exception );
+  void        processMessage( int i );
   std::string receiveMessage( int i, int senderFD ) throw( std::exception );
 
  public:

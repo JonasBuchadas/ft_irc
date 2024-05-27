@@ -95,11 +95,6 @@ void Server::setupListeningSocket( void ) throw( std::exception ) {
 }
 
 void Server::listeningLoop( void ) {
-  std::string            str;
-  std::vector<ParsedMsg> parsedMsgs;
-  ACommand              *command;
-  std::string            response;
-
   signal( SIGINT, sigchld_handler );
   signal( SIGQUIT, sigchld_handler );
   while ( 1 ) {
@@ -110,17 +105,8 @@ void Server::listeningLoop( void ) {
       try {
         if ( isServerConnection( i ) )
           acceptConnection();
-        if ( isServerReceivingMessage( i ) ) {
-          int senderFD = _pfds[i].fd;
-          str          = receiveMessage( i, senderFD );
-          parsedMsgs   = _parser.parseMsg( str );
-          for ( std::vector<ParsedMsg>::iterator it = parsedMsgs.begin(); it != parsedMsgs.end(); it++ ) {
-            command             = _commandFactory.makeCommand( _authenticator, senderFD, it->commandName, it->args );
-            PreparedResponse pr = command->execute();
-            delete command;
-            _messenger.respond( pr );
-          }
-        }
+        if ( isServerReceivingMessage( i ) )
+          processMessage( i );
       } catch ( std::exception &e ) {
         std::cerr << "Error: " << e.what() << std::endl;
         continue;
@@ -147,6 +133,23 @@ void Server::acceptConnection( void ) throw( std::exception ) {
   if ( newFd == -1 )
     throw Server::NewConnectionException();
   addToPfds( newFd );
+}
+
+void Server::processMessage( int i ) {
+  int                    senderFD = _pfds[i].fd;
+  std::string            str;
+  std::vector<ParsedMsg> parsedMsgs;
+  ACommand              *command;
+  PreparedResponse       pr;
+
+  str        = receiveMessage( i, senderFD );
+  parsedMsgs = _parser.parseMsg( str );
+  for ( std::vector<ParsedMsg>::iterator it = parsedMsgs.begin(); it != parsedMsgs.end(); it++ ) {
+    command = _commandFactory.makeCommand( _authenticator, senderFD, it->commandName, it->args );
+    pr      = command->execute();
+    delete command;
+    _messenger.respond( pr );
+  }
 }
 
 std::string Server::receiveMessage( int i, int senderFD ) throw( std::exception ) {

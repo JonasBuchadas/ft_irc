@@ -1,11 +1,11 @@
 #include "commands/JoinCommand.hpp"
 
-JoinCommand::JoinCommand() : ACommand() {}
+JoinCommand::JoinCommand( Authenticator *authenticator, std::string args, int fd ) : ACommand( "JOIN", authenticator, args, fd ) {}
 
 JoinCommand::~JoinCommand() {
 }
 
-JoinCommand::JoinCommand( JoinCommand const &src ) : ACommand() {
+JoinCommand::JoinCommand( JoinCommand const &src ) : ACommand( src._authenticator ) {
   *this = src;
 }
 
@@ -16,6 +16,6 @@ JoinCommand &JoinCommand::operator=( JoinCommand const &src ) {
   return ( *this );
 }
 
-void JoinCommand::execute() const {
+PreparedResponse JoinCommand::execute() const {
   // TODO: Implement me!!!
 }

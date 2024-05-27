@@ -9,11 +9,11 @@
 class JoinCommand : public ACommand {
  private:
  public:
-  JoinCommand();
+  JoinCommand( Authenticator *authenticator, std::string args, int fd );
   ~JoinCommand();
   JoinCommand( JoinCommand const &src );
-  JoinCommand &operator=( JoinCommand const &src );
-  std::string  execute() const;
+  JoinCommand     &operator=( JoinCommand const &src );
+  PreparedResponse execute() const;
 };
 
 #endif

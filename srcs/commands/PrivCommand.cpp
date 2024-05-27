@@ -48,7 +48,7 @@ PreparedResponse PrivCommand::execute() const {
   std::string send = _args.substr( pos + 1 );
   pos = _args.find("DCC SEND");
   if (pos == std::string::npos ) {
-    pr.recipients.push_back( _userFD );
+    pr.recipients.push_back( _authenticator->getFdFromNick( target ) );
     pr.response = genUserMsg( _authenticator->getUser( _userFD), "PRIVMSG" + _args );
     return pr; 
   }

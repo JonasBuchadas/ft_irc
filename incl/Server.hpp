@@ -49,16 +49,6 @@ class Server {
   int  delFromPfds( int fd );
   void clearUsers();
 
-  /*
-  std::map<int, User *> _users;
-  std::vector<int>      _recipients;
-  Authenticator         _authenticator;
-  CommandFactory        _commandFactory;
-
-  typedef std::string ( Server::*CommandFunction )( const std::string &, int fd );
-  std::map<std::string, CommandFunction> _command;
-  */
-
   Server();
   Server &operator=( Server const &src );
 
@@ -70,17 +60,6 @@ class Server {
   void        acceptConnection( void ) throw( std::exception );
   std::string receiveMessage( int i, int senderFD ) throw( std::exception );
 
-  /*
-  std::string executeCommand(const std::string& command, const std::string& message, int fd);
-  std::string joinChannel( const std::string& message, int fd );
-  std::string partChannel( const std::string& message, int fd );
-  std::string changeModes( const std::string& message, int fd );
-  std::string kickoutUser( const std::string& message, int fd );
-  std::string changeTopic( const std::string& message, int fd );
-  std::string inviteUser( const std::string& message, int fd );
-  std::string directMsg( const std::string& message, int fd );
-  */
-
  public:
   static bool _stopServer;
 
@@ -90,8 +69,6 @@ class Server {
   void serve( void ) throw( std::exception );
   void listeningLoop( void );
   int  getListeningSocket() const;
-
-  // std::string executeCommand( const std::string &command, const std::string &message, int fd );
 
   class IncorrectPortException : public std::exception {
    public:

@@ -79,7 +79,6 @@ void Server::setupListeningSocket( void ) throw( std::exception ) {
   for ( p = res; p != NULL; p = p->ai_next ) {
     if ( ( _listeningSocket = socket( p->ai_family, p->ai_socktype, p->ai_protocol ) ) == -1 ) {
       throw Server::SocketSetupException();
-      // continue;
     }
     if ( setsockopt( _listeningSocket, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof( int ) ) == -1 ) {
       throw Server::SocketSetupException();
@@ -87,7 +86,6 @@ void Server::setupListeningSocket( void ) throw( std::exception ) {
     if ( bind( _listeningSocket, p->ai_addr, p->ai_addrlen ) == -1 ) {
       close( _listeningSocket );
       throw Server::BindFailException();
-      // continue;
     }
     break;
   }
@@ -114,9 +112,8 @@ void Server::listeningLoop( void ) {
           acceptConnection();
         if ( isServerReceivingMessage( i ) ) {
           int senderFD = _pfds[i].fd;
-
-          str        = receiveMessage( i, senderFD );
-          parsedMsgs = _parser.parseMsg( str );
+          str          = receiveMessage( i, senderFD );
+          parsedMsgs   = _parser.parseMsg( str );
           for ( std::vector<ParsedMsg>::iterator it = parsedMsgs.begin(); it != parsedMsgs.end(); it++ ) {
             command             = _commandFactory.makeCommand( _authenticator, senderFD, it->commandName, it->args );
             PreparedResponse pr = command->execute();
@@ -213,10 +210,6 @@ void Server::clearUsers() {
   }
   _pfds.clear();
 }
-
-// std::string Server::executeCommand( const std::string &command, const std::string &message, int fd ) {
-//   return _authenticator->executeCommand( command, message, fd );
-// }
 
 void sigchld_handler( int s ) {
   (void)s;

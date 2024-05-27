@@ -18,8 +18,7 @@ UserCommand &UserCommand::operator=( UserCommand const &src ) {
 
 PreparedResponse UserCommand::execute() const {
   PreparedResponse pr = PreparedResponse();
-  if ( _authenticator->getUser( _userFD ) && _authenticator->getUser( _userFD )->getLoggedIn() )
-    pr.recipients.push_back( _userFD );
+  pr.recipients.push_back( _userFD );
   if ( _args.length() <= 1 ) {
     pr.response = "Invalid string\n\0";
     return pr;
@@ -50,7 +49,6 @@ PreparedResponse UserCommand::execute() const {
     pr.response = "Registered your username\n\0";
     if ( _authenticator->authenticateUser( _userFD ) ) {
       pr.response += "Successfully logged in!\n\0";
-      pr.recipients.push_back( _userFD );
     }
     return pr;
   }

@@ -31,16 +31,6 @@ class Messenger {
 
   void respond();
 
-  /*
-  _command["JOIN"] =  &Server::joinChannel;
-  _command["PART"] =  &Server::partChannel;
-  _command["MODE"] =  &Server::changeModes;
-  _command["KICK"] =  &Server::kickoutUser;
-  _command["TOPIC"] = &Server::changeTopic;
-  _command["INVITE"] = &Server::inviteUser;
-  _command["PRIVMSG"] = &Server::directMsg;
-  */
-
  public:
   Messenger();
   Messenger( int listeningSocket );
@@ -49,8 +39,6 @@ class Messenger {
   Messenger &operator=( Messenger const &src );
 
   void respond( PreparedResponse pr ) throw( std::exception );
-  void getValidMsg( Authenticator *auth, int fd, std::string msg );
-  void LoggedInUser( int senderFD );
 
   class BadRespondException : public std::exception {
    public:

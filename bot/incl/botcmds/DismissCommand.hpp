@@ -9,7 +9,7 @@
 class DismissCommand : public ACommand {
  private:
  public:
-  DismissCommand( Authenticator *authenticator, std::string args, int fd );
+  DismissCommand( BotManager *BotManager, std::string args, int fd );
   ~DismissCommand();
   DismissCommand( DismissCommand const &src );
   DismissCommand &operator=( DismissCommand const &src );

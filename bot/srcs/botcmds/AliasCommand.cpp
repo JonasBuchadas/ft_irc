@@ -1,11 +1,11 @@
 #include "botcmds/AliasCommand.hpp"
 
-AliasCommand::AliasCommand( Authenticator *authenticator, std::string args, int fd ) : ACommand( "ALIAS", authenticator, args, fd ) {}
+AliasCommand::AliasCommand( BotManager *BotManager, std::string args, int fd ) : ACommand( "ALIAS", BotManager, args, fd ) {}
 
 AliasCommand::~AliasCommand() {
 }
 
-AliasCommand::AliasCommand( AliasCommand const &src ) : ACommand( src._authenticator ) {
+AliasCommand::AliasCommand( AliasCommand const &src ) : ACommand( src._BotManager ) {
   *this = src;
 }
 
@@ -20,7 +20,7 @@ std::string AliasCommand::execute() const {
   if (_args.length() <= 1)
     return "Invalid string\n";
 
-  if ( !_authenticator->getUser( _userFD ) || !_authenticator->getUser( _userFD )->getLoggedIn() )
+  if ( !_BotManager->getUser( _userFD ) || !_BotManager->getUser( _userFD )->getLoggedIn() )
     return "Only authenticated users can use bots. Authenticate first!\n";
 
   if ( _args.find(":") == std::string::npos )
@@ -33,10 +33,10 @@ std::string AliasCommand::execute() const {
   if ( name.empty() || id.empty())
     return "Invalid string\n";
 
-  if ( !_authenticator->isValidArg( name ) )
+  if ( !_BotManager->isValidArg( name ) )
     return "Invalid bot name\n";
 
-  Bot *bot = _authenticator->getBot( name );
+  Bot *bot = _BotManager->getBot( name );
   if ( bot == NULL )
     return "Bot doesn't exist. Nothing to do!\n";
   else if ( ( !bot->getIsOpen( id ) && bot->getOper( _userFD ) == -1 ) \
@@ -50,6 +50,6 @@ std::string AliasCommand::execute() const {
   if ( !msg.length() || s.empty() )
     return "Invalid alias. Nothing to do\n";
 
-  _authenticator->getBot( name )->setAlias( id , msg );
+  _BotManager->getBot( name )->setAlias( id , msg );
   return "Alias successfully set\n";
 }

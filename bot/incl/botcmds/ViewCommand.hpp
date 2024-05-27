@@ -9,7 +9,7 @@
 class ViewCommand : public ACommand {
  private:
  public:
-  ViewCommand( Authenticator *authenticator, std::string args, int fd );
+  ViewCommand( BotManager *BotManager, std::string args, int fd );
   ~ViewCommand();
   ViewCommand( ViewCommand const &src );
   ViewCommand &operator=( ViewCommand const &src );

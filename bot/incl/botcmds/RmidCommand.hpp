@@ -9,7 +9,7 @@
 class RmidCommand : public ACommand {
  private:
  public:
-  RmidCommand( Authenticator *authenticator, std::string args, int fd );
+  RmidCommand( BotManager *BotManager, std::string args, int fd );
   ~RmidCommand();
   RmidCommand( RmidCommand const &src );
   RmidCommand &operator=( RmidCommand const &src );

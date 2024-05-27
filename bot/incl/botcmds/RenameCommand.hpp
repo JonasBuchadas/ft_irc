@@ -9,7 +9,7 @@
 class RenameCommand : public ACommand {
  private:
  public:
-  RenameCommand( Authenticator *authenticator, std::string args, int fd );
+  RenameCommand( BotManager *BotManager, std::string args, int fd );
   ~RenameCommand();
   RenameCommand( RenameCommand const &src );
   RenameCommand &operator=( RenameCommand const &src );

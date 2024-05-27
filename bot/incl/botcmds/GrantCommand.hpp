@@ -9,7 +9,7 @@
 class GrantCommand : public ACommand {
  private:
  public:
-  GrantCommand( Authenticator *authenticator, std::string args, int fd );
+  GrantCommand( BotManager *BotManager, std::string args, int fd );
   ~GrantCommand();
   GrantCommand( GrantCommand const &src );
   GrantCommand &operator=( GrantCommand const &src );

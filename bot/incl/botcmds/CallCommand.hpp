@@ -9,7 +9,7 @@
 class CallCommand : public ACommand {
  private:
  public:
-  CallCommand( Authenticator *authenticator, std::string args, int fd );
+  CallCommand( BotManager *BotManager, std::string args, int fd );
   ~CallCommand();
   CallCommand( CallCommand const &src );
   CallCommand &operator=( CallCommand const &src );

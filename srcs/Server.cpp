@@ -198,7 +198,6 @@ int Server::delFromPfds( int fd ) {
   while ( it != _pfds.end() ) {
     if ( it->fd == fd ) {
       _authenticator->releaseUserInfo( fd );
-      _authenticator->getBotManager()->clearUserFromBots( fd );
       _pfds.erase( it );
       return ( 1 );
     }

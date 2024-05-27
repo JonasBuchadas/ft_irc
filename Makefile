@@ -27,20 +27,7 @@ SRCS=		Server.cpp \
 				commands/UserCommand.cpp \
 				commands/PassCommand.cpp \
 				commands/NickCommand.cpp \
-				commands/PrivCommand.cpp \
-				Bot.cpp \
-				BotManager.cpp \
-				botcmds/CallCommand.cpp \
-				botcmds/DismissCommand.cpp \
-				botcmds/RenameCommand.cpp \
-				botcmds/GrantCommand.cpp \
-				botcmds/RevokeCommand.cpp \
-				botcmds/AliasCommand.cpp \
-				botcmds/RmidCommand.cpp \
-				botcmds/OpenCommand.cpp \
-				botcmds/CloseCommand.cpp \
-				botcmds/ViewCommand.cpp \
-				botcmds/ReplyCommand.cpp
+				commands/PrivCommand.cpp 
 SRCS_NAME=	$(addprefix $(SRCS_PATH), $(SRC_NAME) $(SRCS))
 ### OBJECT FILES ###
 OBJ_NAME=	$(SRC_NAME:.cpp=.o)
@@ -81,7 +68,6 @@ $(NAME): $(OBJS_PATH) $(OBJS_NAME)
 
 $(OBJS_PATH):
 	@mkdir -p $@/commands
-	@mkdir -p $@/botcmds
 
 $(OBJS_BT_PATH):
 	@mkdir -p $@

@@ -9,7 +9,7 @@
 class CloseCommand : public ACommand {
  private:
  public:
-  CloseCommand( Authenticator *authenticator, std::string args, int fd );
+  CloseCommand( BotManager *BotManager, std::string args, int fd );
   ~CloseCommand();
   CloseCommand( CloseCommand const &src );
   CloseCommand &operator=( CloseCommand const &src );

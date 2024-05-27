@@ -9,7 +9,7 @@
 class OpenCommand : public ACommand {
  private:
  public:
-  OpenCommand( Authenticator *authenticator, std::string args, int fd );
+  OpenCommand( BotManager *BotManager, std::string args, int fd );
   ~OpenCommand();
   OpenCommand( OpenCommand const &src );
   OpenCommand &operator=( OpenCommand const &src );

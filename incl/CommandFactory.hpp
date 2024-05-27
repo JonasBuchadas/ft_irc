@@ -13,21 +13,6 @@
 #include "commands/UserCommand.hpp"
 #include "commands/PrivCommand.hpp"
 
-// BOT BONUS
-#include "BotManager.hpp"
-#include "botcmds/CallCommand.hpp"
-#include "botcmds/DismissCommand.hpp"
-#include "botcmds/RenameCommand.hpp"
-#include "botcmds/GrantCommand.hpp"
-#include "botcmds/RevokeCommand.hpp"
-#include "botcmds/AliasCommand.hpp"
-#include "botcmds/RmidCommand.hpp"
-#include "botcmds/OpenCommand.hpp"
-#include "botcmds/CloseCommand.hpp"
-#include "botcmds/ViewCommand.hpp"
-#include "botcmds/ReplyCommand.hpp"
-
-
 typedef ACommand *( *funcPtr )( Authenticator *authenticator, std::string _args, int fd );
 
 class CommandFactory {

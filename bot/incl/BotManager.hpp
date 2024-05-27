@@ -24,6 +24,7 @@ class BotManager {
   void addBot( std::string &name, Bot* bot );
   void delBot( std::string name );
   void clearUserFromBots( int fd );
+  bool BotManager::isValidArg( std::string str );
 };
 
 #endif

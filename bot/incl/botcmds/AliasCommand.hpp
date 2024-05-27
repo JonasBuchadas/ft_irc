@@ -9,7 +9,7 @@
 class AliasCommand : public ACommand {
  private:
  public:
-  AliasCommand( Authenticator *authenticator, std::string args, int fd );
+  AliasCommand( BotManager *botManager, std::string args, int fd );
   ~AliasCommand();
   AliasCommand( AliasCommand const &src );
   AliasCommand &operator=( AliasCommand const &src );

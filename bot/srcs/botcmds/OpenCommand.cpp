@@ -1,11 +1,11 @@
 #include "botcmds/OpenCommand.hpp"
 
-OpenCommand::OpenCommand( Authenticator *authenticator, std::string args, int fd ) : ACommand( "OPEN", authenticator, args, fd ) {}
+OpenCommand::OpenCommand( BotManager *BotManager, std::string args, int fd ) : ACommand( "OPEN", BotManager, args, fd ) {}
 
 OpenCommand::~OpenCommand() {
 }
 
-OpenCommand::OpenCommand( OpenCommand const &src ) : ACommand( src._authenticator ) {
+OpenCommand::OpenCommand( OpenCommand const &src ) : ACommand( src._BotManager ) {
   *this = src;
 }
 
@@ -20,7 +20,7 @@ std::string OpenCommand::execute() const {
   if (_args.length() <= 1)
     return "Invalid string\n";
 
-  if ( !_authenticator->getUser( _userFD ) || !_authenticator->getUser( _userFD )->getLoggedIn() )
+  if ( !_BotManager->getUser( _userFD ) || !_BotManager->getUser( _userFD )->getLoggedIn() )
     return "Only authenticated users can use bots. Authenticate first!\n";
 
   std::stringstream args(_args);
@@ -30,10 +30,10 @@ std::string OpenCommand::execute() const {
   if ( !leftovers.empty() || id.empty() )
     return "Invalid string\n";
 
-  if ( !_authenticator->isValidArg( name ) )
+  if ( !_BotManager->isValidArg( name ) )
     return "Invalid bot name\n";
 
-  Bot *bot = _authenticator->getBot( name );
+  Bot *bot = _BotManager->getBot( name );
   if ( bot == NULL )
     return "Bot doesn't exist. Nothing to do!\n";
   else if ( bot->getOper( _userFD ) == -1 )
@@ -42,6 +42,6 @@ std::string OpenCommand::execute() const {
   if ( bot->getIsOpen( id ) )
     return "Bot already accepting user input. Nothing to do\n";
 
-  _authenticator->getBot( name )->setIsOpen( id, true );
+  _BotManager->getBot( name )->setIsOpen( id, true );
   return "Bot set to accept user input in alias " + id + "\n";
 }

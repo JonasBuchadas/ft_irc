@@ -1,6 +1,6 @@
 #include "commands/NoCommand.hpp"
 
-NoCommand::NoCommand( Authenticator *authenticator, std::string args, int fd ) : ACommand( "", authenticator, args, fd ) {}
+NoCommand::NoCommand( Authenticator *authenticator, std::string args, int fd ) : ACommand( "NO", authenticator, args, fd ) {}
 
 NoCommand::~NoCommand() {
 }

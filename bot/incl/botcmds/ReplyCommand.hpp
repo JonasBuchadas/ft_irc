@@ -10,7 +10,7 @@
 class ReplyCommand : public ACommand {
  private:
  public:
-  ReplyCommand( Authenticator *authenticator, std::string args, int fd );
+  ReplyCommand( BotManager *BotManager, std::string args, int fd );
   ~ReplyCommand();
   ReplyCommand( ReplyCommand const &src );
   ReplyCommand &operator=( ReplyCommand const &src );

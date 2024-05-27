@@ -66,3 +66,10 @@ void BotManager::clearUserFromBots( int fd ) {
     }
   }
 }
+
+bool BotManager::isValidArg( std::string str ) {
+  for ( size_t i = 0; i < str.length(); i++ )
+    if ( !isalnum( str[i] ) )
+      return 0;
+  return 1;
+}

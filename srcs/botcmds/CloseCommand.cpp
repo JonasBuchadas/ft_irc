@@ -39,9 +39,9 @@ std::string CloseCommand::execute() const {
   else if ( bot->getOper( _userFD ) == -1 )
     return "You are not this bot's operator. Nothing to do\n";
 
-  if ( bot->getIsOpen( id ) )
-    return "Bot already accepting user input. Nothing to do\n";
+  if ( !bot->getIsOpen( id ) )
+    return "Bot not accepting user input. Nothing to do\n";
 
   _authenticator->getBot( name )->setIsOpen( id, false );
-  return "Bot set to accept user input in alias " + id + "\n";
+  return "Bot set to not longer accept user input in alias " + id + "\n";
 }

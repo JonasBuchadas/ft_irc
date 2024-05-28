@@ -8,11 +8,9 @@
 
 class Bot {
  private:
-  std::string                 _name;
-  std::vector<int>            _operators;
-  std::vector<int>            _users;
-  std::map<std::string, std::map<int, std::string> > _aliases;
+  std::map<std::string, std::map<int, std::string> > _asks;
   std::map<std::string, bool>                        _isOpen;
+  std::vector<std::string>                           _users;
 
  public:
   Bot();
@@ -20,24 +18,18 @@ class Bot {
   Bot  &operator=( Bot const &src );
   ~Bot();
 
-  void addOper( int fd );
-  void addUser( int fd );
-  void rmvOper( int fd );
-  void rmvUser( int fd );
-  void setName( std::string &name );
+  void addUser( std::string nick );
+  void rmvUser( std::string nick );
   void setIsOpen( std::string id, bool open );
-  void setAlias( std::string id, std::string msg );
-  void rmAlias( std::string id, int num );
+  void setAsk( std::string id, std::string msg );
+  void rmAsk( std::string id, int num );
 
-  std::string       getName( void ) const;
-  bool              getIsOpen( std::string id );
-  std::vector<int>  getAllOpers();
-  std::vector<int>  getAllUsers();
-  int               getOper( int fd );
-  int               getUser( int fd );
-  std::string       getOption( std::string alias, int option );
-  int               getAlias( std::string id );
-  std::map<std::string, std::map<int, std::string> >  getAllAlias();
+  bool                      getIsOpen( std::string id );
+  std::vector<std::string>  getAllUsers();
+  std::string               getUser( std::string nick );
+  std::string               getOption( std::string Ask, int option );
+  int                       getAsk( std::string id );
+  std::map<std::string, std::map<int, std::string> >  getAllAsk();
 
 };
 

@@ -1,6 +1,6 @@
-#include "commands/NoCommand.hpp"
+#include "botcmds/NoCommand.hpp"
 
-NoCommand::NoCommand( BotManager *BotManager, std::string args, int fd ) : ACommand( " ", BotManager, args, fd ) {}
+NoCommand::NoCommand( BotManager *BotManager, std::string args, std::string nick ) : ACommand( " ", BotManager, args, nick ) {}
 
 NoCommand::~NoCommand() {
 }

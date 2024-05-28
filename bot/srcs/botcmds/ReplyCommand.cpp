@@ -1,6 +1,6 @@
 #include "botcmds/ReplyCommand.hpp"
 
-ReplyCommand::ReplyCommand( BotManager *BotManager, std::string args, int fd ) : ACommand( "REPLY", BotManager, args, fd ) {}
+ReplyCommand::ReplyCommand( BotManager *BotManager, std::string args, std::string nick ) : ACommand( "REPLY", BotManager, args, nick ) {}
 
 ReplyCommand::~ReplyCommand() {
 }
@@ -20,41 +20,33 @@ std::string ReplyCommand::execute() const {
   if (_args.length() <= 1)
     return "Invalid string\n";
 
-  if ( !_BotManager->getUser( _userFD ) || !_BotManager->getUser( _userFD )->getLoggedIn() )
-    return "Only authenticated users can use bots. Authenticate first!\n";
-
   std::stringstream args(_args);
-  std::string name, alias, id, leftovers;
-  args >> name >> alias >> id >> leftovers;
+  std::string channel, ask, id, leftovers;
+  args >> channel >> ask >> id >> leftovers;
 
-  if ( name.empty() || alias.empty() || !leftovers.empty())
+  if ( channel.empty() || channel.empty() || ask.empty() || !leftovers.empty())
     return "Invalid string\n";
 
-  if ( !_BotManager->isValidArg( name ) )
-    return "Invalid bot name\n";
-
-  Bot *bot = _BotManager->getBot( name );
+  Bot *bot = _BotManager->getBot( channel );
   if ( bot == NULL )
     return "Bot doesn't exist. Nothing to do!\n";
-  else if ( bot->getOper( _userFD ) == -1 )
-    return "You are not this bot's operator. Nothing to do\n";
-  else if ( !_BotManager->getBot( name )->getAlias( alias ) )
-    return "Alias doesn't exist. Nothing to do\n";
+  else if ( !_BotManager->getBot( channel )->getAsk( ask ) )
+    return "Question doesn't exist. Nothing to do\n";
 
   std::stringstream num(id);
   int i = -1;
   num >> i;
   std::string resp;
-  resp += "Alias " + alias + ":\n";
-  if (i != -1 && i < (int)_BotManager->getBot( name )->getAlias( alias ))
-    resp += "#" + id + ": " + _BotManager->getBot( name )->getOption( alias, i ) + "\n";
+  resp += "Question " + ask + ":\n";
+  if (i != -1 && i < (int)_BotManager->getBot( channel )->getAsk( ask ))
+    resp += "#" + id + ": " + _BotManager->getBot( channel )->getOption( ask, i ) + "\n";
   else
   {
-    i = rand() % _BotManager->getBot( name )->getAlias( alias );
+    i = rand() % _BotManager->getBot( channel )->getAsk( ask );
     std::stringstream num;
     num << i;
     num >> id;
-    resp += "#" + id + ": " + _BotManager->getBot( name )->getOption( alias, i ) + "\n";
+    resp += "#" + id + ": " + _BotManager->getBot( channel )->getOption( ask, i ) + "\n";
   }
   return resp;
 }

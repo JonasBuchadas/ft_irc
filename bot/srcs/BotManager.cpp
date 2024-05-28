@@ -30,7 +30,7 @@ Bot* BotManager::getBot( std::string &name)
   std::map<std::string, Bot*>::iterator it = _bots.begin();
   for ( ; it != _bots.end(); it++ )
   {
-    if (it->second && it->second->getName() == name)
+    if (it->first == name)
       return it->second;
   }
   return NULL;
@@ -51,15 +51,13 @@ std::map<std::string, Bot*> BotManager::getAllBots()
   return _bots;
 }
 
-void BotManager::clearUserFromBots( int fd ) {
+void BotManager::clearUserFromBots( std::string nick ) {
   std::map<std::string, Bot*>::iterator it = _bots.begin();
   for ( ; it != _bots.end(); it++ )
   {
-    if (it->second && it->second->getOper( fd ) != -1 )
-      it->second->rmvOper( fd );
-    if (it->second && it->second->getUser( fd ) != -1 )
-      it->second->rmvUser( fd );
-    if (it->second && it->second->getAllOpers().empty() )
+    if (it->second && it->second->getUser( nick ) != "" )
+      it->second->rmvUser( nick );
+    if (it->second && it->second->getAllUsers().empty() )
     {
       delete _bots[it->first];
       _bots.erase( it->first );

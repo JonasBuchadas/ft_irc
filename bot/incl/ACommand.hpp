@@ -13,12 +13,12 @@ class ACommand {
 
  protected:
   BotManager    *_BotManager;
-  int            _userFD;
+  std::string    _usernick;
   std::string    _args;
 
  public:
   ACommand( BotManager *BotManager );
-  ACommand( std::string name, BotManager *BotManager, std::string args, int fd );
+  ACommand( std::string name, BotManager *BotManager, std::string args, std::string nick );
   virtual ~ACommand();
   ACommand( ACommand const &src );
   ACommand &operator=( ACommand const &src );

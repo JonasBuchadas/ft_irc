@@ -9,7 +9,7 @@
 class NoCommand : public ACommand {
  private:
  public:
-  NoCommand( BotManager *BotManager, std::string args, int fd );
+  NoCommand( BotManager *BotManager, std::string args, std::string nick );
   ~NoCommand();
   NoCommand( NoCommand const &src );
   NoCommand  &operator=( NoCommand const &src );

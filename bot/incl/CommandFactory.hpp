@@ -8,20 +8,19 @@
 #include "ACommand.hpp"
 #include "BotManager.hpp"
 
-#include "botcmds/CallCommand.hpp"
-#include "botcmds/DismissCommand.hpp"
-#include "botcmds/RenameCommand.hpp"
-#include "botcmds/GrantCommand.hpp"
-#include "botcmds/RevokeCommand.hpp"
-#include "botcmds/AliasCommand.hpp"
-#include "botcmds/RmidCommand.hpp"
-#include "botcmds/OpenCommand.hpp"
+#include "botcmds/AcceptCommand.hpp"
+#include "botcmds/AnswerCommand.hpp"
+#include "botcmds/AskCommand.hpp"
 #include "botcmds/CloseCommand.hpp"
-#include "botcmds/ViewCommand.hpp"
+#include "botcmds/InviteCommand.hpp"
+#include "botcmds/NickCommand.hpp"
+#include "botcmds/NoCommand.hpp"
+#include "botcmds/RemoveCommand.hpp"
 #include "botcmds/ReplyCommand.hpp"
+#include "botcmds/ViewCommand.hpp"
 
 
-typedef ACommand *( *funcPtr )( BotManager *BotManager, std::string _args, int fd );
+typedef ACommand *( *funcPtr )( BotManager *BotManager, std::string _args, std::string nick );
 
 class CommandFactory {
  private:
@@ -30,7 +29,7 @@ class CommandFactory {
   ~CommandFactory();
   CommandFactory( CommandFactory const &src );
   CommandFactory &operator=( CommandFactory const &src );
-  ACommand       *makeCommand( std::string commandName, BotManager *BotManager, std::string args, int fd );
+  ACommand       *makeCommand( std::string commandName, BotManager *BotManager, std::string args, std::string nick );
 };
 
 #endif

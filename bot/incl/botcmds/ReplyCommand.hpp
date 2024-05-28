@@ -10,7 +10,7 @@
 class ReplyCommand : public ACommand {
  private:
  public:
-  ReplyCommand( BotManager *BotManager, std::string args, int fd );
+  ReplyCommand( BotManager *BotManager, std::string args, std::string nick );
   ~ReplyCommand();
   ReplyCommand( ReplyCommand const &src );
   ReplyCommand &operator=( ReplyCommand const &src );

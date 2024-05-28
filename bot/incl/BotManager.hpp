@@ -23,8 +23,8 @@ class BotManager {
   std::map<std::string, Bot*> getAllBots();
   void addBot( std::string &name, Bot* bot );
   void delBot( std::string name );
-  void clearUserFromBots( int fd );
-  bool BotManager::isValidArg( std::string str );
+  void clearUserFromBots( std::string nick );
+  bool isValidArg( std::string str );
 };
 
 #endif

@@ -19,7 +19,7 @@ class BotManager {
   BotManager();
   ~BotManager();
 
-  Bot* getBot( std::string &name);
+  Bot* getBot( std::string name);
   std::map<std::string, Bot*> getAllBots();
   void addBot( std::string &name, Bot* bot );
   void delBot( std::string name );

@@ -19,14 +19,15 @@ InviteCommand &InviteCommand::operator=( InviteCommand const &src ) {
 std::string InviteCommand::execute() const {
   std::string channel;
   if (_args.find("#") != std::string::npos)
-    channel = _args.substr(_args.find("#") + 1);
+  {
+    int start = _args.find("#") + 1;
+    channel = _args.substr(start, _args.find("\n") - start - 1);
+  }
   else
     return "Unknown channel name";
-
   Bot *bot = _BotManager->getBot( channel );
   if ( bot == NULL ) {
     bot = new Bot();
-    bot->addUser( _usernick );
     _BotManager->addBot( channel, bot );
   }
   else

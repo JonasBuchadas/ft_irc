@@ -57,7 +57,7 @@ ACommand *makeReplyCommand( BotManager *BotManager, std::string args, std::strin
 
 
 ACommand *CommandFactory::makeCommand( std::string commandName, BotManager *BotManager, std::string args, std::string nick ) {
-  const std::string enumBotCmd[]  = { "INVITE", "ACCEPT", "NICK", "KICK", "QUIT", "PART", \
+  const std::string enumBotCmd[]  = { "INVITE", "localhost", "NICK", "KICK", "QUIT", "PART", \
   "ASK", "ANSWER", "CLOSE", "VIEW", "REPLY" };
   const funcPtr     enumBotFunc[] = {
       &makeInviteCommand,

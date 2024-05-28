@@ -79,7 +79,7 @@ int main(int ac, char **av)
     if (sockfd == -1 || loginBossBot(sockfd, av) == -1 || awaitInput( sockfd ).size() == 1 )
       return ( -1 );
       
-    BotManager *botmanager = new BotManager;
+    BotManager *bots = new BotManager;
     CommandFactory commands;
     while (1)
     {
@@ -92,14 +92,13 @@ int main(int ac, char **av)
         std::stringstream ss( input );
         std::string word;
         ss >> word;
-        ACommand *cmd = commands.makeCommand( word, botmanager, input.substr(word.length()), sender );
-        std::string prefix = "PRIVMSG " + sender + " :";
-        std::string response = prefix + cmd->execute();
+        ACommand *cmd = commands.makeCommand( word, bots, input.substr(word.length()), sender );
+        std::string response = cmd->execute();
         delete cmd;
-        for (size_t i = 0; i < response.size(); ++i) {
+        for (size_t i = 0; i < response.size(); i++) {
           if (response[i] == '\n' && i + 1 < response.size()) {
-            response.insert(i + 1, prefix);
-            i += prefix.size();
+            response.insert(i + 1, "PRIVMSG " + sender + " :");
+            i += 11;
           }
         }
         if ( send(sockfd, response.c_str(), response.size(), 0) == -1)

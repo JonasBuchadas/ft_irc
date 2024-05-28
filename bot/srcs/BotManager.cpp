@@ -6,7 +6,7 @@ BotManager::BotManager() {
 
 BotManager::~BotManager() {
   std::map<std::string, Bot*>::iterator it = _bots.begin();
-  for ( it == _bots.begin(); it != _bots.end(); it++ )
+  for ( ; it != _bots.end(); it++ )
   {
     delete it->second;
     it->second = NULL;
@@ -25,7 +25,7 @@ BotManager& BotManager::operator=( BotManager const& src ) {
   return ( *this );
 }
 
-Bot* BotManager::getBot( std::string &name)
+Bot* BotManager::getBot( std::string name)
 {
   std::map<std::string, Bot*>::iterator it = _bots.begin();
   for ( ; it != _bots.end(); it++ )

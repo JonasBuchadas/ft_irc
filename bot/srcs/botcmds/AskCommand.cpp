@@ -30,7 +30,7 @@ std::string AskCommand::execute() const {
   if ( channel.empty() || id.empty())
     return "Invalid string\n";
 
-  Bot *bot = _BotManager->getBot( channel );
+  Bot *bot = _BotManager->getBot( _usernick );
   if ( bot == NULL )
     return "Bot doesn't exist. Nothing to do!\n";
   else if ( bot->getAsk( id ) && !bot->getIsOpen( id ) )

@@ -5,7 +5,7 @@
 bool Server::_stopServer = false;
 
 Server::Server() {
-  _authenticator = new Authenticator( "invalid" );
+  _authenticator  = new Authenticator( "invalid" );
   _channelManager = new ChannelManager();
 }
 
@@ -15,8 +15,8 @@ Server::~Server() {
   delete _channelManager;
 }
 
-Server::Server( Server const &src ) : _authenticator( src._authenticator ), \
-_channelManager( src._channelManager ) {
+Server::Server( Server const &src ) : _authenticator( src._authenticator ),
+                                      _channelManager( src._channelManager ) {
   *this = src;
 }
 
@@ -37,10 +37,11 @@ Server::Server( char const *port, char const *password ) throw( std::exception )
   setPort( port );
   setPassword( password );
   setupListeningSocket();
-  _parser        = Parser();
-  _authenticator = new Authenticator( _password.c_str() );
-  _messenger     = Messenger( _listeningSocket );
-  _fdSize        = 5;
+  _parser         = Parser();
+  _authenticator  = new Authenticator( _password.c_str() );
+  _channelManager = new ChannelManager();
+  _messenger      = Messenger( _listeningSocket );
+  _fdSize         = 5;
 }
 
 void Server::setPassword( char const *password ) throw( std::exception ) {

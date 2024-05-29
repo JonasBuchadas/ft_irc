@@ -17,18 +17,17 @@ AcceptCommand &AcceptCommand::operator=( AcceptCommand const &src ) {
 }
 
 std::string AcceptCommand::execute() const {
-
   if (_args.find("353") == std::string::npos)
     return "";
-  std::string beg = _args.substr(1);
-  std::string names = beg.substr(_args.find(":") + 1);
-  std::string channel = _args.substr(_args.find("#") + 1, beg.find(":") - 1);
+  std::string names = _args.substr(_args.find(":") + 1);
+  std::string channel = _args.substr(_args.find("#") + 1, _args.find(":") - 1);
   std::string channelName = channel.substr(0, channel.find(" "));
   Bot *bot = _BotManager->getBot( channelName );
   if (bot == NULL)
     return "PRIVMSG #" + channelName + " :Bot doesn't exist. Nothing to do!\n";
   for (int i = 0; i < (int)names.size(); i++)
   {
+    bot->getAllUsers().clear();
     if (names[i] == '@' || names[i] == '%')
     {
       i++;

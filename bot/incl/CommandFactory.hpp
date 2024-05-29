@@ -13,9 +13,7 @@
 #include "botcmds/AskCommand.hpp"
 #include "botcmds/CloseCommand.hpp"
 #include "botcmds/InviteCommand.hpp"
-#include "botcmds/NickCommand.hpp"
 #include "botcmds/NoCommand.hpp"
-#include "botcmds/RemoveCommand.hpp"
 #include "botcmds/ReplyCommand.hpp"
 #include "botcmds/ViewCommand.hpp"
 

@@ -14,6 +14,7 @@
 
 std::string awaitInput( int sockfd )
 {
+  std::string input;
   char buffer[1024];
   int received;
   while ( (received = recv(sockfd, &buffer, sizeof(buffer) - 1, 0)) <= 0 ) {
@@ -21,7 +22,16 @@ std::string awaitInput( int sockfd )
       return ( "" );
   }
   buffer[received] = 0;
-  std::string input(buffer);
+  input = buffer;
+  if (received < 1024)
+    return input;
+  memset(buffer, 0, sizeof(buffer));
+  while ( (received = recv(sockfd, &buffer, sizeof(buffer) - 1, MSG_DONTWAIT)) > 0 )
+  {
+    buffer[received] = 0;
+    input += buffer;
+    memset(buffer, 0, sizeof(buffer));
+  }
   return input;
 }
 
@@ -29,7 +39,7 @@ int loginBossBot(int sockfd, char **av)
 {
   std::string pass = av[2];
   std::string manager = "PASS " + pass + "\nUSER BossBot\nNICK BossBot\r\n";
-  if ( send(sockfd, manager.c_str(), manager.size(), 0) == -1 || awaitInput( sockfd ).size() == 1 )
+  if ( send(sockfd, manager.c_str(), manager.size(), 0) == -1 || awaitInput( sockfd ).size() == 0 )
     return ( -1 );
   return ( 0 );
 }
@@ -83,15 +93,41 @@ int main(int ac, char **av)
     CommandFactory commands;
     while (1)
     {
-      std::string input = awaitInput( sockfd );
-      std::string sender = input.substr(1, input.find("!") - 1);
-      input = input.substr(1);
-      if ( input.find(":") != std::string::npos )
+      std::string fullInput = awaitInput( sockfd );
+      int start = 0;
+      std::string input;
+      while (start < (int)fullInput.length())
       {
-        input = input.substr(input.find(":") + 1);
-        std::stringstream ss( input );
+        if (fullInput.find("\n") != std::string::npos)
+        {
+          input = fullInput.substr(0, fullInput.find("\n") - 1);
+          start = input.size();
+          while (fullInput[start] == '\r' || fullInput[start] == '\n')
+            start++;
+          if (start < (int)fullInput.size())
+            fullInput = fullInput.substr(start);
+        }
+        else
+        {
+          input = fullInput;
+          start = fullInput.length();
+        }
+        std::string sender;
+        input = input.substr(1);
         std::string word;
-        ss >> word;
+        if (input.find("!") != std::string::npos)
+        {
+          sender = input.substr(0, input.find("!"));
+          int beg = input.find(":");
+          std::string end = input.substr(beg + 1);
+          word = end.substr(0, end.find(" "));
+        }
+        else
+        {
+          sender = input.substr(0, input.find(" "));
+          std::string end = input.substr(0, input.find(" "));
+          word = end;
+        }
         ACommand *cmd = commands.makeCommand( word, bots, input.substr(word.length()), sender );
         std::string response = cmd->execute();
         delete cmd;

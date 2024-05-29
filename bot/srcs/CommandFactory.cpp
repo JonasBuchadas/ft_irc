@@ -27,14 +27,6 @@ ACommand *makeAcceptCommand( BotManager *BotManager, std::string args, std::stri
   return new AcceptCommand( BotManager, args, nick );
 }
 
-ACommand *makeNickCommand( BotManager *BotManager, std::string args, std::string nick ) {
-  return new NickCommand( BotManager, args, nick );
-}
-
-ACommand *makeRemoveCommand( BotManager *BotManager, std::string args, std::string nick ) {
-  return new RemoveCommand( BotManager, args, nick );
-}
-
 ACommand *makeAskCommand( BotManager *BotManager, std::string args, std::string nick ) {
   return new AskCommand( BotManager, args, nick );
 }
@@ -57,15 +49,10 @@ ACommand *makeReplyCommand( BotManager *BotManager, std::string args, std::strin
 
 
 ACommand *CommandFactory::makeCommand( std::string commandName, BotManager *BotManager, std::string args, std::string nick ) {
-  const std::string enumBotCmd[]  = { "INVITE", "localhost", "NICK", "KICK", "QUIT", "PART", \
-  "ASK", "ANSWER", "CLOSE", "VIEW", "REPLY" };
+  const std::string enumBotCmd[]  = { "INVITE", nick, "PART", "ASK", "ANSWER", "CLOSE", "VIEW", "REPLY" };
   const funcPtr     enumBotFunc[] = {
       &makeInviteCommand,
       &makeAcceptCommand,
-      &makeNickCommand,
-      &makeRemoveCommand,
-      &makeRemoveCommand,
-      &makeRemoveCommand,
       &makeAskCommand,
       &makeAnswerCommand,
       &makeCloseCommand,

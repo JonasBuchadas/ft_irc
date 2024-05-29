@@ -24,9 +24,7 @@ SRCS=		Bot.cpp \
 			botcmds/AskCommand.cpp \
 			botcmds/CloseCommand.cpp \
 			botcmds/InviteCommand.cpp \
-			botcmds/NickCommand.cpp \
 			botcmds/NoCommand.cpp \
-			botcmds/RemoveCommand.cpp \
 			botcmds/ReplyCommand.cpp \
 			botcmds/ViewCommand.cpp
 

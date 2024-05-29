@@ -23,6 +23,7 @@
 
 #include "ACommand.hpp"
 #include "Authenticator.hpp"
+#include "ChannelManager.hpp"
 #include "Messenger.hpp"
 #include "Parser.hpp"
 #include "User.hpp"
@@ -42,6 +43,7 @@ class Server {
 
   Parser         _parser;
   Authenticator *_authenticator;
+  ChannelManager *_channelManager;
   CommandFactory _commandFactory;
   Messenger      _messenger;
 

@@ -6,14 +6,17 @@ bool Server::_stopServer = false;
 
 Server::Server() {
   _authenticator = new Authenticator( "invalid" );
+  _channelManager = new ChannelManager();
 }
 
 Server::~Server() {
   clearUsers();
   delete _authenticator;
+  delete _channelManager;
 }
 
-Server::Server( Server const &src ) : _authenticator( src._authenticator ) {
+Server::Server( Server const &src ) : _authenticator( src._authenticator ), \
+_channelManager( src._channelManager ) {
   *this = src;
 }
 
@@ -43,6 +46,10 @@ Server::Server( char const *port, char const *password ) throw( std::exception )
 void Server::setPassword( char const *password ) throw( std::exception ) {
   if ( !password[0] )
     throw Server::IncorrectPasswordException();
+  for ( int i = 0; password[i]; i++ ) {
+    if ( !std::isalnum( password[i] ) )
+      throw Server::IncorrectPasswordException();
+  }
   _password = password;
 }
 
@@ -145,7 +152,7 @@ void Server::processMessage( int i ) {
   str        = receiveMessage( i, senderFD );
   parsedMsgs = _parser.parseMsg( str );
   for ( std::vector<ParsedMsg>::iterator it = parsedMsgs.begin(); it != parsedMsgs.end(); it++ ) {
-    command = _commandFactory.makeCommand( _authenticator, senderFD, it->commandName, it->args );
+    command = _commandFactory.makeCommand( _authenticator, _channelManager, senderFD, it->commandName, it->args );
     pr      = command->execute();
     delete command;
     _messenger.respond( pr );

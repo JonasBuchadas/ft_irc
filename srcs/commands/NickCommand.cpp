@@ -1,11 +1,12 @@
 #include "commands/NickCommand.hpp"
 
-NickCommand::NickCommand( Authenticator *authenticator, std::string args, int fd ) : ACommand( "NICK", authenticator, args, fd ) {}
+NickCommand::NickCommand( Authenticator *authenticator, ChannelManager *channelmanager, \
+std::string args, int fd ) : ACommand( "NICK", authenticator, channelmanager, args, fd ) {}
 
 NickCommand::~NickCommand() {
 }
 
-NickCommand::NickCommand( NickCommand const &src ) : ACommand( src._authenticator ) {
+NickCommand::NickCommand( NickCommand const &src ) : ACommand( src._authenticator, src._channelmanager ) {
   *this = src;
 }
 

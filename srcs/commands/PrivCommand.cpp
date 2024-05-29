@@ -1,12 +1,13 @@
 #include "commands/PrivCommand.hpp"
 #include "Message.hpp"
 
-PrivCommand::PrivCommand( Authenticator *authenticator, std::string args, int fd ) : ACommand( "PRIVMSG", authenticator, args, fd ) {}
+PrivCommand::PrivCommand( Authenticator *authenticator, ChannelManager *channelmanager, \
+std::string args, int fd ) : ACommand( "PRIVMSG", authenticator, channelmanager, args, fd ) {}
 
 PrivCommand::~PrivCommand() {
 }
 
-PrivCommand::PrivCommand( PrivCommand const &src ) : ACommand( src._authenticator ) {
+PrivCommand::PrivCommand( PrivCommand const &src ) : ACommand( src._authenticator, src._channelmanager ) {
   *this = src;
 }
 

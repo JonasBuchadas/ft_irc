@@ -50,16 +50,16 @@ void ChannelManager::removeChannel( std::string channelName ) {
         throw ChannelDoesNotExistException();
 }
 
-User *ChannelManager::getUser( std::string channelName, std::string user ) {
-    if ( channelExists( channelName ) )
-        return _channels[channelName]->getUser( user );
-    return NULL;
+bool ChannelManager::isUser( std::string channelName, std::string user ) {
+    if ( channelExists( channelName ) && _channels[channelName]->isUser( user ))
+        return 1;
+    return 0;
 }
 
-User *ChannelManager::getOperator( std::string channelName ) {
-    if ( channelExists( channelName ) )
-        return _channels[channelName]->getOperator();
-    return NULL;
+bool ChannelManager::isOperator( std::string channelName, std::string user ) {
+    if ( channelExists( channelName ) && _channels[channelName]->isOperator( user ))
+        return 1;
+    return 0;
 }
 
 bool ChannelManager::isInviteOnly( std::string channelName ) {
@@ -92,7 +92,7 @@ unsigned int ChannelManager::getMaxUsers( std::string channelName ) {
     return 0;
 }
 
-void ChannelManager::setOperator( std::string channelName, User* user ) { // Placeholder function
+void ChannelManager::setOperator( std::string channelName, std::string *user ) { // Placeholder function
     if ( channelExists( channelName ) )
         _channels[channelName]->setOperator( user );
 }
@@ -124,7 +124,7 @@ void ChannelManager::setMaxUsers( std::string channelName, unsigned int maxUsers
 
 bool ChannelManager::isValidArg( std::string str ) {
     for ( size_t i = 0; i < str.length(); i++ )
-        if ( !isdigit( str[i] ) && !isalpha( str[i] ) )
+        if ( !isalnum( str[i] ) )
             return 0;
     return 1;
 }

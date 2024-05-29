@@ -22,7 +22,7 @@ Authenticator& Authenticator::operator=( Authenticator const& src ) {
 
 bool Authenticator::isValidArg( std::string str ) {
   for ( size_t i = 0; i < str.length(); i++ )
-    if ( !isdigit( str[i] ) && !isalpha( str[i] ) )
+    if ( !isalnum( str[i] ) )
       return 0;
   return 1;
 }

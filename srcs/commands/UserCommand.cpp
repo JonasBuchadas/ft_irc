@@ -1,11 +1,12 @@
 #include "commands/UserCommand.hpp"
 
-UserCommand::UserCommand( Authenticator *authenticator, std::string args, int fd ) : ACommand( "USER", authenticator, args, fd ) {}
+UserCommand::UserCommand( Authenticator *authenticator, ChannelManager *channelmanager, \
+std::string args, int fd ) : ACommand( "USER", authenticator, channelmanager, args, fd ) {}
 
 UserCommand::~UserCommand() {
 }
 
-UserCommand::UserCommand( UserCommand const &src ) : ACommand( src._authenticator ) {
+UserCommand::UserCommand( UserCommand const &src ) : ACommand( src._authenticator, src._channelmanager ) {
   *this = src;
 }
 

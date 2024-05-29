@@ -1,11 +1,12 @@
 #include "commands/JoinCommand.hpp"
 
-JoinCommand::JoinCommand( Authenticator *authenticator, std::string args, int fd ) : ACommand( "JOIN", authenticator, args, fd ) {}
+JoinCommand::JoinCommand( Authenticator *authenticator, ChannelManager *channelmanager,\
+std::string args, int fd ) : ACommand( "JOIN", authenticator, channelmanager, args, fd ) {}
 
 JoinCommand::~JoinCommand() {
 }
 
-JoinCommand::JoinCommand( JoinCommand const &src ) : ACommand( src._authenticator ) {
+JoinCommand::JoinCommand( JoinCommand const &src ) : ACommand( src._authenticator, src._channelmanager ) {
   *this = src;
 }
 
@@ -17,5 +18,8 @@ JoinCommand &JoinCommand::operator=( JoinCommand const &src ) {
 }
 
 PreparedResponse JoinCommand::execute() const {
-  // TODO: Implement me!!!
+  PreparedResponse pr = PreparedResponse();
+  pr.recipients.push_back( _userFD );
+  pr.response = "Joining!\n";
+  return pr;
 }

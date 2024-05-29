@@ -18,13 +18,25 @@ Channel &Channel::operator=( Channel const &src ) {
   return ( *this );
 }
 
-User *Channel::getUser( std::string user ) {
-  if ( _users.find( user ) != _users.end() )
-    return &_users[user];
-  return NULL;
+bool Channel::isUser( std::string user ) {
+  for ( int j = 0; j < (int)_users.size(); j++ )
+      if ( _users[j] == user )
+        return 1;
+  return 0;
 }
 
-User *Channel::getOperator( void ) {
+bool Channel::isOperator( std::string user ) {
+   for ( int j = 0; j < (int)_operators.size(); j++ )
+      if ( (*_operators[j]) == user )
+        return 1;
+  return 0;
+}
+
+std::vector<std::string> Channel::getAllUsers() {
+  return _users;
+}
+
+std::vector<std::string *> Channel::getAllOperators() {
   return _operators;
 }
 
@@ -52,8 +64,8 @@ unsigned int Channel::getMaxUsers( void ) {
   return _maxUsers;
 }
 
-void Channel::setOperator( User *user ) {  // Placeholder function
-  _operators = user;
+void Channel::setOperator( std::string *user ) {
+  _operators[(int)_operators.size()] = user;
 }
 
 void Channel::setInviteOnly( bool inviteOnly ) {

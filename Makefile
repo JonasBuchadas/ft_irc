@@ -20,6 +20,8 @@ SRCS=		Server.cpp \
 				Authenticator.cpp \
 				Message.cpp \
 				Messenger.cpp \
+				Channel.cpp \
+				ChannelManager.cpp \
 				Parser.cpp \
 				ACommand.cpp \
 				CommandFactory.cpp \
@@ -27,7 +29,8 @@ SRCS=		Server.cpp \
 				commands/UserCommand.cpp \
 				commands/PassCommand.cpp \
 				commands/NickCommand.cpp \
-				commands/PrivCommand.cpp 
+				commands/PrivCommand.cpp \
+				commands/JoinCommand.cpp
 SRCS_NAME=	$(addprefix $(SRCS_PATH), $(SRC_NAME) $(SRCS))
 ### OBJECT FILES ###
 OBJ_NAME=	$(SRC_NAME:.cpp=.o)

@@ -3,14 +3,13 @@
 #define __CHANNEL_HPP__
 
 #include <iostream>
+#include <vector>
 #include <map>
-
-#include "User.hpp"
 
 class Channel {
  private:
-  std::map<std::string, User> _users;
-  User                       *_operators; // Should be a vector or list
+  std::vector<std::string>    _users;
+  std::vector<std::string *>  _operators;
 
   bool                        _inviteOnly;
   bool                        _topicProtected;
@@ -25,8 +24,10 @@ class Channel {
   Channel( Channel const &src );
   Channel &operator=( Channel const &src );
 
-  User *getUser( std::string user );
-  User *getOperator( void );
+  std::vector<std::string>    getAllUsers();
+  std::vector<std::string *>  getAllOperators();
+  bool  isUser( std::string user );
+  bool  isOperator( std::string user );
   bool  isInviteOnly( void );
   bool  isTopicProtected( void );
   std::string getTopic( void );
@@ -34,7 +35,7 @@ class Channel {
   std::string getPassword( void );
   unsigned int getMaxUsers( void );
 
-  void setOperator( User *user );  // it will be more like void addOperator( User *user );
+  void setOperator( std::string *user );  // it will be more like void addOperator( User *user );
   void setInviteOnly( bool inviteOnly );
   void setTopicProtected( bool topicProtected );
   void setTopic( std::string topic );

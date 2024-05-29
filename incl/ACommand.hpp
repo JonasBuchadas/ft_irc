@@ -6,6 +6,7 @@
 #include <map>
 
 #include "Authenticator.hpp"
+#include "ChannelManager.hpp"
 
 struct PreparedResponse {
   std::string      response;
@@ -17,13 +18,14 @@ class ACommand {
   const std::string _name;
 
  protected:
-  Authenticator *_authenticator;
-  int            _userFD;
-  std::string    _args;
+  Authenticator  *_authenticator;
+  ChannelManager *_channelmanager;
+  int             _userFD;
+  std::string     _args;
 
  public:
-  ACommand( Authenticator *authenticator );
-  ACommand( std::string name, Authenticator *authenticator, std::string args, int fd );
+  ACommand( Authenticator *authenticator, ChannelManager *channelmanager );
+  ACommand( std::string name, Authenticator *authenticator, ChannelManager *channelmanager, std::string args, int fd );
   virtual ~ACommand();
   ACommand( ACommand const &src );
   ACommand &operator=( ACommand const &src );

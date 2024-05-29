@@ -11,7 +11,7 @@
 class PrivCommand : public ACommand {
  private:
  public:
-  PrivCommand( Authenticator *authenticator, std::string args, int fd );
+  PrivCommand( Authenticator *authenticator, ChannelManager *channelmanager, std::string args, int fd );
   ~PrivCommand();
   PrivCommand( PrivCommand const &src );
   PrivCommand  &operator=( PrivCommand const &src );

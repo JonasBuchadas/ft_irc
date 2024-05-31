@@ -49,13 +49,13 @@ void ChannelManager::removeChannel( std::string channelName ) {
     throw ChannelDoesNotExistException();
 }
 
-bool ChannelManager::isUser( std::string channelName, std::string user ) {
+bool ChannelManager::isUser( std::string channelName, int user ) {
   if ( channelExists( channelName ) && _channels[channelName]->isUser( user ) )
     return 1;
   return 0;
 }
 
-bool ChannelManager::isOperator( std::string channelName, std::string user ) {
+bool ChannelManager::isOperator( std::string channelName, int user ) {
   if ( channelExists( channelName ) && _channels[channelName]->isOperator( user ) )
     return 1;
   return 0;
@@ -91,7 +91,7 @@ unsigned int ChannelManager::getMaxUsers( std::string channelName ) {
   return 0;
 }
 
-void ChannelManager::setOperator( std::string channelName, std::string* user ) {  // Placeholder function
+void ChannelManager::setOperator( std::string channelName, int user ) {  // Placeholder function
   if ( channelExists( channelName ) )
     _channels[channelName]->setOperator( user );
 }

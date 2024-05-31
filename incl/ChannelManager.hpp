@@ -27,15 +27,15 @@ class ChannelManager {
   void                            addChannel( std::string channelName, Channel* channel );
   void                            removeChannel( std::string channelName );
 
-  bool         isUser( std::string channelName, std::string user );
-  bool         isOperator( std::string channelName, std::string user );
+  bool         isUser( std::string channelName, int user );
+  bool         isOperator( std::string channelName, int user );
   bool         isInviteOnly( std::string channelName );
   bool         isTopicProtected( std::string channelName );
   std::string  getTopic( std::string channelName );
   std::string  getPassword( std::string channelName );
   unsigned int getMaxUsers( std::string channelName );
 
-  void setOperator( std::string channelName, std::string* user );  // it will be more like void addOperator( User *user );
+  void setOperator( std::string channelName, int user );  // it will be more like void addOperator( User *user );
   void setInviteOnly( std::string channelName, bool inviteOnly );
   void setTopicProtected( std::string channelName, bool topicProtected );
   void setTopic( std::string channelName, std::string topic );

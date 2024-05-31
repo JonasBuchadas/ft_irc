@@ -18,25 +18,25 @@ Channel &Channel::operator=( Channel const &src ) {
   return ( *this );
 }
 
-bool Channel::isUser( std::string user ) {
-  for ( int j = 0; j < (int)_users.size(); j++ )
-      if ( _users[j] == user )
-        return 1;
-  return 0;
+bool Channel::isUser( int user ) {
+  for ( std::vector<int>::iterator it = _users.begin(); it != _users.end(); it++ )
+    if ( *it == user )
+      return true;
+  return false;
 }
 
-bool Channel::isOperator( std::string user ) {
-   for ( int j = 0; j < (int)_operators.size(); j++ )
-      if ( (*_operators[j]) == user )
-        return 1;
-  return 0;
+bool Channel::isOperator( int user ) {
+  for ( std::vector<int>::iterator it = _operators.begin(); it != _operators.end(); it++ )
+    if ( *it == user )
+      return true;
+  return false;
 }
 
-std::vector<std::string> Channel::getAllUsers() {
+std::vector<int> Channel::getAllUsers() {
   return _users;
 }
 
-std::vector<std::string *> Channel::getAllOperators() {
+std::vector<int> Channel::getAllOperators() {
   return _operators;
 }
 
@@ -64,8 +64,8 @@ unsigned int Channel::getMaxUsers( void ) {
   return _maxUsers;
 }
 
-void Channel::setOperator( std::string *user ) {
-  _operators[(int)_operators.size()] = user;
+void Channel::setOperator( int user ) {
+  _operators.push_back( user );
 }
 
 void Channel::setInviteOnly( bool inviteOnly ) {

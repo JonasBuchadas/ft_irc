@@ -8,12 +8,17 @@
 #include "ACommand.hpp"
 #include "Authenticator.hpp"
 #include "ChannelManager.hpp"
+#include "commands/InviteCommand.hpp"
+#include "commands/JoinCommand.hpp"
+#include "commands/KickCommand.hpp"
+#include "commands/ModeCommand.hpp"
+#include "commands/NamesCommand.hpp"
 #include "commands/NickCommand.hpp"
 #include "commands/NoCommand.hpp"
+#include "commands/PartCommand.hpp"
 #include "commands/PassCommand.hpp"
-#include "commands/UserCommand.hpp"
 #include "commands/PrivCommand.hpp"
-#include "commands/JoinCommand.hpp"
+#include "commands/UserCommand.hpp"
 
 typedef ACommand *( *funcPtr )( Authenticator *authenticator, ChannelManager *channelmanager, std::string _args, int fd );
 

@@ -19,13 +19,13 @@ class ACommand {
 
  protected:
   Authenticator  *_authenticator;
-  ChannelManager *_channelmanager;
+  ChannelManager *_channelManager;
   int             _userFD;
   std::string     _args;
 
  public:
-  ACommand( Authenticator *authenticator, ChannelManager *channelmanager );
-  ACommand( std::string name, Authenticator *authenticator, ChannelManager *channelmanager, std::string args, int fd );
+  ACommand( Authenticator *authenticator, ChannelManager *channelManager );
+  ACommand( std::string name, Authenticator *authenticator, ChannelManager *channelManager, std::string args, int fd );
   virtual ~ACommand();
   ACommand( ACommand const &src );
   ACommand &operator=( ACommand const &src );

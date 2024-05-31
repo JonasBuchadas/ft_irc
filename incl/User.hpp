@@ -2,8 +2,9 @@
 #ifndef __USER_HPP__
 #define __USER_HPP__
 
-#include <iostream>
 #include <arpa/inet.h>
+
+#include <iostream>
 
 class User {
  private:
@@ -27,9 +28,9 @@ class User {
 
   std::string getNick( void ) const;
   std::string getName( void ) const;
-  bool getPassword( void ) const;
-  bool getLoggedIn( void ) const;
-  uint32_t getIp( void ) const;
+  bool        getPassword( void ) const;
+  bool        getLoggedIn( void ) const;
+  uint32_t    getIp( void ) const;
 
   void join();
   void kick();

@@ -41,11 +41,11 @@ class Server {
   int                 _fdSize;
   std::vector<pollfd> _pfds;
 
-  Parser         _parser;
-  Authenticator *_authenticator;
+  Parser          _parser;
+  Authenticator  *_authenticator;
   ChannelManager *_channelManager;
-  CommandFactory _commandFactory;
-  Messenger      _messenger;
+  CommandFactory  _commandFactory;
+  Messenger       _messenger;
 
   void addToPfds( int fd );
   int  delFromPfds( int fd );

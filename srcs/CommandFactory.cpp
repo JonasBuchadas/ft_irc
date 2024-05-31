@@ -35,16 +35,40 @@ ACommand *makeJoinCommand( Authenticator *authenticator, ChannelManager *channel
   return new JoinCommand( authenticator, channelmanager, args, fd );
 }
 
+ACommand *makeKickCommand( Authenticator *authenticator, ChannelManager *channelmanager, std::string args, int fd ) {
+  return new KickCommand( authenticator, channelmanager, args, fd );
+}
 
-ACommand *CommandFactory::makeCommand( Authenticator *authenticator, \
-ChannelManager *channelmanager, int fd, std::string commandName, std::string args ) {
-  const std::string enumCommand[] = { "USER", "PASS", "NICK", "PRIVMSG", "JOIN" };
+ACommand *makeInviteCommand( Authenticator *authenticator, ChannelManager *channelmanager, std::string args, int fd ) {
+  return new InviteCommand( authenticator, channelmanager, args, fd );
+}
+
+ACommand *makePartCommand( Authenticator *authenticator, ChannelManager *channelmanager, std::string args, int fd ) {
+  return new PartCommand( authenticator, channelmanager, args, fd );
+}
+
+ACommand *makeNamesCommand( Authenticator *authenticator, ChannelManager *channelmanager, std::string args, int fd ) {
+  return new NamesCommand( authenticator, channelmanager, args, fd );
+}
+
+ACommand *makeModeCommand( Authenticator *authenticator, ChannelManager *channelmanager, std::string args, int fd ) {
+  return new ModeCommand( authenticator, channelmanager, args, fd );
+}
+
+ACommand *CommandFactory::makeCommand( Authenticator  *authenticator,
+                                       ChannelManager *channelmanager, int fd, std::string commandName, std::string args ) {
+  const std::string enumCommand[] = { "USER", "PASS", "NICK", "PRIVMSG", "JOIN", "KICK", "INVITE", "PART", "NAMES", "MODE" };
   const funcPtr     enumFunc[]    = {
       &makeUserCommand,
       &makePassCommand,
       &makeNickCommand,
       &makePrivCommand,
       &makeJoinCommand,
+      &makeKickCommand,
+      &makeInviteCommand,
+      &makePartCommand,
+      &makeNamesCommand,
+      &makeModeCommand,
   };
   for ( int i = 0; i < 5; i++ ) {
     if ( commandName == enumCommand[i] ) {

@@ -1,12 +1,12 @@
 #include "commands/PassCommand.hpp"
 
-PassCommand::PassCommand( Authenticator *authenticator, ChannelManager *channelmanager, \
-std::string args, int fd ) : ACommand( "PASS", authenticator, channelmanager, args, fd ) {}
+PassCommand::PassCommand( Authenticator *authenticator, ChannelManager *channelManager,
+                          std::string args, int fd ) : ACommand( "PASS", authenticator, channelManager, args, fd ) {}
 
 PassCommand::~PassCommand() {
 }
 
-PassCommand::PassCommand( PassCommand const &src ) : ACommand( src._authenticator, src._channelmanager ) {
+PassCommand::PassCommand( PassCommand const &src ) : ACommand( src._authenticator, src._channelManager ) {
   *this = src;
 }
 

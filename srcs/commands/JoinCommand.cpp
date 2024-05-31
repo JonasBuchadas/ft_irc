@@ -1,12 +1,12 @@
 #include "commands/JoinCommand.hpp"
 
-JoinCommand::JoinCommand( Authenticator *authenticator, ChannelManager *channelmanager,\
-std::string args, int fd ) : ACommand( "JOIN", authenticator, channelmanager, args, fd ) {}
+JoinCommand::JoinCommand( Authenticator *authenticator, ChannelManager *channelManager,
+                          std::string args, int fd ) : ACommand( "JOIN", authenticator, channelManager, args, fd ) {}
 
 JoinCommand::~JoinCommand() {
 }
 
-JoinCommand::JoinCommand( JoinCommand const &src ) : ACommand( src._authenticator, src._channelmanager ) {
+JoinCommand::JoinCommand( JoinCommand const &src ) : ACommand( src._authenticator, src._channelManager ) {
   *this = src;
 }
 

@@ -1,13 +1,14 @@
 #include "commands/PrivCommand.hpp"
+
 #include "Message.hpp"
 
-PrivCommand::PrivCommand( Authenticator *authenticator, ChannelManager *channelmanager, \
-std::string args, int fd ) : ACommand( "PRIVMSG", authenticator, channelmanager, args, fd ) {}
+PrivCommand::PrivCommand( Authenticator *authenticator, ChannelManager *channelManager,
+                          std::string args, int fd ) : ACommand( "PRIVMSG", authenticator, channelManager, args, fd ) {}
 
 PrivCommand::~PrivCommand() {
 }
 
-PrivCommand::PrivCommand( PrivCommand const &src ) : ACommand( src._authenticator, src._channelmanager ) {
+PrivCommand::PrivCommand( PrivCommand const &src ) : ACommand( src._authenticator, src._channelManager ) {
   *this = src;
 }
 
@@ -20,7 +21,7 @@ PrivCommand &PrivCommand::operator=( PrivCommand const &src ) {
 
 PreparedResponse PrivCommand::execute() const {
   PreparedResponse pr = PreparedResponse();
-  if (!_authenticator->getUser( _userFD )) {
+  if ( !_authenticator->getUser( _userFD ) ) {
     pr.recipients.push_back( _userFD );
     pr.response = genServerMsg( 451, "PRIVMSG" );
     return pr;
@@ -31,50 +32,47 @@ PreparedResponse PrivCommand::execute() const {
     return pr;
   }
   std::string target = _args.substr( 1, _args.find_first_of( " \n\r\0", 1 ) - 1 );
-  if (target.find(":") != std::string::npos)
-    target = target.substr(0, target.find(":"));
+  if ( target.find( ":" ) != std::string::npos )
+    target = target.substr( 0, target.find( ":" ) );
 
-  if (_authenticator->getFdFromNick( target ) == -1) {
+  if ( _authenticator->getFdFromNick( target ) == -1 ) {
     pr.recipients.push_back( _userFD );
     pr.response = genServerMsg( 401, "PRIVMSG" );
-    return pr; 
+    return pr;
   }
 
-  unsigned int long pos = _args.find(":");
-  if (pos == std::string::npos) {
+  unsigned int long pos = _args.find( ":" );
+  if ( pos == std::string::npos ) {
     pr.recipients.push_back( _userFD );
-    pr.response = "error1\n";   // Change later
-    return pr; 
+    pr.response = "error1\n";  // Change later
+    return pr;
   }
   std::string send = _args.substr( pos + 1 );
-  pos = _args.find("DCC SEND");
-  if (pos == std::string::npos ) {
+  pos              = _args.find( "DCC SEND" );
+  if ( pos == std::string::npos ) {
     pr.recipients.push_back( _authenticator->getFdFromNick( target ) );
-    pr.response = genUserMsg( _authenticator->getUser( _userFD), "PRIVMSG" + _args );
-    return pr; 
-  }
-  else {
-    send = send.substr(pos + 8);
-    std::istringstream iss(send);
-    std::string filename, ipStr, portStr, filesizeStr;
+    pr.response = genUserMsg( _authenticator->getUser( _userFD ), "PRIVMSG" + _args );
+    return pr;
+  } else {
+    send = send.substr( pos + 8 );
+    std::istringstream iss( send );
+    std::string        filename, ipStr, portStr, filesizeStr;
     iss >> filename >> ipStr >> portStr >> filesizeStr;
     struct sockaddr_in addr;
-    socklen_t          userlen = sizeof(addr);
-    if (getpeername( _authenticator->getFdFromNick( target ), (struct sockaddr *)&addr, &userlen ) == -1)
-    {
+    socklen_t          userlen = sizeof( addr );
+    if ( getpeername( _authenticator->getFdFromNick( target ), (struct sockaddr *)&addr, &userlen ) == -1 ) {
       pr.recipients.push_back( _userFD );
-      pr.response = "error2\n";   // Change later
-      return pr; 
+      pr.response = "error2\n";  // Change later
+      return pr;
     }
-    if (ntohl(addr.sin_addr.s_addr) != _authenticator->getUser( _authenticator->getFdFromNick( target ) )->getIp())
-    {
+    if ( ntohl( addr.sin_addr.s_addr ) != _authenticator->getUser( _authenticator->getFdFromNick( target ) )->getIp() ) {
       pr.recipients.push_back( _userFD );
-      pr.response = "error3\n";   // Change later
-      return pr; 
+      pr.response = "error3\n";  // Change later
+      return pr;
     }
     pr.recipients.push_back( _userFD );
-    pr.response = genUserMsg( _authenticator->getUser( _userFD), "PRIVMSG" + _args );
-    return pr; 
+    pr.response = genUserMsg( _authenticator->getUser( _userFD ), "PRIVMSG" + _args );
+    return pr;
   }
   pr.recipients.push_back( _userFD );
   pr.response = "";

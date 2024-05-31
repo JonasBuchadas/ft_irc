@@ -1,12 +1,12 @@
 #include "commands/NoCommand.hpp"
 
-NoCommand::NoCommand( Authenticator *authenticator, ChannelManager *channelmanager, \
-std::string args, int fd ) : ACommand( "NO", authenticator, channelmanager, args, fd ) {}
+NoCommand::NoCommand( Authenticator *authenticator, ChannelManager *channelManager,
+                      std::string args, int fd ) : ACommand( "NO", authenticator, channelManager, args, fd ) {}
 
 NoCommand::~NoCommand() {
 }
 
-NoCommand::NoCommand( NoCommand const &src ) : ACommand( src._authenticator, src._channelmanager ) {
+NoCommand::NoCommand( NoCommand const &src ) : ACommand( src._authenticator, src._channelManager ) {
   *this = src;
 }
 

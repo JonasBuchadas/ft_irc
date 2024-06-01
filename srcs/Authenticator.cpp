@@ -42,7 +42,7 @@ bool Authenticator::nickNameExists( int fd, std::string nickName ) {
   }
   return false;
 }
-int Authenticator::getFdFromNick( std::string str ){
+int Authenticator::getFdFromNick( std::string str ) {
   for ( std::map<int, User*>::iterator it = _users.begin(); it != _users.end(); it++ ) {
     if ( it->second && it->second->getNick() == str )
       return it->first;
@@ -87,9 +87,9 @@ bool Authenticator::authenticateUser( int fd ) {
 
 void Authenticator::setUserIp( int fd ) {
   struct sockaddr_in addr;
-  socklen_t          userlen = sizeof(addr);
-  if (getpeername( fd , (struct sockaddr *)&addr, &userlen ) != -1 )
-    _users[fd]->setIp(ntohl(addr.sin_addr.s_addr));
+  socklen_t          userlen = sizeof( addr );
+  if ( getpeername( fd, (struct sockaddr*)&addr, &userlen ) != -1 )
+    _users[fd]->setIp( ntohl( addr.sin_addr.s_addr ) );
 }
 
 void Authenticator::releaseUserInfo( int fd ) {

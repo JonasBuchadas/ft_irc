@@ -2,6 +2,7 @@
 #ifndef __CHANNEL_HPP__
 #define __CHANNEL_HPP__
 
+#include <algorithm>
 #include <iostream>
 #include <map>
 #include <vector>
@@ -34,6 +35,8 @@ class Channel {
   std::string      getName( void );
   std::string      getPassword( void );
   unsigned int     getMaxUsers( void );
+  void             removeUser( int _userFD );
+  void             removeOperator( int _userFD );
 
   void setOperator( int user );  // it will be more like void addOperator( User *user );
   void setInviteOnly( bool inviteOnly );

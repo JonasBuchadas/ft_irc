@@ -11,6 +11,7 @@
 #include "commands/InviteCommand.hpp"
 #include "commands/JoinCommand.hpp"
 #include "commands/KickCommand.hpp"
+#include "commands/LogoutCommand.hpp"
 #include "commands/ModeCommand.hpp"
 #include "commands/NamesCommand.hpp"
 #include "commands/NickCommand.hpp"

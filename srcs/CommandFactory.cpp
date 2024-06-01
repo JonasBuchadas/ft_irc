@@ -55,9 +55,13 @@ ACommand *makeModeCommand( Authenticator *authenticator, ChannelManager *channel
   return new ModeCommand( authenticator, channelmanager, args, fd );
 }
 
+ACommand *makeLogoutCommand( Authenticator *authenticator, ChannelManager *channelmanager, std::string args, int fd ) {
+  return new LogoutCommand( authenticator, channelmanager, args, fd );
+}
+
 ACommand *CommandFactory::makeCommand( Authenticator  *authenticator,
                                        ChannelManager *channelmanager, int fd, std::string commandName, std::string args ) {
-  const std::string enumCommand[] = { "USER", "PASS", "NICK", "PRIVMSG", "JOIN", "KICK", "INVITE", "PART", "NAMES", "MODE" };
+  const std::string enumCommand[] = { "USER", "PASS", "NICK", "PRIVMSG", "JOIN", "KICK", "INVITE", "PART", "NAMES", "MODE", "LOGOUT" };
   const funcPtr     enumFunc[]    = {
       &makeUserCommand,
       &makePassCommand,
@@ -69,8 +73,9 @@ ACommand *CommandFactory::makeCommand( Authenticator  *authenticator,
       &makePartCommand,
       &makeNamesCommand,
       &makeModeCommand,
+      &makeLogoutCommand,
   };
-  for ( int i = 0; i < 10; i++ ) {
+  for ( int i = 0; i < (int)( sizeof( enumCommand ) / sizeof( std::string ) ); i++ ) {
     if ( commandName == enumCommand[i] ) {
       ACommand *c = ( enumFunc[i]( authenticator, channelmanager, args, fd ) );
       return c;

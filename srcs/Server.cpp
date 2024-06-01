@@ -172,6 +172,7 @@ std::string Server::receiveMessage( int i, int senderFD ) throw( std::exception 
     std::cout << "connection closed from " << senderFD << std::endl;
     close( senderFD );
     i -= delFromPfds( senderFD );
+    return ( "LOGOUT" );
   }
   buf[nbytes] = '\0';
   message     = buf;
@@ -205,7 +206,7 @@ int Server::delFromPfds( int fd ) {
   std::vector<pollfd>::iterator it = _pfds.begin();
   while ( it != _pfds.end() ) {
     if ( it->fd == fd ) {
-      _authenticator->releaseUserInfo( fd );
+      // _authenticator->releaseUserInfo( fd );
       _pfds.erase( it );
       return ( 1 );
     }

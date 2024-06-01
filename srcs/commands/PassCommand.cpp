@@ -40,6 +40,11 @@ PreparedResponse PassCommand::execute() const {
     pr.response = "Password registered\n\0";
     return pr;
   }
+  else if ( user->getLoggedIn() )
+  {
+    pr.response = "User already authenticated.Nothing to do\n";
+    return pr;
+  }
 
   if ( !user->getPassword() && str == _authenticator->getServerPass() ) {
     user->setPassword( true );

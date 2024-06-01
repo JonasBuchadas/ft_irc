@@ -31,19 +31,26 @@ PreparedResponse UserCommand::execute() const {
     return pr;
   }
 
-  if ( _authenticator->userNameExists( _userFD, str ) ) {
-    pr.response = "Username already taken. Username not updated\n\0";
+  User *user = _authenticator->getUser( _userFD );
+
+  if (user && user->getLoggedIn())
+  {
+    pr.response = "User already authenticated.Nothing to do\n";
     return pr;
   }
-
-  User *user = _authenticator->getUser( _userFD );
-  if ( user == NULL ) {
+  else if ( user == NULL ) {
     user = new User();
     user->setName( str );
     _authenticator->addUser( _userFD, user );
     pr.response = "Registered your username\n\0";
     return pr;
   }
+
+  if ( _authenticator->userNameExists( _userFD, str ) ) {
+    pr.response = "Username already taken. Username not updated\n\0";
+    return pr;
+  }
+
 
   if ( user->getName().empty() ) {
     user->setName( str );

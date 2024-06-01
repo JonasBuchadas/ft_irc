@@ -7,6 +7,7 @@
 
 #include "Authenticator.hpp"
 #include "ChannelManager.hpp"
+#include "Message.hpp"
 
 struct PreparedResponse {
   std::string      response;

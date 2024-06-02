@@ -19,7 +19,8 @@ SRCS=		ACommand.cpp \
 			CommandFactory.cpp \
 			botcmds/InviteCommand.cpp \
 			botcmds/NoCommand.cpp \
-			botcmds/ShootCommand.cpp
+			botcmds/ShootCommand.cpp \
+			botcmds/NamesCommand.cpp
 
 SRCS_NAME=	$(addprefix $(SRCS_PATH), $(SRC_NAME) $(SRCS))
 ### OBJECT FILES ###

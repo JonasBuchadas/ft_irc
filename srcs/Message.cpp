@@ -62,6 +62,8 @@ std::string getFixedParam( int code, std::string param ) {
       return ": Unknown flag '" + param + "' in MODE command";
     case ERR_NOTEXTTOSEND:
       return ": Message content not provided";
+    case RPL_NAMREPLY:
+      return "" + param + "";
     default:
       return "Unknown error code";
   }

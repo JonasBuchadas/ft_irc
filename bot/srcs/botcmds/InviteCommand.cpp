@@ -21,13 +21,13 @@ std::string InviteCommand::execute() const {
   std::string other_args = "";
   if (_args.find("#") != std::string::npos)
   {
-    int start = _args.find("#") + 1;
-    channel = _args.substr(start, _args.find_first_of(" \n") - start - 1);
-    other_args = _args.substr(_args.find_first_of(" \n"));
+    int start = _args.find("#");
+    channel = _args.substr(start, _args.find_first_of(" \n\r") - start - 1);
+    other_args = _args.substr(_args.find_first_of(" \n\r"));
     if (_args[0] == '\n')
       other_args = "";
   }
   else
     return "Unknown channel name";
-  return "JOIN #" + channel + other_args + "\n";
+  return "JOIN " + channel + "\n";
 }

@@ -20,10 +20,8 @@ std::string awaitInput( int sockfd )
   std::string input;
   char buffer[1024];
   int received;
-  while ( (received = recv(sockfd, &buffer, sizeof(buffer) - 1, 0)) <= 0 ) {
-    if ( received == -1 )
+  if ( (received = recv(sockfd, &buffer, sizeof(buffer) - 1, 0)) == -1 )
       return ( "" );
-  }
   buffer[received] = 0;
   input = buffer;
   if (received < 1024)
@@ -42,7 +40,7 @@ int loginBossBot(int sockfd, char **av)
 {
   std::string pass = av[2];
   std::string manager = "PASS " + pass + "\nUSER BossBot\nNICK BossBot\r\n";
-  if ( send(sockfd, manager.c_str(), manager.size(), 0) == -1 || awaitInput( sockfd ).size() == 0 )
+  if ( send(sockfd, manager.c_str(), manager.size(), 0) == -1 || awaitInput( sockfd ) == "" )
     return ( -1 );
   return ( 0 );
 }
@@ -96,54 +94,50 @@ int main(int ac, char **av)
   try
   {
     int sockfd = connectToServer( av[1] );
-    if (sockfd == -1 || loginBossBot(sockfd, av) == -1 || awaitInput( sockfd ).size() == 1 )
+    if (sockfd == -1 || loginBossBot(sockfd, av) == -1 )
       return ( -1 );
       
     mainFD = sockfd;
     CommandFactory commands;
     std::signal( SIGINT, sigchld_handler );
     std::signal( SIGQUIT, sigchld_handler );
+    std::string fullInput = awaitInput( sockfd );
     while (1)
     {
-      std::string fullInput = awaitInput( sockfd );
-      if (_stopBot)
+      if (_stopBot || fullInput.size() <= 1)
         break ;
+      std::string input = fullInput;
       int start = 0;
-      std::string input;
-      while (start < (int)fullInput.length())
+      if ( fullInput.find_first_of( "\n\r" ) != std::string::npos )
+        input = fullInput.substr( 0, fullInput.find_first_of( "\n\r" ) );
+      start = fullInput.find_first_of( "\n\r" );
+      while ( start < (int)fullInput.size() && ( fullInput[start] == '\n' || fullInput[start] == '\r' ) )
+          start++;
+      while (1)
       {
-        if (fullInput.find("\n") != std::string::npos)
-        {
-          input = fullInput.substr(0, fullInput.find("\n") - 1);
-          start = input.size();
-          while (fullInput[start] == '\r' || fullInput[start] == '\n')
-            start++;
-          if (start < (int)fullInput.size())
-            fullInput = fullInput.substr(start);
-        }
-        else
-        {
-          input = fullInput;
-          start = fullInput.length();
-        }
         std::string sender;
-        if (input.length() > 1)
-          input = input.substr(1);
         std::string word;
         if (input.find("!") != std::string::npos)
         {
+          input = input.substr(1);
           sender = input.substr(0, input.find("!"));
           int beg = input.find(":");
-          std::string end = input.substr(beg + 1);
-          word = end.substr(0, end.find(" "));
+          if (input[beg + 1])
+          {
+            std::string end = input.substr(beg + 1);
+            word = end.substr(0, end.find(" "));
+          }
+          if (word == "INVITE" && input.find(":") != std::string::npos)
+            input = input.substr(input.find(":") + 1);
+          else if (word == "SHOOT" && input.find("#") != std::string::npos)
+          {
+            input = input.substr(input.find("#"));
+            if (input.find(" ") != std::string::npos)
+              input = input.substr(0, input.find(" "));
+          }
         }
-        else if (input.find(" ") != std::string::npos)
-        {
-          sender = input.substr(0, input.find(" "));
-          std::string end = input.substr(0, input.find(" "));
-          word = end;
-        }
-        ACommand *cmd = commands.makeCommand( word, input.substr(word.length()), sender );
+        std::cout << input << std::endl;
+        ACommand *cmd = commands.makeCommand( word, input, sender );
         std::string response = cmd->execute();
         delete cmd;
         for (size_t i = 0; i < response.size(); i++) {
@@ -154,7 +148,17 @@ int main(int ac, char **av)
         }
         if ( send(sockfd, response.c_str(), response.size(), 0) == -1)
           return ( -1 );
+        if (!fullInput[start])
+          break ;
+        start = fullInput.find_first_of( "\n\r\0", start );
+        while ( start < (int)fullInput.size() && ( fullInput[start] == '\n' || fullInput[start] == '\r' ) )
+          start++;
+        if ( start < (int)fullInput.size() && fullInput.find_first_of( "\n\r", start ) != std::string::npos )
+          input = fullInput.substr( start - 1, fullInput.find_first_of( "\n\r", start ) - start );
+        else
+          break;
       }
+      fullInput = awaitInput( sockfd );
     }
   }
   catch ( const std::exception &e ) {

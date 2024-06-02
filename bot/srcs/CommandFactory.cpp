@@ -27,6 +27,9 @@ ACommand *makeShootCommand( std::string args, std::string nick ) {
   return new ShootCommand( args, nick );
 }
 
+ACommand *makeNamesCommand( std::string args, std::string nick ) {
+  return new NamesCommand( args, nick );
+}
 
 
 ACommand *CommandFactory::makeCommand( std::string commandName, std::string args, std::string nick ) {
@@ -34,7 +37,7 @@ ACommand *CommandFactory::makeCommand( std::string commandName, std::string args
   const funcPtr     enumBotFunc[] = {
       &makeInviteCommand,
       &makeShootCommand,
-      &makeShootCommand,
+      &makeNamesCommand,
   };
   for ( int i = 0; i < 3; i++ ) {
     if ( commandName == enumBotCmd[i] ) {

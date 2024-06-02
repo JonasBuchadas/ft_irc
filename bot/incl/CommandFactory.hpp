@@ -10,6 +10,7 @@
 #include "botcmds/InviteCommand.hpp"
 #include "botcmds/NoCommand.hpp"
 #include "botcmds/ShootCommand.hpp"
+#include "botcmds/NamesCommand.hpp"
 
 
 typedef ACommand *( *funcPtr )( std::string _args, std::string nick );

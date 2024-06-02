@@ -23,11 +23,19 @@ PreparedResponse JoinCommand::execute() const {
   if ( !_authenticator->authenticateUser( _userFD ) ) {
     pr.response = "Not logged in";
   }
-  if ( !_channelManager->channelExists( _args ) ) {
-    Channel *channel = new Channel( _args );
+  int i = 0;
+  while (_args[i] && _args[i] == ' ')
+    i++;
+  if (_args.length() > 1 && _args[i] != '#') {
+    pr.response = "Invalid channel name\n";
+    return pr;
+  }
+  std::string channelName = _args.substr(i);
+  if ( !_channelManager->channelExists( channelName ) ) {
+    Channel *channel = new Channel( channelName );
     _channelManager->addChannel( channel->getName(), channel );
   }
-  _channelManager->getChannel( _args )->addUser( _userFD );
+  _channelManager->getChannel( channelName )->addUser( _userFD );
   pr.response = genUserMsg( _authenticator->getUser( _userFD ), "JOIN" + _args );
   return pr;
 }

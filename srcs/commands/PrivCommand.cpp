@@ -34,8 +34,7 @@ PreparedResponse PrivCommand::execute() const {
   std::string target = _args.substr( 1, _args.find_first_of( " \n\r\0", 1 ) - 1 );
   if ( target.find( ":" ) != std::string::npos )
     target = target.substr( 0, target.find( ":" ) );
-
-  if ( _authenticator->getFdFromNick( target ) == -1 ) {
+  if ( _authenticator->getFdFromNick( target ) == -1 && !_channelManager->channelExists( target ) ) {
     pr.recipients.push_back( _userFD );
     pr.response = genServerMsg( 401, "PRIVMSG" );
     return pr;
@@ -50,7 +49,17 @@ PreparedResponse PrivCommand::execute() const {
   std::string send = _args.substr( pos + 1 );
   pos              = _args.find( "DCC SEND" );
   if ( pos == std::string::npos ) {
-    pr.recipients.push_back( _authenticator->getFdFromNick( target ) );
+    if (target.find("#") == std::string::npos)
+      pr.recipients.push_back( _authenticator->getFdFromNick( target ) );
+    else {
+      std::vector<int> users = _channelManager->getChannel( target )->getAllUsers();
+      pr.recipients.clear();
+      for (int i = 0; i < (int)users.size(); i++)
+      {
+        if (users[i] != _userFD)
+          pr.recipients.push_back( users[i] );
+      }
+    }
     pr.response = genUserMsg( _authenticator->getUser( _userFD ), "PRIVMSG" + _args );
     return pr;
   } else {

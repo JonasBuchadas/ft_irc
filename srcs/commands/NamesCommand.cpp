@@ -27,7 +27,7 @@ PreparedResponse NamesCommand::execute() const {
   int i = 0;
   while (_args[i] == ' ')
     i++;
-  if (_args[i++] != '#')
+  if (_args[i] != '#')
   {
     pr.response = "Invalid channel identifier\n";
     return pr;
@@ -44,8 +44,8 @@ PreparedResponse NamesCommand::execute() const {
   }
   std::vector<int> users = _channelManager->getChannel(&_args[i])->getAllUsers();
   std::string resp;
-  resp = _authenticator->getNick(_userFD);
-  resp += "= :";
+  resp = &_args[i];
+  resp += " = :";
   for (int f = 0; f < (int)users.size(); f++)
   {
     resp += _authenticator->getNick(users[f]);

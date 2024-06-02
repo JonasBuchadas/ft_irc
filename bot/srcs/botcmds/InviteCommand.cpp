@@ -1,11 +1,11 @@
 #include "botcmds/InviteCommand.hpp"
 
-InviteCommand::InviteCommand( BotManager *BotManager, std::string args, std::string Invite ) : ACommand( "INVITE", BotManager, args, Invite ) {}
+InviteCommand::InviteCommand( std::string args, std::string Invite ) : ACommand( "INVITE", args, Invite ) {}
 
 InviteCommand::~InviteCommand() {
 }
 
-InviteCommand::InviteCommand( InviteCommand const &src ) : ACommand( src._BotManager ) {
+InviteCommand::InviteCommand( InviteCommand const &src ) : ACommand() {
   *this = src;
 }
 
@@ -18,19 +18,16 @@ InviteCommand &InviteCommand::operator=( InviteCommand const &src ) {
 
 std::string InviteCommand::execute() const {
   std::string channel;
+  std::string other_args = "";
   if (_args.find("#") != std::string::npos)
   {
     int start = _args.find("#") + 1;
-    channel = _args.substr(start, _args.find("\n") - start - 1);
+    channel = _args.substr(start, _args.find_first_of(" \n") - start - 1);
+    other_args = _args.substr(_args.find_first_of(" \n"));
+    if (_args[0] == '\n')
+      other_args = "";
   }
   else
     return "Unknown channel name";
-  Bot *bot = _BotManager->getBot( channel );
-  if ( bot == NULL ) {
-    bot = new Bot();
-    _BotManager->addBot( channel, bot );
-  }
-  else
-    return "Already in channel";
-  return "JOIN #" + channel + "\n";
+  return "JOIN #" + channel + other_args + "\n";
 }

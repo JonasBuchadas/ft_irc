@@ -6,19 +6,13 @@
 #include <map>
 
 #include "ACommand.hpp"
-#include "BotManager.hpp"
 
-#include "botcmds/AcceptCommand.hpp"
-#include "botcmds/AnswerCommand.hpp"
-#include "botcmds/AskCommand.hpp"
-#include "botcmds/CloseCommand.hpp"
 #include "botcmds/InviteCommand.hpp"
 #include "botcmds/NoCommand.hpp"
-#include "botcmds/ReplyCommand.hpp"
-#include "botcmds/ViewCommand.hpp"
+#include "botcmds/ShootCommand.hpp"
 
 
-typedef ACommand *( *funcPtr )( BotManager *BotManager, std::string _args, std::string nick );
+typedef ACommand *( *funcPtr )( std::string _args, std::string nick );
 
 class CommandFactory {
  private:
@@ -27,7 +21,7 @@ class CommandFactory {
   ~CommandFactory();
   CommandFactory( CommandFactory const &src );
   CommandFactory &operator=( CommandFactory const &src );
-  ACommand       *makeCommand( std::string commandName, BotManager *BotManager, std::string args, std::string nick );
+  ACommand       *makeCommand( std::string commandName, std::string args, std::string nick );
 };
 
 #endif

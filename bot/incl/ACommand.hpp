@@ -5,20 +5,17 @@
 #include <iostream>
 #include <map>
 
-#include "BotManager.hpp"
-
 class ACommand {
  private:
   const std::string _name;
 
  protected:
-  BotManager    *_BotManager;
   std::string    _usernick;
   std::string    _args;
 
  public:
-  ACommand( BotManager *BotManager );
-  ACommand( std::string name, BotManager *BotManager, std::string args, std::string nick );
+  ACommand();
+  ACommand( std::string name, std::string args, std::string nick );
   virtual ~ACommand();
   ACommand( ACommand const &src );
   ACommand &operator=( ACommand const &src );

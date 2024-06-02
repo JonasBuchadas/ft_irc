@@ -1,6 +1,5 @@
 
 #include <iostream>
-#include "BotManager.hpp"
 #include "CommandFactory.hpp"
 
 #include <arpa/inet.h>
@@ -11,6 +10,10 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <cstring>
+#include <csignal>
+
+bool _stopBot = false;
+int mainFD = 3;
 
 std::string awaitInput( int sockfd )
 {
@@ -74,6 +77,13 @@ int connectToServer( char *port)
   return sockfd;
 }
 
+void sigchld_handler( int s ) {
+  (void)s;
+  _stopBot = true;
+  close ( mainFD );
+}
+
+
 int main(int ac, char **av)
 {
   if ( ac != 3 )
@@ -89,11 +99,15 @@ int main(int ac, char **av)
     if (sockfd == -1 || loginBossBot(sockfd, av) == -1 || awaitInput( sockfd ).size() == 1 )
       return ( -1 );
       
-    BotManager *bots = new BotManager;
+    mainFD = sockfd;
     CommandFactory commands;
+    std::signal( SIGINT, sigchld_handler );
+    std::signal( SIGQUIT, sigchld_handler );
     while (1)
     {
       std::string fullInput = awaitInput( sockfd );
+      if (_stopBot)
+        break ;
       int start = 0;
       std::string input;
       while (start < (int)fullInput.length())
@@ -113,7 +127,8 @@ int main(int ac, char **av)
           start = fullInput.length();
         }
         std::string sender;
-        input = input.substr(1);
+        if (input.length() > 1)
+          input = input.substr(1);
         std::string word;
         if (input.find("!") != std::string::npos)
         {
@@ -122,13 +137,13 @@ int main(int ac, char **av)
           std::string end = input.substr(beg + 1);
           word = end.substr(0, end.find(" "));
         }
-        else
+        else if (input.find(" ") != std::string::npos)
         {
           sender = input.substr(0, input.find(" "));
           std::string end = input.substr(0, input.find(" "));
           word = end;
         }
-        ACommand *cmd = commands.makeCommand( word, bots, input.substr(word.length()), sender );
+        ACommand *cmd = commands.makeCommand( word, input.substr(word.length()), sender );
         std::string response = cmd->execute();
         delete cmd;
         for (size_t i = 0; i < response.size(); i++) {
@@ -148,3 +163,4 @@ int main(int ac, char **av)
   }
   return ( 0 );
 }
+

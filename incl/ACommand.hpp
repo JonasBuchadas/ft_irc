@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <map>
+#include <sstream>
 
 #include "Authenticator.hpp"
 #include "ChannelManager.hpp"

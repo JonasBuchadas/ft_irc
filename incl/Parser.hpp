@@ -6,11 +6,13 @@
 #include <sstream>
 #include <vector>
 
+#include "Server.hpp"
 #include "User.hpp"
 
 struct ParsedMsg {
   std::string commandName;
   std::string args;
+  bool        internal;
 };
 
 class Parser {
@@ -20,7 +22,7 @@ class Parser {
   ~Parser();
   Parser( Parser const &src );
   Parser                &operator=( Parser const &src );
-  std::vector<ParsedMsg> parseMsg( std::string str );
+  std::vector<ParsedMsg> parseMsg( UnparsedMsg msg );
 };
 
 #endif

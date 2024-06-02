@@ -67,9 +67,11 @@ ACommand *makeLogoutCommand( Authenticator *authenticator, ChannelManager *chann
   return new LogoutCommand( authenticator, channelManager, args, fd );
 }
 
-ACommand *CommandFactory::makeCommand( int fd, std::string commandName, std::string args ) {
-  const std::string enumCommand[] = { "USER", "PASS", "NICK", "PRIVMSG", "JOIN", "KICK", "INVITE", "PART", "NAMES", "MODE", "LOGOUT" };
-  const funcPtr     enumFunc[]    = {
+ACommand *CommandFactory::makeCommand( int fd, std::string commandName, std::string args, bool internal ) {
+  const std::string enumInternalCommand[] = { "LOGOUT" };
+  const funcPtr     enumInternalFunc[]    = { &makeLogoutCommand };
+  const std::string enumCommand[]         = { "USER", "PASS", "NICK", "PRIVMSG", "JOIN", "KICK", "INVITE", "PART", "NAMES", "MODE" };
+  const funcPtr     enumFunc[]            = {
       &makeUserCommand,
       &makePassCommand,
       &makeNickCommand,
@@ -80,8 +82,15 @@ ACommand *CommandFactory::makeCommand( int fd, std::string commandName, std::str
       &makePartCommand,
       &makeNamesCommand,
       &makeModeCommand,
-      &makeLogoutCommand,
   };
+  if ( internal ) {
+    for ( int i = 0; i < (int)( sizeof( enumInternalCommand ) / sizeof( std::string ) ); i++ ) {
+      if ( commandName == enumInternalCommand[i] ) {
+        ACommand *c = ( enumInternalFunc[i]( _authenticator, _channelManager, args, fd ) );
+        return c;
+      }
+    }
+  }
   for ( int i = 0; i < (int)( sizeof( enumCommand ) / sizeof( std::string ) ); i++ ) {
     if ( commandName == enumCommand[i] ) {
       ACommand *c = ( enumFunc[i]( _authenticator, _channelManager, args, fd ) );

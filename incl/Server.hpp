@@ -33,6 +33,11 @@ class Authenticator;
 
 #define BACKLOG 10
 
+struct UnparsedMsg {
+  std::string message;
+  bool        internal;
+};
+
 class Server {
  private:
   const char         *_port;
@@ -59,7 +64,7 @@ class Server {
   bool        isServerReceivingMessage( int i );
   void        acceptConnection( void ) throw( std::exception );
   void        processMessage( int i );
-  std::string receiveMessage( int i, int senderFD ) throw( std::exception );
+  UnparsedMsg receiveMessage( int i, int senderFD ) throw( std::exception );
 
  public:
   static bool _stopServer;

@@ -15,18 +15,12 @@ OBJS_PATH=	objs/
 
 ### SOURCE FILES ###
 SRC_NAME=	chatbot.cpp
-SRCS=		Bot.cpp \
-			BotManager.cpp \
-			ACommand.cpp \
+SRCS=		ACommand.cpp \
 			CommandFactory.cpp \
-			botcmds/AcceptCommand.cpp \
-			botcmds/AnswerCommand.cpp \
-			botcmds/AskCommand.cpp \
-			botcmds/CloseCommand.cpp \
 			botcmds/InviteCommand.cpp \
 			botcmds/NoCommand.cpp \
-			botcmds/ReplyCommand.cpp \
-			botcmds/ViewCommand.cpp
+			botcmds/ShootCommand.cpp \
+			botcmds/NamesCommand.cpp
 
 SRCS_NAME=	$(addprefix $(SRCS_PATH), $(SRC_NAME) $(SRCS))
 ### OBJECT FILES ###

@@ -1,11 +1,11 @@
 #include "botcmds/NoCommand.hpp"
 
-NoCommand::NoCommand( BotManager *BotManager, std::string args, std::string nick ) : ACommand( " ", BotManager, args, nick ) {}
+NoCommand::NoCommand( std::string args, std::string nick ) : ACommand( " ", args, nick ) {}
 
 NoCommand::~NoCommand() {
 }
 
-NoCommand::NoCommand( NoCommand const &src ) : ACommand( src._BotManager ) {
+NoCommand::NoCommand( NoCommand const &src ) : ACommand() {
   *this = src;
 }
 

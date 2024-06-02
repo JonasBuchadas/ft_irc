@@ -9,7 +9,7 @@
 class InviteCommand : public ACommand {
  private:
  public:
-  InviteCommand( BotManager *BotManager, std::string args, std::string Invite );
+  InviteCommand( std::string args, std::string Invite );
   ~InviteCommand();
   InviteCommand( InviteCommand const &src );
   InviteCommand &operator=( InviteCommand const &src );

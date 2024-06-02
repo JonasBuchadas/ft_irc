@@ -18,9 +18,10 @@ class Channel {
   std::string  _name;
   std::string  _password;
   unsigned int _maxUsers;
+  Channel();
 
  public:
-  Channel(std::string name);
+  Channel( std::string name );
   ~Channel();
   Channel( Channel const &src );
   Channel &operator=( Channel const &src );
@@ -35,6 +36,7 @@ class Channel {
   std::string      getName( void );
   std::string      getPassword( void );
   unsigned int     getMaxUsers( void );
+  void             addUser( int _userFD );
   void             removeUser( int _userFD );
   void             removeOperator( int _userFD );
 

@@ -24,6 +24,7 @@
 #include "ACommand.hpp"
 #include "Authenticator.hpp"
 #include "ChannelManager.hpp"
+#include "Message.hpp"
 #include "Messenger.hpp"
 #include "Parser.hpp"
 #include "User.hpp"
@@ -59,7 +60,7 @@ class Server {
   bool        isServerReceivingMessage( int i );
   void        acceptConnection( void ) throw( std::exception );
   void        processMessage( int i );
-  std::string receiveMessage( int i, int senderFD ) throw( std::exception );
+  UnparsedMsg receiveMessage( int i, int senderFD ) throw( std::exception );
 
  public:
   static bool _stopServer;

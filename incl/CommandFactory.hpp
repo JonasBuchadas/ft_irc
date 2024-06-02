@@ -34,7 +34,7 @@ class CommandFactory {
   ~CommandFactory();
   CommandFactory( CommandFactory const &src );
   CommandFactory &operator=( CommandFactory const &src );
-  ACommand       *makeCommand( int fd, std::string commandName, std::string args );
+  ACommand       *makeCommand( int fd, std::string commandName, std::string args, bool internal );
 };
 
 #endif

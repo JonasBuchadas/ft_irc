@@ -15,26 +15,27 @@ Parser &Parser::operator=( Parser const &src ) {
   return ( *this );
 }
 
-std::vector<ParsedMsg> Parser::parseMsg( std::string msg ) {
+std::vector<ParsedMsg> Parser::parseMsg( UnparsedMsg m ) {
   size_t                 start   = 0;
-  std::string            message = msg;
+  std::string            message = m.message;
   std::string            word;
   std::vector<ParsedMsg> msgs;
 
-  if ( !msg.empty() && msg.find_first_of( "\n\r", start ) != std::string::npos )
-    message = msg.substr( start, msg.find_first_of( "\n\r", start ) );
+  if ( !m.message.empty() && m.message.find_first_of( "\n\r", start ) != std::string::npos )
+    message = m.message.substr( start, m.message.find_first_of( "\n\r", start ) );
   while ( !message.empty() ) {
     std::stringstream ss( message );
     ss >> word;
     ParsedMsg result   = ParsedMsg();
     result.commandName = word;
     result.args        = message.substr( word.length() );
+    result.internal    = m.internal;
     msgs.push_back( result );
-    start = msg.find_first_of( "\n\r\0", start );
-    while ( start < msg.size() && ( msg[start] == '\n' || msg[start] == '\r' ) )
+    start = m.message.find_first_of( "\n\r\0", start );
+    while ( start < m.message.size() && ( m.message[start] == '\n' || m.message[start] == '\r' ) )
       start++;
-    if ( start < msg.size() && msg.find_first_of( "\n\r", start ) != std::string::npos )
-      message = msg.substr( start, msg.find_first_of( "\n\r", start ) - start );
+    if ( start < m.message.size() && m.message.find_first_of( "\n\r", start ) != std::string::npos )
+      message = m.message.substr( start, m.message.find_first_of( "\n\r", start ) - start );
     else
       break;
   }

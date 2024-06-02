@@ -138,25 +138,27 @@ void Server::acceptConnection( void ) throw( std::exception ) {
 
 void Server::processMessage( int i ) {
   int                    senderFD = _pfds[i].fd;
-  std::string            str;
+  UnparsedMsg            message;
   std::vector<ParsedMsg> parsedMsgs;
   ACommand              *command;
   PreparedResponse       pr;
 
-  str        = receiveMessage( i, senderFD );
-  parsedMsgs = _parser.parseMsg( str );
+  message    = receiveMessage( i, senderFD );
+  parsedMsgs = _parser.parseMsg( message );
   for ( std::vector<ParsedMsg>::iterator it = parsedMsgs.begin(); it != parsedMsgs.end(); it++ ) {
-    command = _commandFactory.makeCommand( senderFD, it->commandName, it->args );
+    command = _commandFactory.makeCommand( senderFD, it->commandName, it->args, it->internal );
     pr      = command->execute();
     delete command;
     _messenger.respond( pr );
   }
 }
 
-std::string Server::receiveMessage( int i, int senderFD ) throw( std::exception ) {
+UnparsedMsg Server::receiveMessage( int i, int senderFD ) throw( std::exception ) {
   int         nbytes = 0;
   char        buf[514];
-  std::string message;
+  UnparsedMsg m;
+
+  m.internal = false;
 
   nbytes = recv( senderFD, buf, 512, 0 );
   if ( nbytes < 0 )
@@ -165,19 +167,21 @@ std::string Server::receiveMessage( int i, int senderFD ) throw( std::exception 
     std::cout << "connection closed from " << senderFD << std::endl;
     close( senderFD );
     i -= delFromPfds( senderFD );
-    return ( "LOGOUT" );
+    m.message  = "LOGOUT";
+    m.internal = true;
+    return m;
   }
   buf[nbytes] = '\0';
-  message     = buf;
+  m.message   = buf;
   memset( buf, '\0', sizeof( buf ) );
   while ( nbytes >= 512 ) {
     nbytes = recv( senderFD, buf, 512, MSG_DONTWAIT );
     if ( nbytes < 0 )
       throw Server::RecvFailException();
-    message += buf;
+    m.message += buf;
     memset( buf, '\0', sizeof( buf ) );
   }
-  return message;
+  return m;
 }
 
 void Server::addToPfds( int fd ) {

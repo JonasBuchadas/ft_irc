@@ -7,6 +7,17 @@
 
 #include "User.hpp"
 
+struct UnparsedMsg {
+  std::string message;
+  bool        internal;
+};
+
+struct ParsedMsg {
+  std::string commandName;
+  std::string args;
+  bool        internal;
+};
+
 // Dunno if we need them
 #define ERR_CANNOTSENDTOCHAN 404  // Use when: user sends a message to a channel for which he is only invited
 #define ERR_UNKNOWNCOMMAND 421    // Use when: receiving an unknown command

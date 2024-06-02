@@ -20,6 +20,14 @@ JoinCommand &JoinCommand::operator=( JoinCommand const &src ) {
 PreparedResponse JoinCommand::execute() const {
   PreparedResponse pr = PreparedResponse();
   pr.recipients.push_back( _userFD );
-  pr.response = "Joining!\n";
+  if ( !_authenticator->authenticateUser( _userFD ) ) {
+    pr.response = "Not logged in";
+  }
+  if ( !_channelManager->channelExists( _args ) ) {
+    Channel *channel = new Channel( _args );
+    _channelManager->addChannel( channel->getName(), channel );
+  }
+  _channelManager->getChannel( _args )->addUser( _userFD );
+  pr.response = genUserMsg( _authenticator->getUser( _userFD ), "JOIN" + _args );
   return pr;
 }

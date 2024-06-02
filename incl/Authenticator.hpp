@@ -34,6 +34,7 @@ class Authenticator {
   User*                getUser( int fd );
   bool                 getPass( int fd );
   std::string          getNick( int fd );
+  bool                 isLoggedIn( int fd );
   std::string          getServerPass();
   std::string          getUserName( int fd );
   std::map<int, User*> getAllUsers();

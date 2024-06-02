@@ -2,6 +2,10 @@
 
 Channel::Channel() {}
 
+Channel::Channel( std::string name ) {
+  _name = name;
+}
+
 Channel::~Channel() {
   _users.clear();
 }
@@ -62,6 +66,12 @@ std::string Channel::getPassword( void ) {
 
 unsigned int Channel::getMaxUsers( void ) {
   return _maxUsers;
+}
+
+void Channel::addUser( int _userFD ) {
+  if ( isUser( _userFD ) )
+    return;
+  _users.push_back( _userFD );
 }
 
 void Channel::removeUser( int _userFD ) {

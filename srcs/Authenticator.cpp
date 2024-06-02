@@ -58,6 +58,10 @@ std::string Authenticator::getNick( int fd ) {
   return _users[fd]->getNick();
 }
 
+bool Authenticator::isLoggedIn( int fd ) {
+  return _users[fd]->getLoggedIn();
+}
+
 User* Authenticator::getUser( int fd ) {
   std::map<int, User*>::iterator it = _users.find( fd );
   if ( it == _users.end() )

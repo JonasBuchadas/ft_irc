@@ -6,14 +6,8 @@
 #include <sstream>
 #include <vector>
 
-#include "Server.hpp"
+#include "Message.hpp"
 #include "User.hpp"
-
-struct ParsedMsg {
-  std::string commandName;
-  std::string args;
-  bool        internal;
-};
 
 class Parser {
  private:

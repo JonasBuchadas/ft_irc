@@ -24,6 +24,7 @@
 #include "ACommand.hpp"
 #include "Authenticator.hpp"
 #include "ChannelManager.hpp"
+#include "Message.hpp"
 #include "Messenger.hpp"
 #include "Parser.hpp"
 #include "User.hpp"
@@ -32,11 +33,6 @@ class User;
 class Authenticator;
 
 #define BACKLOG 10
-
-struct UnparsedMsg {
-  std::string message;
-  bool        internal;
-};
 
 class Server {
  private:

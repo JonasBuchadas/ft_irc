@@ -1,8 +1,16 @@
 #include "CommandFactory.hpp"
 
-CommandFactory::CommandFactory() {}
+CommandFactory::CommandFactory() {
+}
+
+CommandFactory::CommandFactory( const char *password ) {
+  _authenticator  = new Authenticator( password );
+  _channelManager = new ChannelManager();
+}
 
 CommandFactory::~CommandFactory() {
+  delete _authenticator;
+  delete _channelManager;
 }
 
 CommandFactory::CommandFactory( CommandFactory const &src ) {
@@ -15,52 +23,51 @@ CommandFactory &CommandFactory::operator=( CommandFactory const &src ) {
   return ( *this );
 }
 
-ACommand *makeUserCommand( Authenticator *authenticator, ChannelManager *channelmanager, std::string args, int fd ) {
-  return new UserCommand( authenticator, channelmanager, args, fd );
+ACommand *makeUserCommand( Authenticator *authenticator, ChannelManager *channelManager, std::string args, int fd ) {
+  return new UserCommand( authenticator, channelManager, args, fd );
 }
 
-ACommand *makePassCommand( Authenticator *authenticator, ChannelManager *channelmanager, std::string args, int fd ) {
-  return new PassCommand( authenticator, channelmanager, args, fd );
+ACommand *makePassCommand( Authenticator *authenticator, ChannelManager *channelManager, std::string args, int fd ) {
+  return new PassCommand( authenticator, channelManager, args, fd );
 }
 
-ACommand *makeNickCommand( Authenticator *authenticator, ChannelManager *channelmanager, std::string args, int fd ) {
-  return new NickCommand( authenticator, channelmanager, args, fd );
+ACommand *makeNickCommand( Authenticator *authenticator, ChannelManager *channelManager, std::string args, int fd ) {
+  return new NickCommand( authenticator, channelManager, args, fd );
 }
 
-ACommand *makePrivCommand( Authenticator *authenticator, ChannelManager *channelmanager, std::string args, int fd ) {
-  return new PrivCommand( authenticator, channelmanager, args, fd );
+ACommand *makePrivCommand( Authenticator *authenticator, ChannelManager *channelManager, std::string args, int fd ) {
+  return new PrivCommand( authenticator, channelManager, args, fd );
 }
 
-ACommand *makeJoinCommand( Authenticator *authenticator, ChannelManager *channelmanager, std::string args, int fd ) {
-  return new JoinCommand( authenticator, channelmanager, args, fd );
+ACommand *makeJoinCommand( Authenticator *authenticator, ChannelManager *channelManager, std::string args, int fd ) {
+  return new JoinCommand( authenticator, channelManager, args, fd );
 }
 
-ACommand *makeKickCommand( Authenticator *authenticator, ChannelManager *channelmanager, std::string args, int fd ) {
-  return new KickCommand( authenticator, channelmanager, args, fd );
+ACommand *makeKickCommand( Authenticator *authenticator, ChannelManager *channelManager, std::string args, int fd ) {
+  return new KickCommand( authenticator, channelManager, args, fd );
 }
 
-ACommand *makeInviteCommand( Authenticator *authenticator, ChannelManager *channelmanager, std::string args, int fd ) {
-  return new InviteCommand( authenticator, channelmanager, args, fd );
+ACommand *makeInviteCommand( Authenticator *authenticator, ChannelManager *channelManager, std::string args, int fd ) {
+  return new InviteCommand( authenticator, channelManager, args, fd );
 }
 
-ACommand *makePartCommand( Authenticator *authenticator, ChannelManager *channelmanager, std::string args, int fd ) {
-  return new PartCommand( authenticator, channelmanager, args, fd );
+ACommand *makePartCommand( Authenticator *authenticator, ChannelManager *channelManager, std::string args, int fd ) {
+  return new PartCommand( authenticator, channelManager, args, fd );
 }
 
-ACommand *makeNamesCommand( Authenticator *authenticator, ChannelManager *channelmanager, std::string args, int fd ) {
-  return new NamesCommand( authenticator, channelmanager, args, fd );
+ACommand *makeNamesCommand( Authenticator *authenticator, ChannelManager *channelManager, std::string args, int fd ) {
+  return new NamesCommand( authenticator, channelManager, args, fd );
 }
 
-ACommand *makeModeCommand( Authenticator *authenticator, ChannelManager *channelmanager, std::string args, int fd ) {
-  return new ModeCommand( authenticator, channelmanager, args, fd );
+ACommand *makeModeCommand( Authenticator *authenticator, ChannelManager *channelManager, std::string args, int fd ) {
+  return new ModeCommand( authenticator, channelManager, args, fd );
 }
 
-ACommand *makeLogoutCommand( Authenticator *authenticator, ChannelManager *channelmanager, std::string args, int fd ) {
-  return new LogoutCommand( authenticator, channelmanager, args, fd );
+ACommand *makeLogoutCommand( Authenticator *authenticator, ChannelManager *channelManager, std::string args, int fd ) {
+  return new LogoutCommand( authenticator, channelManager, args, fd );
 }
 
-ACommand *CommandFactory::makeCommand( Authenticator  *authenticator,
-                                       ChannelManager *channelmanager, int fd, std::string commandName, std::string args ) {
+ACommand *CommandFactory::makeCommand( int fd, std::string commandName, std::string args ) {
   const std::string enumCommand[] = { "USER", "PASS", "NICK", "PRIVMSG", "JOIN", "KICK", "INVITE", "PART", "NAMES", "MODE", "LOGOUT" };
   const funcPtr     enumFunc[]    = {
       &makeUserCommand,
@@ -77,9 +84,9 @@ ACommand *CommandFactory::makeCommand( Authenticator  *authenticator,
   };
   for ( int i = 0; i < (int)( sizeof( enumCommand ) / sizeof( std::string ) ); i++ ) {
     if ( commandName == enumCommand[i] ) {
-      ACommand *c = ( enumFunc[i]( authenticator, channelmanager, args, fd ) );
+      ACommand *c = ( enumFunc[i]( _authenticator, _channelManager, args, fd ) );
       return c;
     }
   }
-  return new NoCommand( authenticator, channelmanager, args, fd );
+  return new NoCommand( _authenticator, _channelManager, args, fd );
 }

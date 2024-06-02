@@ -4,19 +4,14 @@
 
 bool Server::_stopServer = false;
 
-Server::Server() {
-  _authenticator  = new Authenticator( "invalid" );
-  _channelManager = new ChannelManager();
+Server::Server() : _commandFactory( "invalid" ) {
 }
 
 Server::~Server() {
   clearUsers();
-  delete _authenticator;
-  delete _channelManager;
 }
 
-Server::Server( Server const &src ) : _authenticator( src._authenticator ),
-                                      _channelManager( src._channelManager ) {
+Server::Server( Server const &src ) : _commandFactory( src._commandFactory ) {
   *this = src;
 }
 
@@ -33,15 +28,13 @@ Server &Server::operator=( Server const &src ) {
   return ( *this );
 }
 
-Server::Server( char const *port, char const *password ) throw( std::exception ) {
+Server::Server( char const *port, char const *password ) throw( std::exception ) : _commandFactory( password ) {
   setPort( port );
   setPassword( password );
   setupListeningSocket();
-  _parser         = Parser();
-  _authenticator  = new Authenticator( _password.c_str() );
-  _channelManager = new ChannelManager();
-  _messenger      = Messenger( _listeningSocket );
-  _fdSize         = 5;
+  _parser    = Parser();
+  _messenger = Messenger( _listeningSocket );
+  _fdSize    = 5;
 }
 
 void Server::setPassword( char const *password ) throw( std::exception ) {
@@ -153,7 +146,7 @@ void Server::processMessage( int i ) {
   str        = receiveMessage( i, senderFD );
   parsedMsgs = _parser.parseMsg( str );
   for ( std::vector<ParsedMsg>::iterator it = parsedMsgs.begin(); it != parsedMsgs.end(); it++ ) {
-    command = _commandFactory.makeCommand( _authenticator, _channelManager, senderFD, it->commandName, it->args );
+    command = _commandFactory.makeCommand( senderFD, it->commandName, it->args );
     pr      = command->execute();
     delete command;
     _messenger.respond( pr );
@@ -206,7 +199,6 @@ int Server::delFromPfds( int fd ) {
   std::vector<pollfd>::iterator it = _pfds.begin();
   while ( it != _pfds.end() ) {
     if ( it->fd == fd ) {
-      // _authenticator->releaseUserInfo( fd );
       _pfds.erase( it );
       return ( 1 );
     }

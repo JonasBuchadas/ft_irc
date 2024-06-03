@@ -49,7 +49,8 @@ PreparedResponse NamesCommand::execute() const {
       resp += ", ";
   }
   for ( int f = 0; f < (int)users.size(); f++ ) {
-    resp += ", ";
+    if (opers.size() > 0 || f > 0)
+      resp += ", ";
     resp += _userManager->getNick( users[f] );
   }
   pr.response = genServerMsg( 353, resp );

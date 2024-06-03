@@ -1,12 +1,12 @@
 #include "commands/PartCommand.hpp"
 
-PartCommand::PartCommand( Authenticator *authenticator, ChannelManager *channelManager,
-                          std::string args, int fd ) : ACommand( "PART", authenticator, channelManager, args, fd ) {}
+PartCommand::PartCommand( UserManager *userManager, ChannelManager *channelManager,
+                          std::string args, int fd ) : ACommand( "PART", userManager, channelManager, args, fd ) {}
 
 PartCommand::~PartCommand() {
 }
 
-PartCommand::PartCommand( PartCommand const &src ) : ACommand( src._authenticator, src._channelManager ) {
+PartCommand::PartCommand( PartCommand const &src ) : ACommand( src._userManager, src._channelManager ) {
   *this = src;
 }
 
@@ -20,7 +20,7 @@ PartCommand &PartCommand::operator=( PartCommand const &src ) {
 PreparedResponse PartCommand::execute() const {
   PreparedResponse pr = PreparedResponse();
   pr.recipients.push_back( _userFD );
-  if ( !_authenticator->isLoggedIn( _userFD ) ) {
+  if ( !_userManager->isLoggedIn( _userFD ) ) {
     pr.response = "Not logged in\n";
     return pr;
   }
@@ -40,6 +40,6 @@ PreparedResponse PartCommand::execute() const {
     _channelManager->getChannel( channelName )->removeUser( _userFD );
   if ( _channelManager->getChannel( channelName )->isOperator( _userFD ) )
     _channelManager->getChannel( channelName )->removeOperator( _userFD );
-  pr.response = genUserMsg( _authenticator->getUser( _userFD ), "PART" + _args );
+  pr.response = genUserMsg( _userManager->getUser( _userFD ), "PART" + _args );
   return pr;
 }

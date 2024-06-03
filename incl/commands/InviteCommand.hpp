@@ -9,7 +9,7 @@
 class InviteCommand : public ACommand {
  private:
  public:
-  InviteCommand( Authenticator *authenticator, ChannelManager *channelManager, std::string args, int fd );
+  InviteCommand( UserManager *userManager, ChannelManager *channelManager, std::string args, int fd );
   ~InviteCommand();
   InviteCommand( InviteCommand const &src );
   InviteCommand   &operator=( InviteCommand const &src );

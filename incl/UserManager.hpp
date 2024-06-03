@@ -1,6 +1,6 @@
 #pragma once
-#ifndef __AUTHENTICATOR_HPP__
-#define __AUTHENTICATOR_HPP__
+#ifndef __USERMANAGER_HPP__
+#define __USERMANAGER_HPP__
 
 #include <arpa/inet.h>
 
@@ -10,13 +10,13 @@
 
 #include "User.hpp"
 
-class Authenticator {
+class UserManager {
  private:
-  Authenticator();
+  UserManager();
   std::map<int, User*> _users;
   const char*          _password;
 
-  typedef std::string ( Authenticator::*CommandFunction )( const std::string&, int fd );
+  typedef std::string ( UserManager::*CommandFunction )( const std::string&, int fd );
   std::map<std::string, CommandFunction> _command;
 
   // std::string checkPasswd( const std::string& message, int fd );
@@ -24,10 +24,10 @@ class Authenticator {
   // std::string setUsername( const std::string& message, int fd );
 
  public:
-  Authenticator( Authenticator const& src );
-  Authenticator& operator=( Authenticator const& src );
-  Authenticator( const char* password );
-  ~Authenticator();
+  UserManager( UserManager const& src );
+  UserManager& operator=( UserManager const& src );
+  UserManager( const char* password );
+  ~UserManager();
 
   // std::string executeCommand( const std::string& command, const std::string& message, int fd );
 

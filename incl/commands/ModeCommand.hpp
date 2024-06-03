@@ -9,7 +9,7 @@
 class ModeCommand : public ACommand {
  private:
  public:
-  ModeCommand( Authenticator *authenticator, ChannelManager *channelManager, std::string args, int fd );
+  ModeCommand( UserManager *userManager, ChannelManager *channelManager, std::string args, int fd );
   ~ModeCommand();
   ModeCommand( ModeCommand const &src );
   ModeCommand     &operator=( ModeCommand const &src );

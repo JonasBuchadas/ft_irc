@@ -1,12 +1,12 @@
 #include "commands/NickCommand.hpp"
 
-NickCommand::NickCommand( Authenticator *authenticator, ChannelManager *channelManager,
-                          std::string args, int fd ) : ACommand( "NICK", authenticator, channelManager, args, fd ) {}
+NickCommand::NickCommand( UserManager *userManager, ChannelManager *channelManager,
+                          std::string args, int fd ) : ACommand( "NICK", userManager, channelManager, args, fd ) {}
 
 NickCommand::~NickCommand() {
 }
 
-NickCommand::NickCommand( NickCommand const &src ) : ACommand( src._authenticator, src._channelManager ) {
+NickCommand::NickCommand( NickCommand const &src ) : ACommand( src._userManager, src._channelManager ) {
   *this = src;
 }
 
@@ -26,21 +26,21 @@ PreparedResponse NickCommand::execute() const {
   }
   std::string str = _args.substr( 1, _args.find_first_of( " \n\r\0", 1 ) - 1 );
 
-  if ( !_authenticator->isValidArg( str ) ) {
+  if ( !_userManager->isValidArg( str ) ) {
     pr.response = "Nickname contains invalid characters\n\0";
     return pr;
   }
 
-  if ( _authenticator->nickNameExists( _userFD, str ) ) {
+  if ( _userManager->nickNameExists( _userFD, str ) ) {
     pr.response = "Nickname already taken. Nickname not updated\n\0";
     return pr;
   }
 
-  User *user = _authenticator->getUser( _userFD );
+  User *user = _userManager->getUser( _userFD );
   if ( user == NULL ) {
     user = new User();
     user->setNick( str );
-    _authenticator->addUser( _userFD, user );
+    _userManager->addUser( _userFD, user );
     pr.response = "Registered your nickname\n\0";
     return pr;
   }
@@ -48,7 +48,7 @@ PreparedResponse NickCommand::execute() const {
   if ( user->getNick().empty() ) {
     user->setNick( str );
     pr.response = "Registered your nickname\n\0";
-    if ( _authenticator->authenticateUser( _userFD ) ) {
+    if ( _userManager->authenticateUser( _userFD ) ) {
       pr.response += "Successfully logged in!\n\0";
     }
     return pr;

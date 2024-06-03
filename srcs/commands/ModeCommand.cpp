@@ -1,12 +1,12 @@
 #include "commands/ModeCommand.hpp"
 
-ModeCommand::ModeCommand( Authenticator *authenticator, ChannelManager *channelManager,
-                          std::string args, int fd ) : ACommand( "MODE", authenticator, channelManager, args, fd ) {}
+ModeCommand::ModeCommand( UserManager *userManager, ChannelManager *channelManager,
+                          std::string args, int fd ) : ACommand( "MODE", userManager, channelManager, args, fd ) {}
 
 ModeCommand::~ModeCommand() {
 }
 
-ModeCommand::ModeCommand( ModeCommand const &src ) : ACommand( src._authenticator, src._channelManager ) {
+ModeCommand::ModeCommand( ModeCommand const &src ) : ACommand( src._userManager, src._channelManager ) {
   *this = src;
 }
 

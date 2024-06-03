@@ -20,8 +20,8 @@
 #include <sstream>
 #include <vector>
 
-#include "Authenticator.hpp"
 #include "CommandFactory.hpp"
+#include "UserManager.hpp"
 
 class Messenger {
  private:

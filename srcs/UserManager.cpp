@@ -1,33 +1,33 @@
-#include "Authenticator.hpp"
+#include "UserManager.hpp"
 
-Authenticator::Authenticator( const char* password ) : _password( password ) {
+UserManager::UserManager( const char* password ) : _password( password ) {
   _users.clear();
   _command.clear();
 }
 
-Authenticator::~Authenticator() {
+UserManager::~UserManager() {
   clearUsers();
 }
 
-Authenticator::Authenticator( Authenticator const& src ) {
+UserManager::UserManager( UserManager const& src ) {
   *this = src;
 }
 
-Authenticator& Authenticator::operator=( Authenticator const& src ) {
+UserManager& UserManager::operator=( UserManager const& src ) {
   if ( this == &src )
     return ( *this );
   _users = src._users;
   return ( *this );
 }
 
-bool Authenticator::isValidArg( std::string str ) {
+bool UserManager::isValidArg( std::string str ) {
   for ( size_t i = 0; i < str.length(); i++ )
     if ( !isalnum( str[i] ) )
       return 0;
   return 1;
 }
 
-bool Authenticator::userNameExists( int fd, std::string userName ) {
+bool UserManager::userNameExists( int fd, std::string userName ) {
   for ( std::map<int, User*>::iterator it = _users.begin(); it != _users.end(); it++ ) {
     if ( it->first != fd && it->second->getName() == userName )
       return true;
@@ -35,14 +35,14 @@ bool Authenticator::userNameExists( int fd, std::string userName ) {
   return false;
 }
 
-bool Authenticator::nickNameExists( int fd, std::string nickName ) {
+bool UserManager::nickNameExists( int fd, std::string nickName ) {
   for ( std::map<int, User*>::iterator it = _users.begin(); it != _users.end(); it++ ) {
     if ( it->first != fd && it->second->getNick() == nickName )
       return true;
   }
   return false;
 }
-int Authenticator::getFdFromNick( std::string str ) {
+int UserManager::getFdFromNick( std::string str ) {
   for ( std::map<int, User*>::iterator it = _users.begin(); it != _users.end(); it++ ) {
     if ( it->second && it->second->getNick() == str )
       return it->first;
@@ -50,40 +50,40 @@ int Authenticator::getFdFromNick( std::string str ) {
   return -1;
 }
 
-bool Authenticator::getPass( int fd ) {
+bool UserManager::getPass( int fd ) {
   return _users[fd]->getPassword();
 }
 
-std::string Authenticator::getNick( int fd ) {
+std::string UserManager::getNick( int fd ) {
   return _users[fd]->getNick();
 }
 
-bool Authenticator::isLoggedIn( int fd ) {
+bool UserManager::isLoggedIn( int fd ) {
   if ( !_users[fd] )
     return false;
   return _users[fd]->getLoggedIn();
 }
 
-User* Authenticator::getUser( int fd ) {
+User* UserManager::getUser( int fd ) {
   std::map<int, User*>::iterator it = _users.find( fd );
   if ( it == _users.end() )
     return NULL;
   return it->second;
 }
 
-std::string Authenticator::getServerPass() {
+std::string UserManager::getServerPass() {
   return _password;
 }
 
-std::map<int, User*> Authenticator::getAllUsers() {
+std::map<int, User*> UserManager::getAllUsers() {
   return _users;
 }
 
-void Authenticator::addUser( int fd, User* user ) {
+void UserManager::addUser( int fd, User* user ) {
   _users[fd] = user;
 }
 
-bool Authenticator::authenticateUser( int fd ) {
+bool UserManager::authenticateUser( int fd ) {
   if ( _users[fd] && !_users[fd]->getLoggedIn() && _users[fd]->getPassword() && !_users[fd]->getNick().empty() && !_users[fd]->getName().empty() ) {
     _users[fd]->setLoggedIn( true );
     return true;
@@ -91,21 +91,21 @@ bool Authenticator::authenticateUser( int fd ) {
   return false;
 }
 
-void Authenticator::setUserIp( int fd ) {
+void UserManager::setUserIp( int fd ) {
   struct sockaddr_in addr;
   socklen_t          userlen = sizeof( addr );
   if ( getpeername( fd, (struct sockaddr*)&addr, &userlen ) != -1 )
     _users[fd]->setIp( ntohl( addr.sin_addr.s_addr ) );
 }
 
-void Authenticator::releaseUserInfo( int fd ) {
+void UserManager::releaseUserInfo( int fd ) {
   if ( _users.find( fd ) != _users.end() ) {
     delete _users[fd];
     _users.erase( fd );
   }
 }
 
-void Authenticator::clearUsers() {
+void UserManager::clearUsers() {
   std::map<int, User*>::iterator it;
   for ( it = _users.begin(); it != _users.end(); it++ ) {
     delete it->second;

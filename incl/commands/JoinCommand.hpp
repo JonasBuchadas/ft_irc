@@ -9,7 +9,7 @@
 class JoinCommand : public ACommand {
  private:
  public:
-  JoinCommand( Authenticator *authenticator, ChannelManager *channelManager, std::string args, int fd );
+  JoinCommand( UserManager *userManager, ChannelManager *channelManager, std::string args, int fd );
   ~JoinCommand();
   JoinCommand( JoinCommand const &src );
   JoinCommand     &operator=( JoinCommand const &src );

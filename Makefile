@@ -17,7 +17,7 @@ OBJS_PATH=	objs/
 SRC_NAME=	main.cpp
 SRCS=		Server.cpp \
 				User.cpp \
-				Authenticator.cpp \
+				UserManager.cpp \
 				Message.cpp \
 				Messenger.cpp \
 				Channel.cpp \

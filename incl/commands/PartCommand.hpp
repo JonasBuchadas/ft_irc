@@ -9,7 +9,7 @@
 class PartCommand : public ACommand {
  private:
  public:
-  PartCommand( Authenticator *authenticator, ChannelManager *channelManager, std::string args, int fd );
+  PartCommand( UserManager *userManager, ChannelManager *channelManager, std::string args, int fd );
   ~PartCommand();
   PartCommand( PartCommand const &src );
   PartCommand     &operator=( PartCommand const &src );

@@ -1,12 +1,12 @@
 #include "commands/JoinCommand.hpp"
 
-JoinCommand::JoinCommand( Authenticator *authenticator, ChannelManager *channelManager,
-                          std::string args, int fd ) : ACommand( "JOIN", authenticator, channelManager, args, fd ) {}
+JoinCommand::JoinCommand( UserManager *userManager, ChannelManager *channelManager,
+                          std::string args, int fd ) : ACommand( "JOIN", userManager, channelManager, args, fd ) {}
 
 JoinCommand::~JoinCommand() {
 }
 
-JoinCommand::JoinCommand( JoinCommand const &src ) : ACommand( src._authenticator, src._channelManager ) {
+JoinCommand::JoinCommand( JoinCommand const &src ) : ACommand( src._userManager, src._channelManager ) {
   *this = src;
 }
 
@@ -20,7 +20,7 @@ JoinCommand &JoinCommand::operator=( JoinCommand const &src ) {
 PreparedResponse JoinCommand::execute() const {
   PreparedResponse pr = PreparedResponse();
   pr.recipients.push_back( _userFD );
-  if ( !_authenticator->isLoggedIn( _userFD ) ) {
+  if ( !_userManager->isLoggedIn( _userFD ) ) {
     pr.response = "Not logged in\n";
     return pr;
   }
@@ -39,6 +39,6 @@ PreparedResponse JoinCommand::execute() const {
   } else {
     _channelManager->getChannel( channelName )->addUser( _userFD );
   }
-  pr.response = genUserMsg( _authenticator->getUser( _userFD ), "JOIN" + _args );
+  pr.response = genUserMsg( _userManager->getUser( _userFD ), "JOIN" + _args );
   return pr;
 }

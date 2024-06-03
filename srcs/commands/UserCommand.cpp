@@ -1,12 +1,12 @@
 #include "commands/UserCommand.hpp"
 
-UserCommand::UserCommand( Authenticator *authenticator, ChannelManager *channelManager,
-                          std::string args, int fd ) : ACommand( "USER", authenticator, channelManager, args, fd ) {}
+UserCommand::UserCommand( UserManager *userManager, ChannelManager *channelManager,
+                          std::string args, int fd ) : ACommand( "USER", userManager, channelManager, args, fd ) {}
 
 UserCommand::~UserCommand() {
 }
 
-UserCommand::UserCommand( UserCommand const &src ) : ACommand( src._authenticator, src._channelManager ) {
+UserCommand::UserCommand( UserCommand const &src ) : ACommand( src._userManager, src._channelManager ) {
   *this = src;
 }
 
@@ -26,36 +26,33 @@ PreparedResponse UserCommand::execute() const {
   }
   std::string str = _args.substr( 1, _args.find_first_of( " \n\r\0", 1 ) - 1 );
 
-  if ( !_authenticator->isValidArg( str ) ) {
+  if ( !_userManager->isValidArg( str ) ) {
     pr.response = "Username contains invalid characters\n\0";
     return pr;
   }
 
-  User *user = _authenticator->getUser( _userFD );
+  User *user = _userManager->getUser( _userFD );
 
-  if (user && user->getLoggedIn())
-  {
+  if ( user && user->getLoggedIn() ) {
     pr.response = "User already authenticated.Nothing to do\n";
     return pr;
-  }
-  else if ( user == NULL ) {
+  } else if ( user == NULL ) {
     user = new User();
     user->setName( str );
-    _authenticator->addUser( _userFD, user );
+    _userManager->addUser( _userFD, user );
     pr.response = "Registered your username\n\0";
     return pr;
   }
 
-  if ( _authenticator->userNameExists( _userFD, str ) ) {
+  if ( _userManager->userNameExists( _userFD, str ) ) {
     pr.response = "Username already taken. Username not updated\n\0";
     return pr;
   }
 
-
   if ( user->getName().empty() ) {
     user->setName( str );
     pr.response = "Registered your username\n\0";
-    if ( _authenticator->authenticateUser( _userFD ) ) {
+    if ( _userManager->authenticateUser( _userFD ) ) {
       pr.response += "Successfully logged in!\n\0";
     }
     return pr;

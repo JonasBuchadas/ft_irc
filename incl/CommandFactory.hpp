@@ -6,8 +6,8 @@
 #include <map>
 
 #include "ACommand.hpp"
-#include "Authenticator.hpp"
 #include "ChannelManager.hpp"
+#include "UserManager.hpp"
 #include "commands/InviteCommand.hpp"
 #include "commands/JoinCommand.hpp"
 #include "commands/KickCommand.hpp"
@@ -21,11 +21,11 @@
 #include "commands/PrivCommand.hpp"
 #include "commands/UserCommand.hpp"
 
-typedef ACommand *( *funcPtr )( Authenticator *authenticator, ChannelManager *channelmanager, std::string _args, int fd );
+typedef ACommand *( *funcPtr )( UserManager *userManager, ChannelManager *channelmanager, std::string _args, int fd );
 
 class CommandFactory {
  private:
-  Authenticator  *_authenticator;
+  UserManager    *_userManager;
   ChannelManager *_channelManager;
   CommandFactory();
 

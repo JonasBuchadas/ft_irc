@@ -1,12 +1,12 @@
 #include "commands/KickCommand.hpp"
 
-KickCommand::KickCommand( Authenticator *authenticator, ChannelManager *channelManager,
-                          std::string args, int fd ) : ACommand( "KICK", authenticator, channelManager, args, fd ) {}
+KickCommand::KickCommand( UserManager *userManager, ChannelManager *channelManager,
+                          std::string args, int fd ) : ACommand( "KICK", userManager, channelManager, args, fd ) {}
 
 KickCommand::~KickCommand() {
 }
 
-KickCommand::KickCommand( KickCommand const &src ) : ACommand( src._authenticator, src._channelManager ) {
+KickCommand::KickCommand( KickCommand const &src ) : ACommand( src._userManager, src._channelManager ) {
   *this = src;
 }
 

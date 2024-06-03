@@ -22,15 +22,15 @@
 #include <vector>
 
 #include "ACommand.hpp"
-#include "Authenticator.hpp"
 #include "ChannelManager.hpp"
 #include "Message.hpp"
 #include "Messenger.hpp"
 #include "Parser.hpp"
 #include "User.hpp"
+#include "UserManager.hpp"
 
 class User;
-class Authenticator;
+class UserManager;
 
 #define BACKLOG 10
 

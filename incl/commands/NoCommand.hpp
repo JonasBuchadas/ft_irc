@@ -9,7 +9,7 @@
 class NoCommand : public ACommand {
  private:
  public:
-  NoCommand( Authenticator *authenticator, ChannelManager *channelManager, std::string args, int fd );
+  NoCommand( UserManager *userManager, ChannelManager *channelManager, std::string args, int fd );
   ~NoCommand();
   NoCommand( NoCommand const &src );
   NoCommand       &operator=( NoCommand const &src );

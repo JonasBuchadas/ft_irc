@@ -9,7 +9,7 @@
 class NamesCommand : public ACommand {
  private:
  public:
-  NamesCommand( Authenticator *authenticator, ChannelManager *channelManager, std::string args, int fd );
+  NamesCommand( UserManager *userManager, ChannelManager *channelManager, std::string args, int fd );
   ~NamesCommand();
   NamesCommand( NamesCommand const &src );
   NamesCommand    &operator=( NamesCommand const &src );

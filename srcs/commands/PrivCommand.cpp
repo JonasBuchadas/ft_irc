@@ -2,13 +2,13 @@
 
 #include "Message.hpp"
 
-PrivCommand::PrivCommand( Authenticator *authenticator, ChannelManager *channelManager,
-                          std::string args, int fd ) : ACommand( "PRIVMSG", authenticator, channelManager, args, fd ) {}
+PrivCommand::PrivCommand( UserManager *userManager, ChannelManager *channelManager,
+                          std::string args, int fd ) : ACommand( "PRIVMSG", userManager, channelManager, args, fd ) {}
 
 PrivCommand::~PrivCommand() {
 }
 
-PrivCommand::PrivCommand( PrivCommand const &src ) : ACommand( src._authenticator, src._channelManager ) {
+PrivCommand::PrivCommand( PrivCommand const &src ) : ACommand( src._userManager, src._channelManager ) {
   *this = src;
 }
 
@@ -21,7 +21,7 @@ PrivCommand &PrivCommand::operator=( PrivCommand const &src ) {
 
 PreparedResponse PrivCommand::execute() const {
   PreparedResponse pr = PreparedResponse();
-  if ( !_authenticator->getUser( _userFD ) ) {
+  if ( !_userManager->getUser( _userFD ) ) {
     pr.recipients.push_back( _userFD );
     pr.response = genServerMsg( 451, "PRIVMSG" );
     return pr;
@@ -34,7 +34,7 @@ PreparedResponse PrivCommand::execute() const {
   std::string target = _args.substr( 1, _args.find_first_of( " \n\r\0", 1 ) - 1 );
   if ( target.find( ":" ) != std::string::npos )
     target = target.substr( 0, target.find( ":" ) );
-  if ( _authenticator->getFdFromNick( target ) == -1 && !_channelManager->channelExists( target ) ) {
+  if ( _userManager->getFdFromNick( target ) == -1 && !_channelManager->channelExists( target ) ) {
     pr.recipients.push_back( _userFD );
     pr.response = genServerMsg( 401, "PRIVMSG" );
     return pr;
@@ -49,18 +49,17 @@ PreparedResponse PrivCommand::execute() const {
   std::string send = _args.substr( pos + 1 );
   pos              = _args.find( "DCC SEND" );
   if ( pos == std::string::npos ) {
-    if (target.find("#") == std::string::npos)
-      pr.recipients.push_back( _authenticator->getFdFromNick( target ) );
+    if ( target.find( "#" ) == std::string::npos )
+      pr.recipients.push_back( _userManager->getFdFromNick( target ) );
     else {
       std::vector<int> users = _channelManager->getChannel( target )->getAllUsers();
       pr.recipients.clear();
-      for (int i = 0; i < (int)users.size(); i++)
-      {
-        if (users[i] != _userFD)
+      for ( int i = 0; i < (int)users.size(); i++ ) {
+        if ( users[i] != _userFD )
           pr.recipients.push_back( users[i] );
       }
     }
-    pr.response = genUserMsg( _authenticator->getUser( _userFD ), "PRIVMSG" + _args );
+    pr.response = genUserMsg( _userManager->getUser( _userFD ), "PRIVMSG" + _args );
     return pr;
   } else {
     send = send.substr( pos + 8 );
@@ -69,18 +68,18 @@ PreparedResponse PrivCommand::execute() const {
     iss >> filename >> ipStr >> portStr >> filesizeStr;
     struct sockaddr_in addr;
     socklen_t          userlen = sizeof( addr );
-    if ( getpeername( _authenticator->getFdFromNick( target ), (struct sockaddr *)&addr, &userlen ) == -1 ) {
+    if ( getpeername( _userManager->getFdFromNick( target ), (struct sockaddr *)&addr, &userlen ) == -1 ) {
       pr.recipients.push_back( _userFD );
       pr.response = "error2\n";  // Change later
       return pr;
     }
-    if ( ntohl( addr.sin_addr.s_addr ) != _authenticator->getUser( _authenticator->getFdFromNick( target ) )->getIp() ) {
+    if ( ntohl( addr.sin_addr.s_addr ) != _userManager->getUser( _userManager->getFdFromNick( target ) )->getIp() ) {
       pr.recipients.push_back( _userFD );
       pr.response = "error3\n";  // Change later
       return pr;
     }
     pr.recipients.push_back( _userFD );
-    pr.response = genUserMsg( _authenticator->getUser( _userFD ), "PRIVMSG" + _args );
+    pr.response = genUserMsg( _userManager->getUser( _userFD ), "PRIVMSG" + _args );
     return pr;
   }
   pr.recipients.push_back( _userFD );

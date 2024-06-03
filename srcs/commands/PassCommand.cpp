@@ -1,12 +1,12 @@
 #include "commands/PassCommand.hpp"
 
-PassCommand::PassCommand( Authenticator *authenticator, ChannelManager *channelManager,
-                          std::string args, int fd ) : ACommand( "PASS", authenticator, channelManager, args, fd ) {}
+PassCommand::PassCommand( UserManager *userManager, ChannelManager *channelManager,
+                          std::string args, int fd ) : ACommand( "PASS", userManager, channelManager, args, fd ) {}
 
 PassCommand::~PassCommand() {
 }
 
-PassCommand::PassCommand( PassCommand const &src ) : ACommand( src._authenticator, src._channelManager ) {
+PassCommand::PassCommand( PassCommand const &src ) : ACommand( src._userManager, src._channelManager ) {
   *this = src;
 }
 
@@ -26,31 +26,29 @@ PreparedResponse PassCommand::execute() const {
   }
   std::string str = _args.substr( 1, _args.find_first_of( " \n\r\0", 1 ) - 1 );
 
-  if ( !_authenticator->isValidArg( str ) ) {
+  if ( !_userManager->isValidArg( str ) ) {
     pr.response = "Password contains invalid characters\n\0";
     return pr;
   }
 
-  User *user = _authenticator->getUser( _userFD );
+  User *user = _userManager->getUser( _userFD );
   if ( user == NULL ) {
     user = new User();
-    if ( str == _authenticator->getServerPass() )
+    if ( str == _userManager->getServerPass() )
       user->setPassword( true );
-    _authenticator->addUser( _userFD, user );
+    _userManager->addUser( _userFD, user );
     pr.response = "Password registered\n\0";
     return pr;
-  }
-  else if ( user->getLoggedIn() )
-  {
+  } else if ( user->getLoggedIn() ) {
     pr.response = "User already authenticated.Nothing to do\n";
     return pr;
   }
 
-  if ( !user->getPassword() && str == _authenticator->getServerPass() ) {
+  if ( !user->getPassword() && str == _userManager->getServerPass() ) {
     user->setPassword( true );
     pr.response = "Password registered\n\0";
   }
-  if ( _authenticator->authenticateUser( _userFD ) ) {
+  if ( _userManager->authenticateUser( _userFD ) ) {
     pr.response += "Successfully logged in!\n\0";
   }
   return pr;

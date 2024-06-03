@@ -1,12 +1,12 @@
 #include "commands/LogoutCommand.hpp"
 
-LogoutCommand::LogoutCommand( Authenticator *authenticator, ChannelManager *channelManager,
-                              std::string args, int fd ) : ACommand( "LOGOUT", authenticator, channelManager, args, fd ) {}
+LogoutCommand::LogoutCommand( UserManager *userManager, ChannelManager *channelManager,
+                              std::string args, int fd ) : ACommand( "LOGOUT", userManager, channelManager, args, fd ) {}
 
 LogoutCommand::~LogoutCommand() {
 }
 
-LogoutCommand::LogoutCommand( LogoutCommand const &src ) : ACommand( src._authenticator, src._channelManager ) {
+LogoutCommand::LogoutCommand( LogoutCommand const &src ) : ACommand( src._userManager, src._channelManager ) {
   *this = src;
 }
 
@@ -23,6 +23,6 @@ PreparedResponse LogoutCommand::execute() const {
     it->second->removeUser( _userFD );
     it->second->removeOperator( _userFD );
   }
-  _authenticator->releaseUserInfo( _userFD );
+  _userManager->releaseUserInfo( _userFD );
   return PreparedResponse();
 }

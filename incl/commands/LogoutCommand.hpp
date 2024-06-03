@@ -9,7 +9,7 @@
 class LogoutCommand : public ACommand {
  private:
  public:
-  LogoutCommand( Authenticator *authenticator, ChannelManager *channelManager, std::string args, int fd );
+  LogoutCommand( UserManager *userManager, ChannelManager *channelManager, std::string args, int fd );
   ~LogoutCommand();
   LogoutCommand( LogoutCommand const &src );
   LogoutCommand   &operator=( LogoutCommand const &src );

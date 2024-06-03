@@ -9,7 +9,7 @@
 class KickCommand : public ACommand {
  private:
  public:
-  KickCommand( Authenticator *authenticator, ChannelManager *channelManager, std::string args, int fd );
+  KickCommand( UserManager *userManager, ChannelManager *channelManager, std::string args, int fd );
   ~KickCommand();
   KickCommand( KickCommand const &src );
   KickCommand     &operator=( KickCommand const &src );

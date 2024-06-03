@@ -37,10 +37,16 @@ PreparedResponse NamesCommand::execute() const {
     pr.response = "Channel doesn't exist\n";
     return pr;
   }
+  std::vector<int> opers = _channelManager->getChannel( &_args[i] )->getAllOperators();
   std::vector<int> users = _channelManager->getChannel( &_args[i] )->getAllUsers();
   std::string      resp;
   resp = &_args[i];
   resp += " = :";
+  for ( int f = 0; f < (int)opers.size(); f++ ) {
+    resp += _userManager->getNick( opers[f] );
+    if ( f != (int)opers.size() - 1 )
+      resp += ", ";
+  }
   for ( int f = 0; f < (int)users.size(); f++ ) {
     resp += _userManager->getNick( users[f] );
     if ( f != (int)users.size() - 1 )

@@ -59,6 +59,8 @@ std::string Authenticator::getNick( int fd ) {
 }
 
 bool Authenticator::isLoggedIn( int fd ) {
+  if ( !_users[fd] )
+    return false;
   return _users[fd]->getLoggedIn();
 }
 

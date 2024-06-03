@@ -20,22 +20,25 @@ JoinCommand &JoinCommand::operator=( JoinCommand const &src ) {
 PreparedResponse JoinCommand::execute() const {
   PreparedResponse pr = PreparedResponse();
   pr.recipients.push_back( _userFD );
-  if ( !_authenticator->authenticateUser( _userFD ) ) {
-    pr.response = "Not logged in";
+  if ( !_authenticator->isLoggedIn( _userFD ) ) {
+    pr.response = "Not logged in\n";
+    return pr;
   }
   int i = 0;
-  while (_args[i] && _args[i] == ' ')
+  while ( _args[i] && _args[i] == ' ' )
     i++;
-  if (_args.length() > 1 && _args[i] != '#') {
+  if ( _args.length() > 1 && _args[i] != '#' ) {
     pr.response = "Invalid channel name\n";
     return pr;
   }
-  std::string channelName = _args.substr(i);
+  std::string channelName = _args.substr( i );
   if ( !_channelManager->channelExists( channelName ) ) {
     Channel *channel = new Channel( channelName );
-    _channelManager->addChannel( channel->getName(), channel );
+    _channelManager->addChannel( channelName, channel );
+    _channelManager->getChannel( channelName )->addOperator( _userFD );
+  } else {
+    _channelManager->getChannel( channelName )->addUser( _userFD );
   }
-  _channelManager->getChannel( channelName )->addUser( _userFD );
   pr.response = genUserMsg( _authenticator->getUser( _userFD ), "JOIN" + _args );
   return pr;
 }

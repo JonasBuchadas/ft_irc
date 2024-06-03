@@ -11,6 +11,7 @@ class Channel {
  private:
   std::vector<int> _users;
   std::vector<int> _operators;
+  std::vector<int> _invitees;
 
   bool         _inviteOnly;
   bool         _topicProtected;
@@ -30,6 +31,7 @@ class Channel {
   std::vector<int> getAllOperators();
   bool             isUser( int user );
   bool             isOperator( int user );
+  bool             isInvitee( int user );
   bool             isInviteOnly( void );
   bool             isTopicProtected( void );
   std::string      getTopic( void );
@@ -38,8 +40,10 @@ class Channel {
   unsigned int     getMaxUsers( void );
   void             addUser( int _userFD );
   void             addOperator( int _userFD );
+  void             addInvitee( int _userFD );
   void             removeUser( int _userFD );
   void             removeOperator( int _userFD );
+  void             removeInvitee( int _userFD );
 
   void setInviteOnly( bool inviteOnly );
   void setTopicProtected( bool topicProtected );

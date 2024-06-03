@@ -20,25 +20,54 @@ JoinCommand &JoinCommand::operator=( JoinCommand const &src ) {
 PreparedResponse JoinCommand::execute() const {
   PreparedResponse pr = PreparedResponse();
   pr.recipients.push_back( _userFD );
+
   if ( !_userManager->isLoggedIn( _userFD ) ) {
     pr.response = "Not logged in\n";
     return pr;
   }
-  int i = 0;
-  while ( _args[i] && _args[i] == ' ' )
-    i++;
-  if ( _args.length() > 1 && _args[i] != '#' ) {
+
+  std::stringstream ss( _args );
+  std::string       channelName;
+  std::string       password;
+  std::string       invalidArg;
+  ss >> channelName;
+  ss >> password;
+  ss >> invalidArg;
+
+  if ( channelName.empty() || !invalidArg.empty() ) {
+    pr.response = "Invalid args\n";
+    return pr;
+  }
+
+  if ( channelName[0] != '#' ) {
     pr.response = "Invalid channel name\n";
     return pr;
   }
-  std::string channelName = _args.substr( i );
+
   if ( !_channelManager->channelExists( channelName ) ) {
     Channel *channel = new Channel( channelName );
     _channelManager->addChannel( channelName, channel );
     _channelManager->getChannel( channelName )->addOperator( _userFD );
-  } else {
-    _channelManager->getChannel( channelName )->addUser( _userFD );
+    pr.response = genUserMsg( _userManager->getUser( _userFD ), "JOIN" + _args );
+    return pr;
   }
+
+  if ( _channelManager->getChannel( channelName )->isInviteOnly() && !_channelManager->getChannel( channelName )->isInvitee( _userFD ) ) {
+    pr.response = "Channel is invite-only\n";
+    return pr;
+  }
+
+  if ( password != _channelManager->getChannel( channelName )->getPassword() ) {
+    pr.response = "Wrong channel password\n";
+    return pr;
+  }
+
+  if ( _channelManager->getChannel( channelName )->isUser( _userFD ) || _channelManager->getChannel( channelName )->isOperator( _userFD ) ) {
+    pr.response = "Already in the channel\n";
+    return pr;
+  }
+  _channelManager->getChannel( channelName )->addUser( _userFD );
+
   pr.response = genUserMsg( _userManager->getUser( _userFD ), "JOIN" + _args );
   return pr;
 }

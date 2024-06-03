@@ -2,12 +2,14 @@
 
 Channel::Channel() {}
 
-Channel::Channel(std::string name) : _inviteOnly(false), _topicProtected(false), _maxUsers(0) {
+Channel::Channel( std::string name ) : _inviteOnly( false ), _topicProtected( false ), _maxUsers( 0 ) {
   _name = name;
 }
 
 Channel::~Channel() {
   _users.clear();
+  _operators.clear();
+  _invitees.clear();
 }
 
 Channel::Channel( Channel const &src ) {
@@ -19,6 +21,7 @@ Channel &Channel::operator=( Channel const &src ) {
     return ( *this );
   _operators = src._operators;
   _users     = src._users;
+  _invitees  = src._invitees;
   return ( *this );
 }
 
@@ -31,6 +34,13 @@ bool Channel::isUser( int user ) {
 
 bool Channel::isOperator( int user ) {
   for ( std::vector<int>::iterator it = _operators.begin(); it != _operators.end(); it++ )
+    if ( *it == user )
+      return true;
+  return false;
+}
+
+bool Channel::isInvitee( int user ) {
+  for ( std::vector<int>::iterator it = _invitees.begin(); it != _invitees.end(); it++ )
     if ( *it == user )
       return true;
   return false;
@@ -80,6 +90,12 @@ void Channel::addOperator( int _userFD ) {
   _operators.push_back( _userFD );
 }
 
+void Channel::addInvitee( int _userFD ) {
+  if ( isInvitee( _userFD ) )
+    return;
+  _invitees.push_back( _userFD );
+}
+
 void Channel::removeUser( int _userFD ) {
   std::vector<int>::iterator it = std::find( _users.begin(), _users.end(), _userFD );
   if ( it != _users.end() )
@@ -90,6 +106,12 @@ void Channel::removeOperator( int _userFD ) {
   std::vector<int>::iterator it = std::find( _operators.begin(), _operators.end(), _userFD );
   if ( it != _operators.end() )
     _operators.erase( it );
+}
+
+void Channel::removeInvitee( int _userFD ) {
+  std::vector<int>::iterator it = std::find( _invitees.begin(), _invitees.end(), _userFD );
+  if ( it != _invitees.end() )
+    _invitees.erase( it );
 }
 
 void Channel::setInviteOnly( bool inviteOnly ) {

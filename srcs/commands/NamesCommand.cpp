@@ -30,7 +30,8 @@ PreparedResponse NamesCommand::execute() const {
   if ( _args[i] != '#' ) {
     pr.response = "Invalid channel identifier\n";
     return pr;
-  } else if ( _channelManager->channelExists( &_args[i] ) && !_channelManager->isUser( &_args[i], _userFD ) ) {
+  } else if ( _channelManager->channelExists( &_args[i] ) && \
+  !(_channelManager->isOperator( &_args[i], _userFD) || _channelManager->isUser( &_args[i], _userFD ) ) ) {
     pr.response = "You don't belong to channels with this channel name\n";
     return pr;
   } else if ( !_channelManager->channelExists( &_args[i] ) ) {
@@ -48,9 +49,8 @@ PreparedResponse NamesCommand::execute() const {
       resp += ", ";
   }
   for ( int f = 0; f < (int)users.size(); f++ ) {
+    resp += ", ";
     resp += _userManager->getNick( users[f] );
-    if ( f != (int)users.size() - 1 )
-      resp += ", ";
   }
   pr.response = genServerMsg( 353, resp );
   return pr;

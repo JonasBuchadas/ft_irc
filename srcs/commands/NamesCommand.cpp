@@ -30,21 +30,28 @@ PreparedResponse NamesCommand::execute() const {
   if ( _args[i] != '#' ) {
     pr.response = "Invalid channel identifier\n";
     return pr;
-  } else if ( _channelManager->channelExists( &_args[i] ) && !_channelManager->isUser( &_args[i], _userFD ) ) {
+  } else if ( _channelManager->channelExists( &_args[i] ) && \
+  !(_channelManager->isOperator( &_args[i], _userFD) || _channelManager->isUser( &_args[i], _userFD ) ) ) {
     pr.response = "You don't belong to channels with this channel name\n";
     return pr;
   } else if ( !_channelManager->channelExists( &_args[i] ) ) {
     pr.response = "Channel doesn't exist\n";
     return pr;
   }
+  std::vector<int> opers = _channelManager->getChannel( &_args[i] )->getAllOperators();
   std::vector<int> users = _channelManager->getChannel( &_args[i] )->getAllUsers();
   std::string      resp;
   resp = &_args[i];
   resp += " = :";
-  for ( int f = 0; f < (int)users.size(); f++ ) {
-    resp += _userManager->getNick( users[f] );
-    if ( f != (int)users.size() - 1 )
+  for ( int f = 0; f < (int)opers.size(); f++ ) {
+    resp += _userManager->getNick( opers[f] );
+    if ( f != (int)opers.size() - 1 )
       resp += ", ";
+  }
+  for ( int f = 0; f < (int)users.size(); f++ ) {
+    if (opers.size() > 0 || f > 0)
+      resp += ", ";
+    resp += _userManager->getNick( users[f] );
   }
   pr.response = genServerMsg( 353, resp );
   return pr;

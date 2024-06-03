@@ -14,8 +14,9 @@ SRCS_PATH=	srcs/
 OBJS_PATH=	objs/
 
 ### SOURCE FILES ###
-SRC_NAME=	chatbot.cpp
-SRCS=		ACommand.cpp \
+SRC_NAME=	main.cpp
+SRCS=		Chatbot.cpp \
+			ACommand.cpp \
 			CommandFactory.cpp \
 			botcmds/InviteCommand.cpp \
 			botcmds/NoCommand.cpp \

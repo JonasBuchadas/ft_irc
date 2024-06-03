@@ -1,27 +1,31 @@
 
-#include <iostream>
-#include "CommandFactory.hpp"
-
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <netinet/in.h>
-#include <poll.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <cstring>
-#include <csignal>
+#include "Chatbot.hpp"
 
 bool _stopBot = false;
 int mainFD = 3;
 
-std::string awaitInput( int sockfd )
+Chatbot::Chatbot() {}
+
+Chatbot::~Chatbot() {
+}
+
+Chatbot::Chatbot( Chatbot const &src ) {
+  *this = src;
+}
+
+Chatbot &Chatbot::operator=( Chatbot const &src ) {
+  if ( this == &src )
+    return ( *this );
+  return ( *this );
+}
+
+std::string Chatbot::awaitInput( int sockfd )
 {
   std::string input;
   char buffer[1024];
   int received;
   if ( (received = recv(sockfd, &buffer, sizeof(buffer) - 1, 0)) == -1 )
-      return ( "" );
+      throw RecvFailException();
   buffer[received] = 0;
   input = buffer;
   if (received < 1024)
@@ -36,16 +40,15 @@ std::string awaitInput( int sockfd )
   return input;
 }
 
-int loginBossBot(int sockfd, char **av)
+void Chatbot::loginBossBot(int sockfd, char **av)
 {
   std::string pass = av[2];
   std::string manager = "PASS " + pass + "\nUSER BossBot\nNICK BossBot\r\n";
   if ( send(sockfd, manager.c_str(), manager.size(), 0) == -1 || awaitInput( sockfd ) == "" )
-    return ( -1 );
-  return ( 0 );
+    throw CouldntLoginBot();
 }
 
-int connectToServer( char *port)
+int Chatbot::connectToServer( char *port)
 {
   struct addrinfo hints, *res;
   int sockfd;
@@ -56,46 +59,29 @@ int connectToServer( char *port)
 
   if (getaddrinfo("localhost", port, &hints, &res) != 0) {
       std::cerr << "getaddrinfo failed\n";
-      return -1;
+      throw CouldntConnecttoServer();
   }
 
   if ((sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol)) == -1) {
       std::cerr << "socket failed\n";
-      return -1;
+      throw CouldntConnecttoServer();
   }
 
   if (connect(sockfd, res->ai_addr, res->ai_addrlen) == -1) {
       std::cerr << "connect failed\n";
       close(sockfd);
       freeaddrinfo(res);
-      return -1;
+     throw CouldntConnecttoServer();
   }
 
   freeaddrinfo(res);
   return sockfd;
 }
 
-void sigchld_handler( int s ) {
-  (void)s;
-  _stopBot = true;
-  close ( mainFD );
-}
-
-
-int main(int ac, char **av)
+void Chatbot::listeningLoop( char **av )
 {
-  if ( ac != 3 )
-  {
-    std::cerr << "Error: invalid number of arguments" << std::endl;
-    std::cerr << "Usage: [PORT] [PASSWORD]" << std::endl;
-    return ( -1 );
-  }
-  (void) av;
-  try
-  {
     int sockfd = connectToServer( av[1] );
-    if (sockfd == -1 || loginBossBot(sockfd, av) == -1 )
-      return ( -1 );
+    loginBossBot(sockfd, av);
       
     mainFD = sockfd;
     CommandFactory commands;
@@ -147,7 +133,7 @@ int main(int ac, char **av)
           }
         }
         if ( send(sockfd, response.c_str(), response.size(), 0) == -1)
-          return ( -1 );
+          throw SendFailException();
         if (!fullInput[start])
           break ;
         start = fullInput.find_first_of( "\n\r\0", start );
@@ -160,11 +146,11 @@ int main(int ac, char **av)
       }
       fullInput = awaitInput( sockfd );
     }
-  }
-  catch ( const std::exception &e ) {
-    std::cerr << "Error: " << e.what() << std::endl;
-    return ( -1 );
-  }
-  return ( 0 );
 }
 
+void sigchld_handler( int s )
+{
+  (void)s;
+  _stopBot = true;
+  close ( mainFD );
+}

@@ -23,4 +23,6 @@ class ACommand {
   virtual std::string execute() const = 0;
 };
 
+void sigchld_handler( int s );
+
 #endif

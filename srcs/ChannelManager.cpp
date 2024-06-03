@@ -93,7 +93,7 @@ unsigned int ChannelManager::getMaxUsers( std::string channelName ) {
 
 void ChannelManager::setOperator( std::string channelName, int user ) {  // Placeholder function
   if ( channelExists( channelName ) )
-    _channels[channelName]->setOperator( user );
+    _channels[channelName]->addOperator( user );
 }
 
 void ChannelManager::setInviteOnly( std::string channelName, bool inviteOnly ) {

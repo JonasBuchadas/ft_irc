@@ -1,8 +1,6 @@
 #include "Channel.hpp"
 
-Channel::Channel(std::string name) : _name(name), _inviteOnly(false), _topicProtected(false), _maxUsers(0) {}
-
-Channel::Channel( std::string name ) {
+Channel::Channel(std::string name) : _inviteOnly(false), _topicProtected(false), _maxUsers(0) {
   _name = name;
 }
 
@@ -90,19 +88,6 @@ void Channel::removeOperator( int _userFD ) {
   std::vector<int>::iterator it = std::find( _operators.begin(), _operators.end(), _userFD );
   if ( it != _operators.end() )
     _operators.erase( it );
-}
-
-void Channel::setOperator( int user ) {
-  _operators.push_back( user );
-}
-
-void Channel::removeOperator( int user ) {
-  for ( std::vector<int>::iterator it = _operators.begin(); it != _operators.end(); it++ ) {
-    if ( *it == user ) {
-      _operators.erase(it);
-      return;
-    }
-  }
 }
 
 void Channel::setInviteOnly( bool inviteOnly ) {

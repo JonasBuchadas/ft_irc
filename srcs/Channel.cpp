@@ -1,5 +1,7 @@
 #include "Channel.hpp"
 
+Channel::Channel() {}
+
 Channel::Channel(std::string name) : _inviteOnly(false), _topicProtected(false), _maxUsers(0) {
   _name = name;
 }

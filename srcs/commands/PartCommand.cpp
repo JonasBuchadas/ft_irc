@@ -32,11 +32,14 @@ PreparedResponse PartCommand::execute() const {
     pr.response = "Channel does not exist\n";
     return pr;
   }
-  if ( !_channelManager->getChannel( channelName )->isUser( _userFD ) ) {
+  if ( !_channelManager->getChannel( channelName )->isUser( _userFD ) && !_channelManager->getChannel( channelName )->isOperator( _userFD ) ) {
     pr.response = "Already not in the channel\n";
     return pr;
   }
-  _channelManager->getChannel( channelName )->removeUser( _userFD );
+  if ( _channelManager->getChannel( channelName )->isUser( _userFD ) )
+    _channelManager->getChannel( channelName )->removeUser( _userFD );
+  if ( _channelManager->getChannel( channelName )->isOperator( _userFD ) )
+    _channelManager->getChannel( channelName )->removeOperator( _userFD );
   pr.response = genUserMsg( _authenticator->getUser( _userFD ), "PART" + _args );
   return pr;
 }

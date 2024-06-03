@@ -34,9 +34,11 @@ PreparedResponse JoinCommand::execute() const {
   std::string channelName = _args.substr( i );
   if ( !_channelManager->channelExists( channelName ) ) {
     Channel *channel = new Channel( channelName );
-    _channelManager->addChannel( channel->getName(), channel );
+    _channelManager->addChannel( channelName, channel );
+    _channelManager->getChannel( channelName )->addOperator( _userFD );
+  } else {
+    _channelManager->getChannel( channelName )->addUser( _userFD );
   }
-  _channelManager->getChannel( channelName )->addUser( _userFD );
   pr.response = genUserMsg( _authenticator->getUser( _userFD ), "JOIN" + _args );
   return pr;
 }

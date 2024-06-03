@@ -74,6 +74,12 @@ void Channel::addUser( int _userFD ) {
   _users.push_back( _userFD );
 }
 
+void Channel::addOperator( int _userFD ) {
+  if ( isOperator( _userFD ) )
+    return;
+  _operators.push_back( _userFD );
+}
+
 void Channel::removeUser( int _userFD ) {
   std::vector<int>::iterator it = std::find( _users.begin(), _users.end(), _userFD );
   if ( it != _users.end() )

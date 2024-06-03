@@ -37,6 +37,7 @@ class Channel {
   std::string      getPassword( void );
   unsigned int     getMaxUsers( void );
   void             addUser( int _userFD );
+  void             addOperator( int _userFD );
   void             removeUser( int _userFD );
   void             removeOperator( int _userFD );
 

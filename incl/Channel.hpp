@@ -43,7 +43,7 @@ class Channel {
 
   void addUser( int user );
   void removeUser( int user );
-  void addOperator( int user );  // it will be more like void addOperator( User *user );
+  void setOperator( int user );  // it will be more like void addOperator( User *user );
   void removeOperator( int user );
 
   void setInviteOnly( bool inviteOnly );

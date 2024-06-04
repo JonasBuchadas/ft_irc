@@ -22,7 +22,7 @@ PreparedResponse JoinCommand::execute() const {
   pr.recipients.push_back( _userFD );
 
   if ( !_userManager->isLoggedIn( _userFD ) ) {
-    pr.response = "Not logged in\n";
+    pr.response = genServerMsg(ERR_NOTREGISTERED, "JOIN");
     return pr;
   }
 
@@ -35,12 +35,12 @@ PreparedResponse JoinCommand::execute() const {
   ss >> invalidArg;
 
   if ( channelName.empty() || !invalidArg.empty() ) {
-    pr.response = "Invalid args\n";
+    pr.response = genServerMsg(ERR_NEEDMOREPARAMS, "JOIN");
     return pr;
   }
 
   if ( channelName[0] != '#' ) {
-    pr.response = "Invalid channel name\n";
+    pr.response = genServerMsg(ERR_NOSUCHCHANNEL, "JOIN");
     return pr;
   }
 
@@ -53,17 +53,17 @@ PreparedResponse JoinCommand::execute() const {
   }
 
   if ( _channelManager->getChannel( channelName )->isInviteOnly() && !_channelManager->getChannel( channelName )->isInvitee( _userFD ) ) {
-    pr.response = "Channel is invite-only\n";
+    pr.response = genServerMsg(ERR_INVITEONLYCHAN, channelName);
     return pr;
   }
 
   if ( password != _channelManager->getChannel( channelName )->getPassword() ) {
-    pr.response = "Wrong channel password\n";
+    pr.response = genServerMsg(ERR_PASSWDMISMATCH, "");
     return pr;
   }
 
   if ( _channelManager->getChannel( channelName )->isUser( _userFD ) || _channelManager->getChannel( channelName )->isOperator( _userFD ) ) {
-    pr.response = "Already in the channel\n";
+    pr.response = genServerMsg(ERR_USERONCHANNEL, _userManager->getNick( _userFD ));
     return pr;
   }
   _channelManager->getChannel( channelName )->addUser( _userFD );

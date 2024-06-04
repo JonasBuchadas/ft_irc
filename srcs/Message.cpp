@@ -76,6 +76,12 @@ std::string getFixedParam( int code, std::string param ) {
       return ": Couldn't find user";
     case ERR_IPNOTFOUND:
       return ": Invalid ip address";
+    case ERR_TARGETNOTAUTH:
+      return ": Command target not authenticated";
+    case ERR_TARGETNOTINCHANNEL:
+      return ": Command target not in channel";
+    case ERR_TARGETALREADYINV:
+      return ": Invitee already invited";
     default:
       return "Unknown error code";
   }

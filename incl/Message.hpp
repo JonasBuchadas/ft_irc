@@ -71,6 +71,10 @@ struct ParsedMsg {
 #define ERR_USERNAMEINUSE 603  // Use when: username to (re)place is already taken
 #define ERR_USERNOTFOUND 604  // Use when: username is different than necessary in file transfer
 #define ERR_IPNOTFOUND 605  // Use when: user ip is different than necessary in file transfer
+#define ERR_TARGETNOTAUTH 606  // Use when: target of a command is not autheticated
+#define ERR_TARGETNOTINCHANNEL 607  // Use when: target of a command not in channel
+#define ERR_TARGETALREADYINV 608  // Use when: target of a command INVITE already invited
+
 
 
 std::string genServerMsg( int code, std::string param );

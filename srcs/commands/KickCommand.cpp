@@ -22,7 +22,7 @@ PreparedResponse KickCommand::execute() const {
 
   if ( !_userManager->isLoggedIn( _userFD ) ) {
     pr.recipients.push_back( _userFD );
-    pr.response = "Not logged in\n";
+    pr.response = genServerMsg(ERR_NOTREGISTERED, "KICK");
     return pr;
   }
 
@@ -36,40 +36,40 @@ PreparedResponse KickCommand::execute() const {
 
   if ( kickedNick.empty() || channelName.empty() || !invalidArg.empty() ) {
     pr.recipients.push_back( _userFD );
-    pr.response = "Invalid args\n";
+    pr.response = genServerMsg(ERR_NEEDMOREPARAMS, "KICK");
     return pr;
   }
 
   if ( !_userManager->nickNameExists( _userFD, kickedNick ) ) {
     pr.recipients.push_back( _userFD );
-    pr.response = "Target nick does not exist\n";
+    pr.response = genServerMsg(ERR_NOSUCHNICK, channelName);
     return pr;
   }
 
   int kickedFD = _userManager->getFdFromNick( kickedNick );
   if ( !_userManager->isLoggedIn( kickedFD ) ) {
     pr.recipients.push_back( _userFD );
-    pr.response = "Target nick is not logged in\n";
+    pr.response = genServerMsg(ERR_TARGETNOTAUTH, "");
     return pr;
   }
 
   if ( !_channelManager->channelExists( channelName ) ) {
     pr.recipients.push_back( _userFD );
-    pr.response = "Channel does not exist\n";
+    pr.response = genServerMsg(ERR_NOSUCHCHANNEL, "KICK");
     return pr;
   }
 
   if ( !_channelManager->getChannel( channelName )->isUser( _userFD ) &&
        !_channelManager->getChannel( channelName )->isOperator( _userFD ) ) {
     pr.recipients.push_back( _userFD );
-    pr.response = "Not an user or operator of channel\n";
+    pr.response = genServerMsg(ERR_USERNOTINCHANNEL, "KICK");
     return pr;
   }
 
   if ( !_channelManager->getChannel( channelName )->isUser( kickedFD ) &&
        !_channelManager->getChannel( channelName )->isOperator( kickedFD ) ) {
     pr.recipients.push_back( _userFD );
-    pr.response = "Target nick not an user or operator of channel\n";
+    pr.response = genServerMsg(ERR_TARGETNOTINCHANNEL, "");
     return pr;
   }
 

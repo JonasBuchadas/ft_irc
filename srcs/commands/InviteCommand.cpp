@@ -22,7 +22,7 @@ PreparedResponse InviteCommand::execute() const {
 
   if ( !_userManager->isLoggedIn( _userFD ) ) {
     pr.recipients.push_back( _userFD );
-    pr.response = "Not logged in\n";
+    pr.response = genServerMsg(ERR_NOTREGISTERED, "INVITE");
     return pr;
   }
 
@@ -36,46 +36,46 @@ PreparedResponse InviteCommand::execute() const {
 
   if ( inviteeNick.empty() || channelName.empty() || !invalidArg.empty() ) {
     pr.recipients.push_back( _userFD );
-    pr.response = "Invalid args\n";
+    pr.response = genServerMsg(ERR_NEEDMOREPARAMS, "INVITE");
     return pr;
   }
 
   if ( !_userManager->nickNameExists( _userFD, inviteeNick ) ) {
     pr.recipients.push_back( _userFD );
-    pr.response = "Invitee does not exist\n";
+    pr.response = genServerMsg(ERR_NOSUCHNICK, channelName);
     return pr;
   }
 
   int inviteeFD = _userManager->getFdFromNick( inviteeNick );
   if ( !_userManager->isLoggedIn( inviteeFD ) ) {
     pr.recipients.push_back( _userFD );
-    pr.response = "Invitee is not logged in\n";
+    pr.response = genServerMsg(ERR_TARGETNOTAUTH, "");
     return pr;
   }
 
   if ( !_channelManager->channelExists( channelName ) ) {
     pr.recipients.push_back( _userFD );
-    pr.response = "Channel does not exist\n";
+    pr.response = genServerMsg(ERR_NOSUCHCHANNEL, "INVITE");
     return pr;
   }
 
   if ( !_channelManager->getChannel( channelName )->isUser( _userFD ) &&
        !_channelManager->getChannel( channelName )->isOperator( _userFD ) ) {
     pr.recipients.push_back( _userFD );
-    pr.response = "Not an user or operator of channel\n";
+    pr.response = genServerMsg(ERR_USERNOTINCHANNEL, "INVITE");
     return pr;
   }
 
   if ( _channelManager->getChannel( channelName )->isUser( inviteeFD ) ||
        _channelManager->getChannel( channelName )->isOperator( inviteeFD ) ) {
     pr.recipients.push_back( _userFD );
-    pr.response = "Invitee already in the channel\n";
+    pr.response = genServerMsg(ERR_USERONCHANNEL, _userManager->getNick( _userFD ));
     return pr;
   }
 
   if ( _channelManager->getChannel( channelName )->isInvitee( inviteeFD ) ) {
     pr.recipients.push_back( _userFD );
-    pr.response = "Invitee already invited\n";
+    pr.response = genServerMsg(ERR_TARGETALREADYINV, "");
     return pr;
   }
 

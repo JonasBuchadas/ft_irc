@@ -18,64 +18,38 @@ KickCommand &KickCommand::operator=( KickCommand const &src ) {
 }
 
 PreparedResponse KickCommand::execute() const {
-  PreparedResponse pr = PreparedResponse();
+  if ( !_userManager->isLoggedIn( _userFD ) )
+    return serverResponse( ERR_NOTREGISTERED, "KICK" );
 
-  if ( !_userManager->isLoggedIn( _userFD ) ) {
-    pr.recipients.push_back( _userFD );
-    pr.response = genServerMsg(ERR_NOTREGISTERED, "KICK");
-    return pr;
-  }
+  std::stringstream argsStream( _args );
+  std::string       kickedNick, channelName, invalidArg;
+  argsStream >> kickedNick >> channelName >> invalidArg;
 
-  std::stringstream ss( _args );
-  std::string       kickedNick;
-  std::string       channelName;
-  std::string       invalidArg;
-  ss >> kickedNick;
-  ss >> channelName;
-  ss >> invalidArg;
+  if ( kickedNick.empty() || channelName.empty() || !invalidArg.empty() )
+    return serverResponse( ERR_NEEDMOREPARAMS, "KICK" );
 
-  if ( kickedNick.empty() || channelName.empty() || !invalidArg.empty() ) {
-    pr.recipients.push_back( _userFD );
-    pr.response = genServerMsg(ERR_NEEDMOREPARAMS, "KICK");
-    return pr;
-  }
-
-  if ( !_userManager->nickNameExists( _userFD, kickedNick ) ) {
-    pr.recipients.push_back( _userFD );
-    pr.response = genServerMsg(ERR_NOSUCHNICK, channelName);
-    return pr;
-  }
+  if ( !_userManager->nickNameExists( _userFD, kickedNick ) )
+    return serverResponse( ERR_NOSUCHNICK, channelName );
 
   int kickedFD = _userManager->getFdFromNick( kickedNick );
-  if ( !_userManager->isLoggedIn( kickedFD ) ) {
-    pr.recipients.push_back( _userFD );
-    pr.response = genServerMsg(ERR_TARGETNOTAUTH, "");
-    return pr;
-  }
+  if ( !_userManager->isLoggedIn( kickedFD ) )
+    return serverResponse( ERR_TARGETNOTAUTH, "" );
 
-  if ( !_channelManager->channelExists( channelName ) ) {
-    pr.recipients.push_back( _userFD );
-    pr.response = genServerMsg(ERR_NOSUCHCHANNEL, "KICK");
-    return pr;
-  }
+  if ( !_channelManager->channelExists( channelName ) )
+    return serverResponse( ERR_NOSUCHCHANNEL, "KICK" );
 
   if ( !_channelManager->getChannel( channelName )->isUser( _userFD ) &&
-       !_channelManager->getChannel( channelName )->isOperator( _userFD ) ) {
-    pr.recipients.push_back( _userFD );
-    pr.response = genServerMsg(ERR_USERNOTINCHANNEL, "KICK");
-    return pr;
-  }
+       !_channelManager->getChannel( channelName )->isOperator( _userFD ) )
+    return serverResponse( ERR_USERNOTINCHANNEL, "KICK" );
 
   if ( !_channelManager->getChannel( channelName )->isUser( kickedFD ) &&
-       !_channelManager->getChannel( channelName )->isOperator( kickedFD ) ) {
-    pr.recipients.push_back( _userFD );
-    pr.response = genServerMsg(ERR_TARGETNOTINCHANNEL, "");
-    return pr;
-  }
+       !_channelManager->getChannel( channelName )->isOperator( kickedFD ) )
+    return serverResponse( ERR_TARGETNOTINCHANNEL, "" );
 
   _channelManager->getChannel( channelName )->removeUser( kickedFD );
   _channelManager->getChannel( channelName )->removeOperator( kickedFD );
 
+  PreparedResponse pr = PreparedResponse();
   pr.recipients.push_back( kickedFD );
   pr.response = genUserMsg( _userManager->getUser( _userFD ), "KICK" + _args );
   return pr;

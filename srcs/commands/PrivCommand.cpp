@@ -21,31 +21,22 @@ PrivCommand &PrivCommand::operator=( PrivCommand const &src ) {
 
 PreparedResponse PrivCommand::execute() const {
   PreparedResponse pr = PreparedResponse();
-  if ( !_userManager->getUser( _userFD ) ) {
-    pr.recipients.push_back( _userFD );
-    pr.response = genServerMsg(ERR_NOTREGISTERED, "PRIVMSG");
-    return pr;
-  }
-  if ( _args.length() <= 1 ) {
-    pr.recipients.push_back( _userFD );
-    pr.response = genServerMsg(ERR_NEEDMOREPARAMS, "PRIVMSG");
-    return pr;
-  }
+  if ( !_userManager->getUser( _userFD ) )
+    return serverResponse( ERR_NOTREGISTERED, "PRIVMSG" );
+
+  if ( _args.length() <= 1 )
+    return serverResponse( ERR_NEEDMOREPARAMS, "PRIVMSG" );
+
   std::string target = _args.substr( 1, _args.find_first_of( " \n\r\0", 1 ) - 1 );
   if ( target.find( ":" ) != std::string::npos )
     target = target.substr( 0, target.find( ":" ) );
-  if ( _userManager->getFdFromNick( target ) == -1 && !_channelManager->channelExists( target ) ) {
-    pr.recipients.push_back( _userFD );
-    pr.response = genServerMsg( ERR_NOSUCHNICK, "PRIVMSG" );
-    return pr;
-  }
+  if ( _userManager->getFdFromNick( target ) == -1 && !_channelManager->channelExists( target ) )
+    return serverResponse( ERR_NOSUCHNICK, "PRIVMSG" );
 
   unsigned int long pos = _args.find( ":" );
-  if ( pos == std::string::npos ) {
-    pr.recipients.push_back( _userFD );
-    pr.response = genServerMsg(ERR_NOTEXTTOSEND, "");
-    return pr;
-  }
+  if ( pos == std::string::npos )
+    return serverResponse( ERR_NOTEXTTOSEND, "" );
+
   std::string send = _args.substr( pos + 1 );
   pos              = _args.find( "DCC SEND" );
   if ( pos == std::string::npos ) {
@@ -68,16 +59,12 @@ PreparedResponse PrivCommand::execute() const {
     iss >> filename >> ipStr >> portStr >> filesizeStr;
     struct sockaddr_in addr;
     socklen_t          userlen = sizeof( addr );
-    if ( getpeername( _userManager->getFdFromNick( target ), (struct sockaddr *)&addr, &userlen ) == -1 ) {
-      pr.recipients.push_back( _userFD );
-      pr.response = genServerMsg(ERR_USERNOTFOUND, "");
-      return pr;
-    }
-    if ( ntohl( addr.sin_addr.s_addr ) != _userManager->getUser( _userManager->getFdFromNick( target ) )->getIp() ) {
-      pr.recipients.push_back( _userFD );
-      pr.response = genServerMsg(ERR_IPNOTFOUND, "");
-      return pr;
-    }
+    if ( getpeername( _userManager->getFdFromNick( target ), (struct sockaddr *)&addr, &userlen ) == -1 )
+      return serverResponse( ERR_USERNOTFOUND, "" );
+
+    if ( ntohl( addr.sin_addr.s_addr ) != _userManager->getUser( _userManager->getFdFromNick( target ) )->getIp() )
+      return serverResponse( ERR_IPNOTFOUND, "" );
+
     pr.recipients.push_back( _userFD );
     pr.response = genUserMsg( _userManager->getUser( _userFD ), "PRIVMSG" + _args );
     return pr;

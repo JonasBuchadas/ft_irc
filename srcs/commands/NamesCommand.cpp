@@ -18,25 +18,19 @@ NamesCommand &NamesCommand::operator=( NamesCommand const &src ) {
 }
 
 PreparedResponse NamesCommand::execute() const {
-  PreparedResponse pr = PreparedResponse();
-  pr.recipients.push_back( _userFD );
-  if ( _args.length() <= 1 ) {
-    pr.response = genServerMsg(ERR_NEEDMOREPARAMS, "NAMES");
-    return pr;
-  }
+  if ( _args.length() <= 1 )
+    return serverResponse( ERR_NEEDMOREPARAMS, "NAMES" );
+
   int i = 0;
   while ( _args[i] == ' ' )
     i++;
   if ( _args[i] != '#' ) {
-    pr.response = genServerMsg(ERR_NOSUCHCHANNEL, "NAMES");
-    return pr;
-  } else if ( _channelManager->channelExists( &_args[i] ) && \
-  !(_channelManager->isOperator( &_args[i], _userFD) || _channelManager->isUser( &_args[i], _userFD ) ) ) {
-    pr.response = genServerMsg(ERR_USERNOTINCHANNEL, "NAMES");
-    return pr;
+    return serverResponse( ERR_NOSUCHCHANNEL, "NMES" );
+  } else if ( _channelManager->channelExists( &_args[i] ) &&
+              !( _channelManager->isOperator( &_args[i], _userFD ) || _channelManager->isUser( &_args[i], _userFD ) ) ) {
+    return serverResponse( ERR_USERNOTINCHANNEL, "NAMES" );
   } else if ( !_channelManager->channelExists( &_args[i] ) ) {
-    pr.response = genServerMsg(ERR_NOSUCHCHANNEL, "NAMES");
-    return pr;
+    return serverResponse( ERR_NOSUCHCHANNEL, "NAMES" );
   }
   std::vector<int> opers = _channelManager->getChannel( &_args[i] )->getAllOperators();
   std::vector<int> users = _channelManager->getChannel( &_args[i] )->getAllUsers();
@@ -49,10 +43,9 @@ PreparedResponse NamesCommand::execute() const {
       resp += ", ";
   }
   for ( int f = 0; f < (int)users.size(); f++ ) {
-    if (opers.size() > 0 || f > 0)
+    if ( opers.size() > 0 || f > 0 )
       resp += ", ";
     resp += _userManager->getNick( users[f] );
   }
-  pr.response = genServerMsg( RPL_NAMREPLY, resp );
-  return pr;
+  return serverResponse( RPL_NAMREPLY, resp );
 }

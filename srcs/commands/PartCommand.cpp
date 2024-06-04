@@ -20,22 +20,19 @@ PartCommand &PartCommand::operator=( PartCommand const &src ) {
 PreparedResponse PartCommand::execute() const {
   PreparedResponse pr = PreparedResponse();
   pr.recipients.push_back( _userFD );
-  if ( !_userManager->isLoggedIn( _userFD ) ) {
-    pr.response = genServerMsg(ERR_NOTREGISTERED, "PART");
-    return pr;
-  }
-  std::stringstream ss( _args );
+  if ( !_userManager->isLoggedIn( _userFD ) )
+    return serverResponse( ERR_NOTREGISTERED, "PART" );
+
+  std::stringstream argsStream( _args );
   std::string       channelName;
 
-  ss >> channelName;
-  if ( !_channelManager->channelExists( channelName ) ) {
-    pr.response = genServerMsg(ERR_NOSUCHCHANNEL, "PART");
-    return pr;
-  }
-  if ( !_channelManager->getChannel( channelName )->isUser( _userFD ) && !_channelManager->getChannel( channelName )->isOperator( _userFD ) ) {
-    pr.response = genServerMsg(ERR_USERNOTINCHANNEL, "PART");
-    return pr;
-  }
+  argsStream >> channelName;
+  if ( !_channelManager->channelExists( channelName ) )
+    return serverResponse( ERR_NOSUCHCHANNEL, "PART" );
+
+  if ( !_channelManager->getChannel( channelName )->isUser( _userFD ) && !_channelManager->getChannel( channelName )->isOperator( _userFD ) )
+    return serverResponse( ERR_USERNOTINCHANNEL, "PART" );
+
   if ( _channelManager->getChannel( channelName )->isUser( _userFD ) )
     _channelManager->getChannel( channelName )->removeUser( _userFD );
   if ( _channelManager->getChannel( channelName )->isOperator( _userFD ) )

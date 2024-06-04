@@ -30,3 +30,10 @@ ACommand &ACommand::operator=( ACommand const &src ) {
   _userFD         = src._userFD;
   return ( *this );
 }
+
+PreparedResponse ACommand::serverResponse( int code, const std::string &msg ) const {
+  PreparedResponse preparedResponse;
+  preparedResponse.recipients.push_back( _userFD );
+  preparedResponse.response = genServerMsg( code, msg );
+  return preparedResponse;
+}

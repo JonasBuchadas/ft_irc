@@ -18,27 +18,22 @@ ModeCommand &ModeCommand::operator=( ModeCommand const &src ) {
 }
 
 PreparedResponse ModeCommand::execute() const {
-  bool add = true;
+  bool   add = true;
   size_t pos = 0;
-  PreparedResponse pr = PreparedResponse();
 
-  pr.recipients.push_back( _userFD );
-  if ( !_userManager->isLoggedIn( _userFD ) ) {
-    pr.response = genServerMsg(ERR_NOTREGISTERED, "MODE");
-    return pr;
-  }
+  if ( !_userManager->isLoggedIn( _userFD ) )
+    return serverResponse( ERR_NOTREGISTERED, "MODE" );
+
   while ( _args[pos] == ' ' && pos < _args.length() )
     pos++;
-  if ( _args.length() > 1 && _args[pos] != '#' ) {
-    pr.response = genServerMsg(ERR_NOSUCHCHANNEL, "MODE");
-    return pr;
-  }
-  std::string channelName = _args.substr( pos, _args.find(' ', pos) - pos );
-  if ( !_channelManager->isOperator(channelName, _userFD) ) {
-    pr.response = genServerMsg(ERR_CHANOPRIVSNEEDED, "MODE");
-    return pr;
-  }
-  pos = _args.find(' ', pos) + 1;
+  if ( _args.length() > 1 && _args[pos] != '#' )
+    return serverResponse( ERR_NOSUCHCHANNEL, "MODE" );
+
+  std::string channelName = _args.substr( pos, _args.find( ' ', pos ) - pos );
+  if ( !_channelManager->isOperator( channelName, _userFD ) )
+    return serverResponse( ERR_CHANOPRIVSNEEDED, "MODE" );
+
+  pos = _args.find( ' ', pos ) + 1;
   while ( pos < _args.length() ) {
     char mode = _args[pos++];
     if ( mode == '+' || mode == '-' ) {
@@ -46,54 +41,54 @@ PreparedResponse ModeCommand::execute() const {
       continue;
     }
     std::string target;
-    if (((mode == 'k' || mode == 'l') && add) || mode == 'o' ) {
+    if ( ( ( mode == 'k' || mode == 'l' ) && add ) || mode == 'o' ) {
       pos++;
-      size_t spacePos = _args.find(' ', pos);
-      if (spacePos != std::string::npos) {
-        target = _args.substr(pos, spacePos - pos);
-        pos = spacePos + 1;
+      size_t spacePos = _args.find( ' ', pos );
+      if ( spacePos != std::string::npos ) {
+        target = _args.substr( pos, spacePos - pos );
+        pos    = spacePos + 1;
       } else {
-        target = _args.substr(pos);
-        pos = _args.length();
+        target = _args.substr( pos );
+        pos    = _args.length();
       }
     }
-    Channel *channel = _channelManager->getChannel(channelName);
-    if ( !channel ) {
-      pr.response = genServerMsg(ERR_NOSUCHCHANNEL, "MODE");
-      return pr;
-    }
+    Channel *channel = _channelManager->getChannel( channelName );
+    if ( !channel )
+      return serverResponse( ERR_NOSUCHCHANNEL, "MODE" );
+
     std::string m = "";
     m += mode;
     switch ( mode ) {
       case 'k':
         if ( add )
-          channel->setPassword(target);
+          channel->setPassword( target );
         else
-          channel->setPassword("");
+          channel->setPassword( "" );
         break;
       case 'l':
         if ( add )
-          channel->setMaxUsers(std::atoi(target.c_str()));
+          channel->setMaxUsers( std::atoi( target.c_str() ) );
         else
-          channel->setMaxUsers(0);
+          channel->setMaxUsers( 0 );
         break;
       case 'o':
         if ( add )
-          channel->addOperator(_userManager->getFdFromNick(target));
+          channel->addOperator( _userManager->getFdFromNick( target ) );
         else
-          channel->removeOperator(_userManager->getFdFromNick(target));
+          channel->removeOperator( _userManager->getFdFromNick( target ) );
         break;
       case 'i':
-        channel->setInviteOnly(add);
+        channel->setInviteOnly( add );
         break;
       case 't':
-        channel->setTopicProtected(add);
+        channel->setTopicProtected( add );
         break;
       default:
-        pr.response = genServerMsg(ERR_UNKNOWNMODE, m);
-        return pr;
+        return serverResponse( ERR_UNKNOWNMODE, m );
     }
   }
-  pr.response = genUserMsg(_userManager->getUser(_userFD), "MODE" + _args);
+  PreparedResponse pr = PreparedResponse();
+  pr.recipients.push_back( _userFD );
+  pr.response = genUserMsg( _userManager->getUser( _userFD ), "MODE" + _args );
   return pr;
 }

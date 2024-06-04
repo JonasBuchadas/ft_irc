@@ -20,52 +20,38 @@ JoinCommand &JoinCommand::operator=( JoinCommand const &src ) {
 PreparedResponse JoinCommand::execute() const {
   PreparedResponse pr = PreparedResponse();
   pr.recipients.push_back( _userFD );
+  if ( !_userManager->isLoggedIn( _userFD ) )
+    return serverResponse( ERR_NOTREGISTERED, "JOIN" );
 
-  if ( !_userManager->isLoggedIn( _userFD ) ) {
-    pr.response = genServerMsg(ERR_NOTREGISTERED, "JOIN");
-    return pr;
-  }
+  std::stringstream argsStream( _args );
+  std::string       channelName, password, invalidArg;
+  argsStream >> channelName >> password >> invalidArg;
 
-  std::stringstream ss( _args );
-  std::string       channelName;
-  std::string       password;
-  std::string       invalidArg;
-  ss >> channelName;
-  ss >> password;
-  ss >> invalidArg;
+  if ( channelName.empty() || !invalidArg.empty() )
+    return serverResponse( ERR_NEEDMOREPARAMS, "JOIN" );
 
-  if ( channelName.empty() || !invalidArg.empty() ) {
-    pr.response = genServerMsg(ERR_NEEDMOREPARAMS, "JOIN");
-    return pr;
-  }
-
-  if ( channelName[0] != '#' ) {
-    pr.response = genServerMsg(ERR_NOSUCHCHANNEL, "JOIN");
-    return pr;
-  }
+  if ( channelName[0] != '#' )
+    return serverResponse( ERR_NOSUCHCHANNEL, "JOIN" );
 
   if ( !_channelManager->channelExists( channelName ) ) {
     Channel *channel = new Channel( channelName );
     _channelManager->addChannel( channelName, channel );
     _channelManager->getChannel( channelName )->addOperator( _userFD );
+    if ( !password.empty() )
+      _channelManager->getChannel( channelName )->setPassword( password );
     pr.response = genUserMsg( _userManager->getUser( _userFD ), "JOIN" + _args );
     return pr;
   }
 
-  if ( _channelManager->getChannel( channelName )->isInviteOnly() && !_channelManager->getChannel( channelName )->isInvitee( _userFD ) ) {
-    pr.response = genServerMsg(ERR_INVITEONLYCHAN, channelName);
-    return pr;
-  }
+  if ( _channelManager->getChannel( channelName )->isInviteOnly() && !_channelManager->getChannel( channelName )->isInvitee( _userFD ) )
+    return serverResponse( ERR_INVITEONLYCHAN, channelName );
 
-  if ( password != _channelManager->getChannel( channelName )->getPassword() ) {
-    pr.response = genServerMsg(ERR_PASSWDMISMATCH, "");
-    return pr;
-  }
+  if ( password != _channelManager->getChannel( channelName )->getPassword() )
+    return serverResponse( ERR_PASSWDMISMATCH, "" );
 
-  if ( _channelManager->getChannel( channelName )->isUser( _userFD ) || _channelManager->getChannel( channelName )->isOperator( _userFD ) ) {
-    pr.response = genServerMsg(ERR_USERONCHANNEL, _userManager->getNick( _userFD ));
-    return pr;
-  }
+  if ( _channelManager->getChannel( channelName )->isUser( _userFD ) || _channelManager->getChannel( channelName )->isOperator( _userFD ) )
+    return serverResponse( ERR_USERONCHANNEL, _userManager->getNick( _userFD ) );
+
   _channelManager->getChannel( channelName )->addUser( _userFD );
 
   pr.response = genUserMsg( _userManager->getUser( _userFD ), "JOIN" + _args );

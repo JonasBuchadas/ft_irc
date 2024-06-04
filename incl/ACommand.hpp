@@ -33,6 +33,7 @@ class ACommand {
   ACommand &operator=( ACommand const &src );
 
   virtual PreparedResponse execute() const = 0;
+  PreparedResponse         serverResponse( int code, const std::string &msg ) const;
 };
 
 #endif

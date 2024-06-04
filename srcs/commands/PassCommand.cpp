@@ -18,18 +18,13 @@ PassCommand &PassCommand::operator=( PassCommand const &src ) {
 }
 
 PreparedResponse PassCommand::execute() const {
-  PreparedResponse pr = PreparedResponse();
-  pr.recipients.push_back( _userFD );
-  if ( _args.length() <= 1 ) {
-    pr.response = genServerMsg(ERR_NEEDMOREPARAMS, "PASS");
-    return pr;
-  }
+  if ( _args.length() <= 1 )
+    return serverResponse( ERR_NEEDMOREPARAMS, "PASS" );
+
   std::string str = _args.substr( 1, _args.find_first_of( " \n\r\0", 1 ) - 1 );
 
-  if ( !_userManager->isValidArg( str ) ) {
-    pr.response = genServerMsg(INVALIDAUTHELEM, "Password");
-    return pr;
-  }
+  if ( !_userManager->isValidArg( str ) )
+    return serverResponse( INVALIDAUTHELEM, "Password" );
 
   User *user = _userManager->getUser( _userFD );
   if ( user == NULL ) {
@@ -37,19 +32,17 @@ PreparedResponse PassCommand::execute() const {
     if ( str == _userManager->getServerPass() )
       user->setPassword( true );
     _userManager->addUser( _userFD, user );
-    pr.response = genServerMsg(UPD_AUTHELEM, "Password");
-    return pr;
-  } else if ( user->getLoggedIn() ) {
-    pr.response = genServerMsg(ERR_ALREADYREGISTERED, "");
-    return pr;
-  }
+    return serverResponse( UPD_AUTHELEM, "Password" );
+  } else if ( user->getLoggedIn() )
+    return serverResponse( ERR_ALREADYREGISTERED, "" );
 
+  PreparedResponse pr;
   if ( !user->getPassword() && str == _userManager->getServerPass() ) {
     user->setPassword( true );
-    pr.response = genServerMsg(UPD_AUTHELEM, "Password");
+    pr = serverResponse( UPD_AUTHELEM, "Password" );
   }
   if ( _userManager->authenticateUser( _userFD ) ) {
-    pr.response += genServerMsg(RPL_WELCOME, "");
+    pr.response += genServerMsg( RPL_WELCOME, "" );
   }
   return pr;
 }

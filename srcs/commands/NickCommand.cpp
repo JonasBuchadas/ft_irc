@@ -18,43 +18,33 @@ NickCommand &NickCommand::operator=( NickCommand const &src ) {
 }
 
 PreparedResponse NickCommand::execute() const {
-  PreparedResponse pr = PreparedResponse();
-  pr.recipients.push_back( _userFD );
-  if ( _args.length() <= 1 ) {
-    pr.response = genServerMsg(ERR_NEEDMOREPARAMS, "NICK");
-    return pr;
-  }
+  if ( _args.length() <= 1 )
+    return serverResponse( ERR_NEEDMOREPARAMS, "NICK" );
+
   std::string str = _args.substr( 1, _args.find_first_of( " \n\r\0", 1 ) - 1 );
 
-  if ( !_userManager->isValidArg( str ) ) {
-    pr.response = genServerMsg(ERR_ERRONEUSNICKNAME, "");
-    return pr;
-  }
+  if ( !_userManager->isValidArg( str ) )
+    return serverResponse( ERR_ERRONEUSNICKNAME, "" );
 
-  if ( _userManager->nickNameExists( _userFD, str ) ) {
-    pr.response = genServerMsg(ERR_NICKNAMEINUSE, "");
-    return pr;
-  }
+  if ( _userManager->nickNameExists( _userFD, str ) )
+    return serverResponse( ERR_NICKNAMEINUSE, "" );
 
   User *user = _userManager->getUser( _userFD );
   if ( user == NULL ) {
     user = new User();
     user->setNick( str );
     _userManager->addUser( _userFD, user );
-    pr.response = genServerMsg(UPD_AUTHELEM, "Nickname");
-    return pr;
+    return serverResponse( UPD_AUTHELEM, "Nickname" );
   }
-
   if ( user->getNick().empty() ) {
     user->setNick( str );
-    pr.response = genServerMsg(UPD_AUTHELEM, "Nickname");
+    PreparedResponse pr = serverResponse( UPD_AUTHELEM, "Nickname" );
     if ( _userManager->authenticateUser( _userFD ) ) {
-      pr.response += genServerMsg(RPL_WELCOME, "");
+      pr.response += genServerMsg( RPL_WELCOME, "" );
     }
     return pr;
   }
 
   user->setNick( str );
-  pr.response = genServerMsg(UPD_AUTHELEM, "Nickname");
-  return pr;
+  return serverResponse( UPD_AUTHELEM, "Nickname" );
 }

@@ -70,12 +70,12 @@ PreparedResponse PrivCommand::execute() const {
     socklen_t          userlen = sizeof( addr );
     if ( getpeername( _userManager->getFdFromNick( target ), (struct sockaddr *)&addr, &userlen ) == -1 ) {
       pr.recipients.push_back( _userFD );
-      pr.response = "Couldn't find user\n";  // Change later
+      pr.response = genServerMsg(ERR_USERNOTFOUND, "");
       return pr;
     }
     if ( ntohl( addr.sin_addr.s_addr ) != _userManager->getUser( _userManager->getFdFromNick( target ) )->getIp() ) {
       pr.recipients.push_back( _userFD );
-      pr.response = "Invalid ip address\n";  // Change later
+      pr.response = genServerMsg(ERR_IPNOTFOUND, "");
       return pr;
     }
     pr.recipients.push_back( _userFD );

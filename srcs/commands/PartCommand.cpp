@@ -21,7 +21,7 @@ PreparedResponse PartCommand::execute() const {
   PreparedResponse pr = PreparedResponse();
   pr.recipients.push_back( _userFD );
   if ( !_userManager->isLoggedIn( _userFD ) ) {
-    pr.response = "Not logged in\n";
+    pr.response = genServerMsg(ERR_NOTREGISTERED, "PART");
     return pr;
   }
   std::stringstream ss( _args );
@@ -29,11 +29,11 @@ PreparedResponse PartCommand::execute() const {
 
   ss >> channelName;
   if ( !_channelManager->channelExists( channelName ) ) {
-    pr.response = "Channel does not exist\n";
+    pr.response = genServerMsg(ERR_NOSUCHCHANNEL, "PART");
     return pr;
   }
   if ( !_channelManager->getChannel( channelName )->isUser( _userFD ) && !_channelManager->getChannel( channelName )->isOperator( _userFD ) ) {
-    pr.response = "Already not in the channel\n";
+    pr.response = genServerMsg(ERR_USERNOTINCHANNEL, "PART");
     return pr;
   }
   if ( _channelManager->getChannel( channelName )->isUser( _userFD ) )

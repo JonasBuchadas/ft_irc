@@ -7,7 +7,7 @@ std::string getFixedParam( int code, std::string param ) {
     case ERR_CANNOTSENDTOCHAN:
       return ": You're not yet a '" + param + "' channel member";
     case ERR_UNKNOWNCOMMAND:
-      return ": Unknwon command '" + param + "'";
+      return ": Unknown command '" + param + "'";
     case ERR_KEYSET:
       return ": Channel key already defined";
     case ERR_CANTKILLSERVER:
@@ -64,6 +64,18 @@ std::string getFixedParam( int code, std::string param ) {
       return ": Message content not provided";
     case RPL_NAMREPLY:
       return "" + param + "";
+
+    // Custom Msgs
+    case UPD_AUTHELEM:
+      return ": " + param + " successfully registered";
+    case INVALIDAUTHELEM:
+      return ": " + param + " contains invalid characters";
+    case ERR_USERNAMEINUSE:
+      return ": Nickname already taken";
+    case ERR_USERNOTFOUND:
+      return ": Couldn't find user";
+    case ERR_IPNOTFOUND:
+      return ": Invalid ip address";
     default:
       return "Unknown error code";
   }

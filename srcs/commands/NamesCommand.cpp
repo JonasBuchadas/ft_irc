@@ -21,21 +21,21 @@ PreparedResponse NamesCommand::execute() const {
   PreparedResponse pr = PreparedResponse();
   pr.recipients.push_back( _userFD );
   if ( _args.length() <= 1 ) {
-    pr.response = "Invalid string\n";
+    pr.response = genServerMsg(ERR_NEEDMOREPARAMS, "NAMES");
     return pr;
   }
   int i = 0;
   while ( _args[i] == ' ' )
     i++;
   if ( _args[i] != '#' ) {
-    pr.response = "Invalid channel identifier\n";
+    pr.response = genServerMsg(ERR_NOSUCHCHANNEL, "NAMES");
     return pr;
   } else if ( _channelManager->channelExists( &_args[i] ) && \
   !(_channelManager->isOperator( &_args[i], _userFD) || _channelManager->isUser( &_args[i], _userFD ) ) ) {
-    pr.response = "You don't belong to channels with this channel name\n";
+    pr.response = genServerMsg(ERR_USERNOTINCHANNEL, "NAMES");
     return pr;
   } else if ( !_channelManager->channelExists( &_args[i] ) ) {
-    pr.response = "Channel doesn't exist\n";
+    pr.response = genServerMsg(ERR_NOSUCHCHANNEL, "NAMES");
     return pr;
   }
   std::vector<int> opers = _channelManager->getChannel( &_args[i] )->getAllOperators();
@@ -53,6 +53,6 @@ PreparedResponse NamesCommand::execute() const {
       resp += ", ";
     resp += _userManager->getNick( users[f] );
   }
-  pr.response = genServerMsg( 353, resp );
+  pr.response = genServerMsg( RPL_NAMREPLY, resp );
   return pr;
 }

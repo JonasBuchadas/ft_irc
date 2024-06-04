@@ -21,18 +21,18 @@ PreparedResponse NickCommand::execute() const {
   PreparedResponse pr = PreparedResponse();
   pr.recipients.push_back( _userFD );
   if ( _args.length() <= 1 ) {
-    pr.response = "Invalid string\n\0";
+    pr.response = genServerMsg(ERR_NEEDMOREPARAMS, "NICK");
     return pr;
   }
   std::string str = _args.substr( 1, _args.find_first_of( " \n\r\0", 1 ) - 1 );
 
   if ( !_userManager->isValidArg( str ) ) {
-    pr.response = "Nickname contains invalid characters\n\0";
+    pr.response = genServerMsg(ERR_ERRONEUSNICKNAME, "");
     return pr;
   }
 
   if ( _userManager->nickNameExists( _userFD, str ) ) {
-    pr.response = "Nickname already taken. Nickname not updated\n\0";
+    pr.response = genServerMsg(ERR_NICKNAMEINUSE, "");
     return pr;
   }
 
@@ -41,20 +41,20 @@ PreparedResponse NickCommand::execute() const {
     user = new User();
     user->setNick( str );
     _userManager->addUser( _userFD, user );
-    pr.response = "Registered your nickname\n\0";
+    pr.response = genServerMsg(UPD_AUTHELEM, "Nickname");
     return pr;
   }
 
   if ( user->getNick().empty() ) {
     user->setNick( str );
-    pr.response = "Registered your nickname\n\0";
+    pr.response = genServerMsg(UPD_AUTHELEM, "Nickname");
     if ( _userManager->authenticateUser( _userFD ) ) {
-      pr.response += "Successfully logged in!\n\0";
+      pr.response += genServerMsg(RPL_WELCOME, "");
     }
     return pr;
   }
 
   user->setNick( str );
-  pr.response = "Nickname successfully updated\n\0";
+  pr.response = genServerMsg(UPD_AUTHELEM, "Nickname");
   return pr;
 }

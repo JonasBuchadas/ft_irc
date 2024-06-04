@@ -65,6 +65,14 @@ struct ParsedMsg {
 // PRIVMSG Cmd
 #define ERR_NOTEXTTOSEND 412  // Use when: the PRIVMSG has no message
 
+// Custom Msgs
+#define UPD_AUTHELEM 601  // Use when: successfully updated an authentication element
+#define INVALIDAUTHELEM 602  // Use when: new authentication element has invalid characters
+#define ERR_USERNAMEINUSE 603  // Use when: username to (re)place is already taken
+#define ERR_USERNOTFOUND 604  // Use when: username is different than necessary in file transfer
+#define ERR_IPNOTFOUND 605  // Use when: user ip is different than necessary in file transfer
+
+
 std::string genServerMsg( int code, std::string param );
 std::string genUserMsg( User *userinfo, std::string msg );
 

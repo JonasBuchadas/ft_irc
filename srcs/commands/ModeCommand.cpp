@@ -24,18 +24,18 @@ PreparedResponse ModeCommand::execute() const {
 
   pr.recipients.push_back( _userFD );
   if ( !_userManager->isLoggedIn( _userFD ) ) {
-    pr.response = "Not logged in\n";
+    pr.response = genServerMsg(ERR_NOTREGISTERED, "MODE");
     return pr;
   }
   while ( _args[pos] == ' ' && pos < _args.length() )
     pos++;
   if ( _args.length() > 1 && _args[pos] != '#' ) {
-    pr.response = "Invalid channel name\n";
+    pr.response = genServerMsg(ERR_NOSUCHCHANNEL, "MODE");
     return pr;
   }
   std::string channelName = _args.substr( pos, _args.find(' ', pos) - pos );
   if ( !_channelManager->isOperator(channelName, _userFD) ) {
-    pr.response = "You are not an operator\n";
+    pr.response = genServerMsg(ERR_CHANOPRIVSNEEDED, "MODE");
     return pr;
   }
   pos = _args.find(' ', pos) + 1;
@@ -59,9 +59,11 @@ PreparedResponse ModeCommand::execute() const {
     }
     Channel *channel = _channelManager->getChannel(channelName);
     if ( !channel ) {
-      pr.response = "Channel does not exist\n";
+      pr.response = genServerMsg(ERR_NOSUCHCHANNEL, "MODE");
       return pr;
     }
+    std::string m = "";
+    m += mode;
     switch ( mode ) {
       case 'k':
         if ( add )
@@ -88,7 +90,7 @@ PreparedResponse ModeCommand::execute() const {
         channel->setTopicProtected(add);
         break;
       default:
-        pr.response = "Invalid mode\n";
+        pr.response = genServerMsg(ERR_UNKNOWNMODE, m);
         return pr;
     }
   }

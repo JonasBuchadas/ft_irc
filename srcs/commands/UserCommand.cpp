@@ -21,44 +21,44 @@ PreparedResponse UserCommand::execute() const {
   PreparedResponse pr = PreparedResponse();
   pr.recipients.push_back( _userFD );
   if ( _args.length() <= 1 ) {
-    pr.response = "Invalid string\n\0";
+    pr.response = genServerMsg(ERR_NEEDMOREPARAMS, "USER");
     return pr;
   }
   std::string str = _args.substr( 1, _args.find_first_of( " \n\r\0", 1 ) - 1 );
 
   if ( !_userManager->isValidArg( str ) ) {
-    pr.response = "Username contains invalid characters\n\0";
+    pr.response = genServerMsg(INVALIDAUTHELEM, "Username");
     return pr;
   }
 
   User *user = _userManager->getUser( _userFD );
 
   if ( user && user->getLoggedIn() ) {
-    pr.response = "User already authenticated.Nothing to do\n";
+    pr.response = genServerMsg(ERR_ALREADYREGISTERED, "");
     return pr;
   } else if ( user == NULL ) {
     user = new User();
     user->setName( str );
     _userManager->addUser( _userFD, user );
-    pr.response = "Registered your username\n\0";
+    pr.response = genServerMsg(UPD_AUTHELEM, "Username");
     return pr;
   }
 
   if ( _userManager->userNameExists( _userFD, str ) ) {
-    pr.response = "Username already taken. Username not updated\n\0";
+    pr.response = genServerMsg(ERR_USERNAMEINUSE, "");
     return pr;
   }
 
   if ( user->getName().empty() ) {
     user->setName( str );
-    pr.response = "Registered your username\n\0";
+    pr.response = genServerMsg(UPD_AUTHELEM, "Username");
     if ( _userManager->authenticateUser( _userFD ) ) {
-      pr.response += "Successfully logged in!\n\0";
+      pr.response += genServerMsg(RPL_WELCOME, "");
     }
     return pr;
   }
 
   user->setName( str );
-  pr.response = "Username successfully updated\n\0";
+  pr.response = genServerMsg(UPD_AUTHELEM, "Username");
   return pr;
 }

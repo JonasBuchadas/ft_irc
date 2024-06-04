@@ -21,13 +21,13 @@ PreparedResponse PassCommand::execute() const {
   PreparedResponse pr = PreparedResponse();
   pr.recipients.push_back( _userFD );
   if ( _args.length() <= 1 ) {
-    pr.response = "Invalid string\n\0";
+    pr.response = genServerMsg(ERR_NEEDMOREPARAMS, "PASS");
     return pr;
   }
   std::string str = _args.substr( 1, _args.find_first_of( " \n\r\0", 1 ) - 1 );
 
   if ( !_userManager->isValidArg( str ) ) {
-    pr.response = "Password contains invalid characters\n\0";
+    pr.response = genServerMsg(INVALIDAUTHELEM, "Password");
     return pr;
   }
 
@@ -37,19 +37,19 @@ PreparedResponse PassCommand::execute() const {
     if ( str == _userManager->getServerPass() )
       user->setPassword( true );
     _userManager->addUser( _userFD, user );
-    pr.response = "Password registered\n\0";
+    pr.response = genServerMsg(UPD_AUTHELEM, "Password");
     return pr;
   } else if ( user->getLoggedIn() ) {
-    pr.response = "User already authenticated.Nothing to do\n";
+    pr.response = genServerMsg(ERR_ALREADYREGISTERED, "");
     return pr;
   }
 
   if ( !user->getPassword() && str == _userManager->getServerPass() ) {
     user->setPassword( true );
-    pr.response = "Password registered\n\0";
+    pr.response = genServerMsg(UPD_AUTHELEM, "Password");
   }
   if ( _userManager->authenticateUser( _userFD ) ) {
-    pr.response += "Successfully logged in!\n\0";
+    pr.response += genServerMsg(RPL_WELCOME, "");
   }
   return pr;
 }

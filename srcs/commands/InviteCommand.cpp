@@ -40,7 +40,7 @@ PreparedResponse InviteCommand::execute() const {
 
   if ( !_channelManager->getChannel( channelName )->isUser( _userFD ) &&
        !_channelManager->getChannel( channelName )->isOperator( _userFD ) )
-    return serverResponse( ERR_USERNOTINCHANNEL, "INVITE" );
+    return serverResponse( ERR_USERNOTINCHANNEL, channelName );
 
   if ( _channelManager->getChannel( channelName )->isUser( inviteeFD ) ||
        _channelManager->getChannel( channelName )->isOperator( inviteeFD ) )

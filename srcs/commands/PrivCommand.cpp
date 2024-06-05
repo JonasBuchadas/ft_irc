@@ -50,6 +50,11 @@ PreparedResponse PrivCommand::execute() const {
         if ( users[i] != _userFD )
           pr.recipients.push_back( users[i] );
       }
+      std::vector<int> opers = _channelManager->getChannel( target )->getAllOperators();
+      for ( int i = 0; i < (int)opers.size(); i++ ) {
+        if ( opers[i] != _userFD )
+          pr.recipients.push_back( opers[i] );
+      }
       pr.response = genUserMsg( _userManager->getUser( _userFD ), "PRIVMSG" + _args );
     }
     else

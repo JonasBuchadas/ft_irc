@@ -39,6 +39,7 @@ class Channel {
   std::string      getName( void );
   std::string      getPassword( void );
   unsigned int     getMaxUsers( void );
+  std::string      getModes( void );
   void             addUser( int _userFD );
   void             addOperator( int _userFD );
   void             addInvitee( int _userFD );

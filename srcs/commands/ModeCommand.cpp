@@ -36,6 +36,10 @@ PreparedResponse ModeCommand::execute() const {
   pos = _args.find( ' ', pos ) + 1;
 
   PreparedResponse pr = PreparedResponse();
+
+  if ( pos == std::string::npos) {
+    std::string modeResponse = _channelManager->getChannelModes( channelName );
+  }
   while ( pos < _args.length() ) {
     char mode = _args[pos++];
     if ( mode == '+' || mode == '-' ) {

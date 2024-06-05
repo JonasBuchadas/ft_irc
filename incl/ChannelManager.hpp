@@ -34,6 +34,7 @@ class ChannelManager {
   std::string  getTopic( std::string channelName );
   std::string  getPassword( std::string channelName );
   unsigned int getMaxUsers( std::string channelName );
+  std::string  getChannelModes( std::string channelName );
 
   void setOperator( std::string channelName, int user );  // it will be more like void addOperator( User *user );
   void setInviteOnly( std::string channelName, bool inviteOnly );

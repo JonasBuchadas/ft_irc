@@ -20,9 +20,13 @@ Messenger &Messenger::operator=( Messenger const &src ) {
 }
 
 void Messenger::respond( PreparedResponse pr ) throw( std::exception ) {
-  for ( int j = 0; j < (int)pr.recipients.size(); j++ ) {
-    int destFD = pr.recipients[j];
-    if ( send( destFD, pr.response.c_str(), pr.response.size(), 0 ) == -1 )
-      throw BadRespondException();
+  std::map<std::string, std::vector<int> >::iterator resps = pr.allresponses.begin();
+  for ( ; resps != pr.allresponses.end(); resps++ )
+  {
+    for ( int j = 0; j < (int)resps->second.size(); j++ ) {
+      int destFD = resps->second[j];
+      if ( send( destFD, resps->first.c_str(), resps->first.size(), 0 ) == -1 )
+        throw BadRespondException();
+    }
   }
 }

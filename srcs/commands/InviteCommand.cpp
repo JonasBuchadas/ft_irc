@@ -51,7 +51,9 @@ PreparedResponse InviteCommand::execute() const {
 
   _channelManager->getChannel( channelName )->addInvitee( inviteeFD );
   PreparedResponse pr = PreparedResponse();
-  pr.recipients.push_back( inviteeFD );
-  pr.response = genUserMsg( _userManager->getUser( _userFD ), "INVITE" + _args );
+  pr.allresponses[genUserMsg( _userManager->getUser( _userFD ), "INVITE" + _args )].push_back( inviteeFD );
+  std::string answer = genUserMsg( _userManager->getUser( _userFD ), "PRIVMSG " + _userManager->getNick( _userFD ) \
+  + ": " + _userManager->getNick( _userFD ) + " invited you to channel " + channelName );
+  pr.allresponses[answer] = _channelManager->getChannel( channelName)->getAllMembersSansUser( _userFD, 0 );
   return pr;
 }

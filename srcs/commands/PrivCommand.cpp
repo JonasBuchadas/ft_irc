@@ -41,21 +41,11 @@ PreparedResponse PrivCommand::execute() const {
   pos              = _args.find( "DCC SEND" );
   if ( pos == std::string::npos ) {
     if ( target.find( "#" ) == std::string::npos )
-      pr.recipients.push_back( _userManager->getFdFromNick( target ) );
+      pr.allresponses[genUserMsg( _userManager->getUser( _userFD ), "PRIVMSG" + _args )].push_back( _userManager->getFdFromNick( target ) );
     else if (_channelManager->getChannel( target )->isUser( _userFD ) \
     || _channelManager->getChannel( target )->isOperator( _userFD )) {
-      std::vector<int> users = _channelManager->getChannel( target )->getAllUsers();
-      pr.recipients.clear();
-      for ( int i = 0; i < (int)users.size(); i++ ) {
-        if ( users[i] != _userFD )
-          pr.recipients.push_back( users[i] );
-      }
-      std::vector<int> opers = _channelManager->getChannel( target )->getAllOperators();
-      for ( int i = 0; i < (int)opers.size(); i++ ) {
-        if ( opers[i] != _userFD )
-          pr.recipients.push_back( opers[i] );
-      }
-      pr.response = genUserMsg( _userManager->getUser( _userFD ), "PRIVMSG" + _args );
+      pr.allresponses[genUserMsg( _userManager->getUser( _userFD ), "PRIVMSG" + _args )] \
+      = _channelManager->getChannel( target )->getAllMembersSansUser( _userFD, 0 );
     }
     else
       return serverResponse( ERR_USERNOTINCHANNEL, target );
@@ -73,8 +63,7 @@ PreparedResponse PrivCommand::execute() const {
     if ( ntohl( addr.sin_addr.s_addr ) != _userManager->getUser( _userManager->getFdFromNick( target ) )->getIp() )
       return serverResponse( ERR_IPNOTFOUND, "" );
 
-    pr.recipients.push_back( _userFD );
-    pr.response = genUserMsg( _userManager->getUser( _userFD ), "PRIVMSG" + _args );
+    pr.allresponses[genUserMsg( _userManager->getUser( _userFD ), "PRIVMSG" + _args )].push_back( _userFD );
     return pr;
   }
   return pr;

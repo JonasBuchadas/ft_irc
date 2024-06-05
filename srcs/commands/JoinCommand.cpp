@@ -19,7 +19,6 @@ JoinCommand &JoinCommand::operator=( JoinCommand const &src ) {
 
 PreparedResponse JoinCommand::execute() const {
   PreparedResponse pr = PreparedResponse();
-  pr.recipients.push_back( _userFD );
   if ( !_userManager->isLoggedIn( _userFD ) )
     return serverResponse( ERR_NOTREGISTERED, "JOIN" );
 
@@ -39,7 +38,9 @@ PreparedResponse JoinCommand::execute() const {
     _channelManager->getChannel( channelName )->addOperator( _userFD );
     if ( !password.empty() )
       _channelManager->getChannel( channelName )->setPassword( password );
-    pr.response = genUserMsg( _userManager->getUser( _userFD ), "JOIN " + channelName );
+    pr.allresponses[genUserMsg( _userManager->getUser( _userFD ), "JOIN " + channelName )].push_back( _userFD );
+    std::string answer = genUserMsg( _userManager->getUser( _userFD ), "PRIVMSG " + channelName + " :" + _userManager->getNick( _userFD ) + " just joined in!");
+    pr.allresponses[answer] = _channelManager->getChannel( channelName)->getAllMembersSansUser( _userFD, 0 );
     return pr;
   }
 
@@ -55,6 +56,8 @@ PreparedResponse JoinCommand::execute() const {
   _channelManager->getChannel( channelName )->addUser( _userFD );
   if (_channelManager->getChannel( channelName )->isInvitee( _userFD ))
     _channelManager->getChannel( channelName )->removeInvitee( _userFD );
-  pr.response = genUserMsg( _userManager->getUser( _userFD ), "JOIN " + channelName );
+  pr.allresponses[genUserMsg( _userManager->getUser( _userFD ), "JOIN " + channelName )].push_back( _userFD );
+  std::string answer = genUserMsg( _userManager->getUser( _userFD ), "PRIVMSG " + channelName + " :" + _userManager->getNick( _userFD ) + " just joined in!");
+  pr.allresponses[answer] = _channelManager->getChannel( channelName)->getAllMembersSansUser( _userFD, 0 );
   return pr;
 }

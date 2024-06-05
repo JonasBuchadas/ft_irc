@@ -19,7 +19,6 @@ PartCommand &PartCommand::operator=( PartCommand const &src ) {
 
 PreparedResponse PartCommand::execute() const {
   PreparedResponse pr = PreparedResponse();
-  pr.recipients.push_back( _userFD );
   if ( !_userManager->isLoggedIn( _userFD ) )
     return serverResponse( ERR_NOTREGISTERED, "PART" );
 
@@ -37,6 +36,8 @@ PreparedResponse PartCommand::execute() const {
     _channelManager->getChannel( channelName )->removeUser( _userFD );
   if ( _channelManager->getChannel( channelName )->isOperator( _userFD ) )
     _channelManager->getChannel( channelName )->removeOperator( _userFD );
-  pr.response = genUserMsg( _userManager->getUser( _userFD ), "PART" + _args );
+  pr.allresponses[genUserMsg( _userManager->getUser( _userFD ), "PART" + _args )].push_back( _userFD );
+  std::string answer = genUserMsg( _userManager->getUser( _userFD ), "PRIVMSG " + channelName + " :" + _userManager->getNick( _userFD ) + " just left");
+  pr.allresponses[answer] = _channelManager->getChannel( channelName)->getAllMembersSansUser( _userFD, 0 );
   return pr;
 }

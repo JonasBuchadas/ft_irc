@@ -34,6 +34,8 @@ PreparedResponse ModeCommand::execute() const {
     return serverResponse( ERR_CHANOPRIVSNEEDED, "MODE" );
 
   pos = _args.find( ' ', pos ) + 1;
+
+  PreparedResponse pr = PreparedResponse();
   while ( pos < _args.length() ) {
     char mode = _args[pos++];
     if ( mode == '+' || mode == '-' ) {
@@ -58,10 +60,24 @@ PreparedResponse ModeCommand::execute() const {
 
     std::string m = "";
     m += mode;
+
+    if ( mode == 'k' || mode == 'l' || mode == 'o' )
+    {
+      if ( !_userManager->nickNameExists( target ) )
+        return serverResponse( ERR_TARGETNOTINCHANNEL, channelName );
+      if ( !_userManager->isLoggedIn( _userManager->getFdFromNick( target ) ) )
+        return serverResponse( ERR_TARGETNOTAUTH, "" );
+    }
+    
+    std::string answer;
     switch ( mode ) {
       case 'k':
-        if ( add )
+        if ( add ) {
           channel->setPassword( target );
+          answer = genUserMsg( _userManager->getUser( _userFD ), "PRIVMSG " + \
+          channelName + " :set channel password");
+          pr.allresponses[answer].push_back( _userManager->getFdFromNick( target ) );
+        }
         else
           channel->setPassword( "" );
         break;
@@ -74,17 +90,30 @@ PreparedResponse ModeCommand::execute() const {
       case 'o':
         if ( add )
         {
+          if ( !channel->isUser( _userManager->getFdFromNick( target ) ) )
+            return serverResponse( ERR_TARGETNOTINCHANNEL, "MODE" );
           channel->addOperator( _userManager->getFdFromNick( target ) );
           channel->removeUser( _userManager->getFdFromNick( target ) );
+          answer = genUserMsg( _userManager->getUser( _userFD ), "PRIVMSG " + \
+          channelName + " :" + _userManager->getNick( _userFD ) + " gave operator status to " + target);
+          pr.allresponses[answer].push_back( _userManager->getFdFromNick( target ) );
         }
         else
         {
+          if ( !channel->isUser( _userManager->getFdFromNick( target ) ) )
+            return serverResponse( ERR_TARGETNOTINCHANNEL, "MODE" );
           channel->removeOperator( _userManager->getFdFromNick( target ) );
           channel->addUser( _userManager->getFdFromNick( target ) );
+          answer = genUserMsg( _userManager->getUser( _userFD ), "PRIVMSG " + \
+          channelName + " :" + _userManager->getNick( _userFD ) + " removed operator status of " + target);
+          pr.allresponses[answer].push_back( _userManager->getFdFromNick( target ) );
         }
         break;
       case 'i':
         channel->setInviteOnly( add );
+        answer = genUserMsg( _userManager->getUser( _userFD ), "PRIVMSG " + \
+        channelName + " :channel is now invite-only");
+        pr.allresponses[answer].push_back( _userManager->getFdFromNick( target ) );
         break;
       case 't':
         channel->setTopicProtected( add );
@@ -93,8 +122,6 @@ PreparedResponse ModeCommand::execute() const {
         return serverResponse( ERR_UNKNOWNMODE, m );
     }
   }
-  PreparedResponse pr = PreparedResponse();
-  pr.recipients.push_back( _userFD );
-  pr.response = genUserMsg( _userManager->getUser( _userFD ), "MODE" + _args );
+  pr.allresponses[genUserMsg( _userManager->getUser( _userFD ), "MODE" + _args )].push_back( _userFD );
   return pr;
 }

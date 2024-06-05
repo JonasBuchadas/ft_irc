@@ -33,7 +33,7 @@ std::string getFixedParam( int code, std::string param ) {
     case ERR_NOSUCHCHANNEL:
       return ": Invalid channel name in " + param + " command";
     case ERR_USERNOTINCHANNEL:
-      return ": Your are not a member of channel '" + param + "'";
+      return ": You are not a member of channel '" + param + "'";
     case ERR_USERONCHANNEL:
       return ": '" + param + "' already in the channel";
     case ERR_INVITEONLYCHAN:

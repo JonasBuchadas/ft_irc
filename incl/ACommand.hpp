@@ -11,8 +11,7 @@
 #include "UserManager.hpp"
 
 struct PreparedResponse {
-  std::string      response;
-  std::vector<int> recipients;
+  std::map <std::string, std::vector<int> >allresponses;
 };
 
 class ACommand {

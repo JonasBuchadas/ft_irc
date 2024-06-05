@@ -49,7 +49,9 @@ PreparedResponse KickCommand::execute() const {
   _channelManager->getChannel( channelName )->removeOperator( kickedFD );
 
   PreparedResponse pr = PreparedResponse();
-  pr.recipients.push_back( kickedFD );
-  pr.response = genUserMsg( _userManager->getUser( _userFD ), "KICK " + kickedNick );
+  pr.allresponses[genUserMsg( _userManager->getUser( _userFD ), "KICK " + kickedNick )].push_back( kickedFD );
+  std::string answer = genUserMsg( _userManager->getUser( _userFD ), "PRIVMSG " + channelName \
+  + " :" + _userManager->getNick( kickedFD ) + " got kicked out by " + _userManager->getNick( _userFD ) );
+  pr.allresponses[answer] = _channelManager->getChannel( channelName)->getAllMembersSansUser( _userFD, 0 );
   return pr;
 }

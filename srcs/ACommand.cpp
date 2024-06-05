@@ -33,6 +33,9 @@ ACommand &ACommand::operator=( ACommand const &src ) {
 
 PreparedResponse ACommand::serverResponse( int code, const std::string &msg ) const {
   PreparedResponse preparedResponse;
-  preparedResponse.allresponses[genServerMsg( code, _userManager->getNick( _userFD ) ,msg )].push_back( _userFD );
+  if ( !_userManager->getUser( _userFD ) )
+    preparedResponse.allresponses[genServerMsg( code, "", msg )].push_back( _userFD );
+  else
+    preparedResponse.allresponses[genServerMsg( code, _userManager->getNick( _userFD ), msg )].push_back( _userFD );
   return preparedResponse;
 }

@@ -34,8 +34,8 @@ std::string NamesCommand::execute() const {
     while ( names[i] && names[i] != ',' && names[i] != '\0' )
       i++;
     std::string user = names.substr(start, i - start);
-    allNames.push_back(user);
+    if ( user != _usernick )
+      allNames.push_back(user);
   }
-  std::cout <<  "KICK " << channelName << " " << allNames[rand() % allNames.size()] << std::endl;
-  return "KICK " + channelName + " " + allNames[rand() % allNames.size()] + "\n";
+  return "KICK " + channelName + " " + allNames[rand() % allNames.size()] + "\r\n";
 }

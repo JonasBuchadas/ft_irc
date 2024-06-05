@@ -28,7 +28,7 @@ PreparedResponse InviteCommand::execute() const {
   if ( inviteeNick.empty() || channelName.empty() || !invalidArg.empty() )
     return serverResponse( ERR_NEEDMOREPARAMS, "INVITE" );
 
-  if ( !_userManager->nickNameExists( _userFD, inviteeNick ) )
+  if ( !_userManager->nickNameExists( inviteeNick ) )
     return serverResponse( ERR_NOSUCHNICK, channelName );
 
   int inviteeFD = _userManager->getFdFromNick( inviteeNick );

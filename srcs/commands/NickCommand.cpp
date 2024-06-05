@@ -26,7 +26,7 @@ PreparedResponse NickCommand::execute() const {
   if ( !_userManager->isValidArg( str ) )
     return serverResponse( ERR_ERRONEUSNICKNAME, "" );
 
-  if ( _userManager->nickNameExists( _userFD, str ) )
+  if ( _userManager->nickNameExists( str ) && str != _userManager->getNick( _userFD ))
     return serverResponse( ERR_NICKNAMEINUSE, "" );
 
   User *user = _userManager->getUser( _userFD );
@@ -39,7 +39,7 @@ PreparedResponse NickCommand::execute() const {
   user->setNick( str );
   PreparedResponse pr = serverResponse( UPD_AUTHELEM, "Nickname" );
   if ( _userManager->authenticateUser( _userFD ) ) {
-    pr.response += genServerMsg( RPL_WELCOME, "" );
+    pr.response += genServerMsg( RPL_WELCOME, _userManager->getNick( _userFD ), "" );
   }
   return pr;
 }

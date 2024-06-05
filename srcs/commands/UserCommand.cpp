@@ -42,7 +42,7 @@ PreparedResponse UserCommand::execute() const {
   user->setName( str );
   PreparedResponse pr = serverResponse( UPD_AUTHELEM, "Username" );
   if ( _userManager->authenticateUser( _userFD ) ) {
-    pr.response += genServerMsg( RPL_WELCOME, "" );
+    pr.response += genServerMsg( RPL_WELCOME, _userManager->getNick( _userFD ), "" );
   }
   return pr;
 }

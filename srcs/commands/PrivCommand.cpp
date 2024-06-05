@@ -42,15 +42,18 @@ PreparedResponse PrivCommand::execute() const {
   if ( pos == std::string::npos ) {
     if ( target.find( "#" ) == std::string::npos )
       pr.recipients.push_back( _userManager->getFdFromNick( target ) );
-    else {
+    else if (_channelManager->getChannel( target )->isUser( _userFD ) \
+    || _channelManager->getChannel( target )->isOperator( _userFD )) {
       std::vector<int> users = _channelManager->getChannel( target )->getAllUsers();
       pr.recipients.clear();
       for ( int i = 0; i < (int)users.size(); i++ ) {
         if ( users[i] != _userFD )
           pr.recipients.push_back( users[i] );
       }
+      pr.response = genUserMsg( _userManager->getUser( _userFD ), "PRIVMSG" + _args );
     }
-    pr.response = genUserMsg( _userManager->getUser( _userFD ), "PRIVMSG" + _args );
+    else
+      return serverResponse( ERR_USERNOTINCHANNEL, target );
     return pr;
   } else {
     send = send.substr( pos + 8 );

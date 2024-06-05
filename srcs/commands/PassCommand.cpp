@@ -42,7 +42,7 @@ PreparedResponse PassCommand::execute() const {
     pr = serverResponse( UPD_AUTHELEM, "Password" );
   }
   if ( _userManager->authenticateUser( _userFD ) ) {
-    pr.response += genServerMsg( RPL_WELCOME, "" );
+    pr.response += genServerMsg( RPL_WELCOME, _userManager->getNick( _userFD ), "" );
   }
   return pr;
 }

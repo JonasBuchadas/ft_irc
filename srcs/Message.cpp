@@ -27,7 +27,7 @@ std::string getFixedParam( int code, std::string param ) {
     case ERR_NOTREGISTERED:
       return ": " + param + " command reserved to authenticated users";
     case ERR_NEEDMOREPARAMS:
-      return ": " + param + " command lacks some parameters";
+      return ": " + param + " command lacks valid parameters";
 
     // Channel
     case RPL_CHANNELMODEIS:

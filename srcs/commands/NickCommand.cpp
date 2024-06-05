@@ -36,15 +36,10 @@ PreparedResponse NickCommand::execute() const {
     _userManager->addUser( _userFD, user );
     return serverResponse( UPD_AUTHELEM, "Nickname" );
   }
-  if ( user->getNick().empty() ) {
-    user->setNick( str );
-    PreparedResponse pr = serverResponse( UPD_AUTHELEM, "Nickname" );
-    if ( _userManager->authenticateUser( _userFD ) ) {
-      pr.response += genServerMsg( RPL_WELCOME, "" );
-    }
-    return pr;
-  }
-
   user->setNick( str );
-  return serverResponse( UPD_AUTHELEM, "Nickname" );
+  PreparedResponse pr = serverResponse( UPD_AUTHELEM, "Nickname" );
+  if ( _userManager->authenticateUser( _userFD ) ) {
+    pr.response += genServerMsg( RPL_WELCOME, "" );
+  }
+  return pr;
 }

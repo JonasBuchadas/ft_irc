@@ -86,6 +86,7 @@ void Server::setupListeningSocket( void ) throw( std::exception ) {
     }
     if ( bind( _listeningSocket, p->ai_addr, p->ai_addrlen ) == -1 ) {
       close( _listeningSocket );
+      freeaddrinfo( res );
       throw Server::BindFailException();
     }
     break;

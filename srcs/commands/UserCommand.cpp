@@ -30,24 +30,19 @@ PreparedResponse UserCommand::execute() const {
 
   if ( user && user->getLoggedIn() ) {
     return serverResponse( ERR_ALREADYREGISTERED, "" );
-  } else if ( user == NULL )
+  } else if ( user == NULL ) {
     user = new User();
-  user->setName( str );
-  _userManager->addUser( _userFD, user );
-  return serverResponse( UPD_AUTHELEM, "Username" );
-
+    user->setName( str );
+    _userManager->addUser( _userFD, user );
+    return serverResponse( UPD_AUTHELEM, "Username" );
+  }
   if ( _userManager->userNameExists( _userFD, str ) )
     return serverResponse( ERR_USERNAMEINUSE, "" );
 
-  if ( user->getName().empty() ) {
-    user->setName( str );
-    PreparedResponse pr = serverResponse( UPD_AUTHELEM, "Username" );
-    if ( _userManager->authenticateUser( _userFD ) ) {
-      pr.response += genServerMsg( RPL_WELCOME, "" );
-    }
-    return pr;
-  }
-
   user->setName( str );
-  return serverResponse( UPD_AUTHELEM, "Username" );
+  PreparedResponse pr = serverResponse( UPD_AUTHELEM, "Username" );
+  if ( _userManager->authenticateUser( _userFD ) ) {
+    pr.response += genServerMsg( RPL_WELCOME, "" );
+  }
+  return pr;
 }

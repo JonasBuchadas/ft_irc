@@ -108,11 +108,10 @@ void Chatbot::listeningLoop( char **av )
           input = input.substr(1);
           sender = input.substr(0, input.find("!"));
           int beg = input.find(":");
-          if (input[beg + 1])
-          {
-            std::string end = input.substr(beg + 1);
-            word = end.substr(0, end.find(" "));
-          }
+          if (beg == (int)std::string::npos && input.find(" ") != std::string::npos)
+            beg = input.find(" ");
+          std::string end = input.substr(beg + 1);
+          word = end.substr(0, end.find(" "));
           if (word == "INVITE" && input.find(":") != std::string::npos)
             input = input.substr(input.find(":") + 1);
           else if (word == "SHOOT" && input.find("#") != std::string::npos)
@@ -122,7 +121,6 @@ void Chatbot::listeningLoop( char **av )
               input = input.substr(0, input.find(" "));
           }
         }
-        std::cout << input << std::endl;
         ACommand *cmd = commands.makeCommand( word, input, sender );
         std::string response = cmd->execute();
         delete cmd;

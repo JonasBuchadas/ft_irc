@@ -73,9 +73,15 @@ PreparedResponse ModeCommand::execute() const {
         break;
       case 'o':
         if ( add )
+        {
           channel->addOperator( _userManager->getFdFromNick( target ) );
+          channel->removeUser( _userManager->getFdFromNick( target ) );
+        }
         else
+        {
           channel->removeOperator( _userManager->getFdFromNick( target ) );
+          channel->addUser( _userManager->getFdFromNick( target ) );
+        }
         break;
       case 'i':
         channel->setInviteOnly( add );

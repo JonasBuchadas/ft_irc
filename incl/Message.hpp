@@ -77,7 +77,7 @@ struct ParsedMsg {
 
 
 
-std::string genServerMsg( int code, std::string param );
+std::string genServerMsg( int code, std::string nick, std::string param );
 std::string genUserMsg( User *userinfo, std::string msg );
 
 #endif

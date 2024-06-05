@@ -35,9 +35,9 @@ bool UserManager::userNameExists( int fd, std::string userName ) {
   return false;
 }
 
-bool UserManager::nickNameExists( int fd, std::string nickName ) {
+bool UserManager::nickNameExists( std::string nickName ) {
   for ( std::map<int, User*>::iterator it = _users.begin(); it != _users.end(); it++ ) {
-    if ( it->first != fd && it->second->getNick() == nickName )
+    if ( it->second->getNick() == nickName )
       return true;
   }
   return false;

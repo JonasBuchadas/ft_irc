@@ -40,7 +40,7 @@ class UserManager {
   std::map<int, User*> getAllUsers();
   void                 addUser( int fd, User* user );
   bool                 userNameExists( int fd, std::string userName );
-  bool                 nickNameExists( int fd, std::string nickName );
+  bool                 nickNameExists( std::string nickName );
 
   bool isValidArg( std::string str );
   int  getFdFromNick( std::string str );

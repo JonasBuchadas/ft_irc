@@ -39,7 +39,7 @@ PreparedResponse JoinCommand::execute() const {
     _channelManager->getChannel( channelName )->addOperator( _userFD );
     if ( !password.empty() )
       _channelManager->getChannel( channelName )->setPassword( password );
-    pr.response = genUserMsg( _userManager->getUser( _userFD ), "JOIN" + _args );
+    pr.response = genUserMsg( _userManager->getUser( _userFD ), "JOIN " + channelName );
     return pr;
   }
 
@@ -53,7 +53,8 @@ PreparedResponse JoinCommand::execute() const {
     return serverResponse( ERR_USERONCHANNEL, _userManager->getNick( _userFD ) );
 
   _channelManager->getChannel( channelName )->addUser( _userFD );
-
-  pr.response = genUserMsg( _userManager->getUser( _userFD ), "JOIN" + _args );
+  if (_channelManager->getChannel( channelName )->isInvitee( _userFD ))
+    _channelManager->getChannel( channelName )->removeInvitee( _userFD );
+  pr.response = genUserMsg( _userManager->getUser( _userFD ), "JOIN " + channelName );
   return pr;
 }

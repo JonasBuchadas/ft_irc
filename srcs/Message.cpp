@@ -87,11 +87,11 @@ std::string getFixedParam( int code, std::string param ) {
   }
 }
 
-std::string genServerMsg( int code, std::string param ) {
+std::string genServerMsg( int code, std::string nick, std::string param ) {
   std::ostringstream s;
   s << code;
   std::string scode( s.str() );
-  return ":server " + scode + " * " + getFixedParam( code, param ) + "\n";
+  return ":server " + scode + " " + nick + " " + getFixedParam( code, param ) + "\r\n";
 }
 
 std::string genUserMsg( User *userinfo, std::string msg ) {
@@ -105,5 +105,5 @@ std::string genUserMsg( User *userinfo, std::string msg ) {
   MODE + #channel + signal_and_flag + targetNickname
   */
 
-  return ":" + userinfo->getNick() + "!~" + userinfo->getName() + "@* " + msg + "\n";
+  return ":" + userinfo->getNick() + "!~" + userinfo->getName() + "@* " + msg + "\r\n";
 }

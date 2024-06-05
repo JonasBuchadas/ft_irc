@@ -13,15 +13,15 @@ open_terminal() {
     local fifo=$2
     local pos=$3
 
-    xterm -geometry 60x24+$pos -title "USER $user" -e bash -c "
+    xterm -fn 10x20 -geometry 60x24+$pos -title "USER $user" -e bash -c "
         (cat $fifo; cat) | nc localhost $port
     " &
 }
 
 # Open terminals with named pipes for initial input
 open_terminal "a" "/tmp/user_a_fifo" "100+300"
-open_terminal "b" "/tmp/user_b_fifo" "470+300"
-open_terminal "c" "/tmp/user_c_fifo" "840+300"
+open_terminal "b" "/tmp/user_b_fifo" "705+300"
+open_terminal "c" "/tmp/user_c_fifo" "1310+300"
 
 # Send initial commands to the IRC server through the named pipes
 echo -e "PASS $2\nNICK a\nUSER a\n" > /tmp/user_a_fifo

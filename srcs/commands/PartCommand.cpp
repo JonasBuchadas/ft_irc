@@ -30,7 +30,7 @@ PreparedResponse PartCommand::execute() const {
     return serverResponse( ERR_NOSUCHCHANNEL, "PART" );
 
   if ( !_channelManager->getChannel( channelName )->isUser( _userFD ) && !_channelManager->getChannel( channelName )->isOperator( _userFD ) )
-    return serverResponse( ERR_USERNOTINCHANNEL, "PART" );
+    return serverResponse( ERR_USERNOTINCHANNEL, channelName );
 
   if ( _channelManager->getChannel( channelName )->isUser( _userFD ) )
     _channelManager->getChannel( channelName )->removeUser( _userFD );

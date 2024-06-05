@@ -38,9 +38,8 @@ PreparedResponse KickCommand::execute() const {
   if ( !_channelManager->channelExists( channelName ) )
     return serverResponse( ERR_NOSUCHCHANNEL, "KICK" );
 
-  if ( !_channelManager->getChannel( channelName )->isUser( _userFD ) &&
-       !_channelManager->getChannel( channelName )->isOperator( _userFD ) )
-    return serverResponse( ERR_USERNOTINCHANNEL, "KICK" );
+  if ( !_channelManager->getChannel( channelName )->isOperator( _userFD ) )
+    return serverResponse( ERR_CHANOPRIVSNEEDED, "KICK" );
 
   if ( !_channelManager->getChannel( channelName )->isUser( kickedFD ) &&
        !_channelManager->getChannel( channelName )->isOperator( kickedFD ) )

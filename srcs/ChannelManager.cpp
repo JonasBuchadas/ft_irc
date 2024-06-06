@@ -35,8 +35,13 @@ std::map<std::string, Channel*> ChannelManager::getAllChannels() {
 }
 
 std::string ChannelManager::getChannelModes( std::string channelName ) {
-  if ( channelExists( channelName ) )
-    return _channels[channelName]->getModes();
+  if ( channelExists( channelName ) ) {
+    std::string modes = _channels[channelName]->getModes();
+    std::string parameters = _channels[channelName]->getModeParams();
+    if ( modes.empty() )
+      return "";
+    return "+" + modes + parameters;
+  }
   return "";
 }
 

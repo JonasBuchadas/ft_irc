@@ -30,6 +30,8 @@ std::string getFixedParam( int code, std::string param ) {
       return ": " + param + " command lacks some parameters";
 
     // Channel
+    case RPL_CHANNELMODEIS:
+      return ": Channel modes are " + param;
     case ERR_NOSUCHCHANNEL:
       return ": Invalid channel name in " + param + " command";
     case ERR_USERNOTINCHANNEL:

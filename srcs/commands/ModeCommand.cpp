@@ -37,8 +37,9 @@ PreparedResponse ModeCommand::execute() const {
 
   PreparedResponse pr = PreparedResponse();
 
-  if ( pos == std::string::npos) {
+  if ( pos >= _args.length()) {
     std::string modeResponse = _channelManager->getChannelModes( channelName );
+    return serverResponse( RPL_CHANNELMODEIS, modeResponse );
   }
   while ( pos < _args.length() ) {
     char mode = _args[pos++];
@@ -64,8 +65,7 @@ PreparedResponse ModeCommand::execute() const {
 
     std::string m = "";
     m += mode;
-
-    if ( mode == 'k' || mode == 'l' || mode == 'o' )
+    if (mode == 'o' )
     {
       if ( !_userManager->nickNameExists( target ) )
         return serverResponse( ERR_TARGETNOTINCHANNEL, channelName );
@@ -80,7 +80,7 @@ PreparedResponse ModeCommand::execute() const {
           channel->setPassword( target );
           answer = genUserMsg( _userManager->getUser( _userFD ), "PRIVMSG " + \
           channelName + " :set channel password");
-          pr.allresponses[answer].push_back( _userManager->getFdFromNick( target ) );
+          pr.allresponses[answer] = _channelManager->getChannel( channelName )->getAllMembersSansUser( _userFD, 0 );
         }
         else
           channel->setPassword( "" );

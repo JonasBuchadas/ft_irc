@@ -4,6 +4,8 @@
 
 #include <algorithm>
 #include <iostream>
+#include <sstream>
+#include <string>
 #include <map>
 #include <vector>
 
@@ -40,6 +42,7 @@ class Channel {
   std::string      getPassword( void );
   unsigned int     getMaxUsers( void );
   std::string      getModes( void );
+  std::string      getModeParams( void );
   void             addUser( int _userFD );
   void             addOperator( int _userFD );
   void             addInvitee( int _userFD );

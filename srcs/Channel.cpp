@@ -106,6 +106,18 @@ std::string Channel::getModes( void ) {
   return modes;
 }
 
+std::string Channel::getModeParams( void ) {
+  std::string params = "";
+  std::stringstream ss;
+  if ( _password != "" )
+    params += " " + _password;
+  if ( _maxUsers != 0 ){
+    ss << _maxUsers;
+    params += " " + ss.str();
+  }
+  return params;
+}
+
 void Channel::addUser( int _userFD ) {
   if ( isUser( _userFD ) )
     return;

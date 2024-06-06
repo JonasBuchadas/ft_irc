@@ -34,6 +34,7 @@ struct ParsedMsg {
 #define ERR_NEEDMOREPARAMS 461   // Use when: received command lacks parameters
 
 // Channel
+#define RPL_CHANNELMODEIS 324     // Use when: viewing channel modes
 #define RPL_NAMREPLY 353          // Use when: notifying the channel about a user's status or nickname change
 #define ERR_NOSUCHCHANNEL 403     // Use when: received channel name doesn't exist
 #define ERR_USERNOTINCHANNEL 441  // Use when: a user sends a message to a channel he is not a member of

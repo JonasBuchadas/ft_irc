@@ -22,7 +22,7 @@ PreparedResponse KickCommand::execute() const {
     return serverResponse( ERR_NOTREGISTERED, "KICK" );
 
   std::stringstream argsStream( _args );
-  std::string       kickedNick, channelName, reason, invalidArg;
+  std::string       kickedNick, channelName, reason;
   argsStream >> channelName >> kickedNick;
   reason = "";
 
@@ -57,9 +57,9 @@ PreparedResponse KickCommand::execute() const {
   pr.allresponses[genUserMsg( _userManager->getUser( _userFD ), "KICK " + kickedNick )].push_back( kickedFD );
   std::string answer = "";
   if ( reason == "" )
-    answer      = genUserMsg( _userManager->getUser( _userFD ), "PRIVMSG " + channelName + " :" + _userManager->getNick( kickedFD ) + " got kicked out by " + _userManager->getNick( _userFD ) );
+    answer = genUserMsg( _userManager->getUser( _userFD ), "PRIVMSG " + channelName + " :" + _userManager->getNick( kickedFD ) + " got kicked out by " + _userManager->getNick( _userFD ) );
   else
-    answer      = genUserMsg( _userManager->getUser( _userFD ), "PRIVMSG " + channelName + " :" + _userManager->getNick( kickedFD ) + " got kicked out by " + _userManager->getNick( _userFD ) + " because" + reason );
+    answer = genUserMsg( _userManager->getUser( _userFD ), "PRIVMSG " + channelName + " :" + _userManager->getNick( kickedFD ) + " got kicked out by " + _userManager->getNick( _userFD ) + " because" + reason );
   pr.allresponses[answer] = _channelManager->getChannel( channelName )->getAllMembers();
   return pr;
 }

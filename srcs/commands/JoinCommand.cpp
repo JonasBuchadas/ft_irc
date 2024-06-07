@@ -30,7 +30,7 @@ PreparedResponse JoinCommand::execute() const {
     return serverResponse( ERR_NEEDMOREPARAMS, "JOIN" );
 
   if ( channelName[0] != '#' )
-    return serverResponse( ERR_NOSUCHCHANNEL, "JOIN" );
+    return serverResponse( ERR_NOSUCHCHANNEL, channelName );
 
   if ( !_channelManager->channelExists( channelName ) ) {
     Channel *channel = new Channel( channelName );

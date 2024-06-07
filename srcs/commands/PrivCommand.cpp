@@ -32,7 +32,7 @@ PreparedResponse PrivCommand::execute() const {
     target = target.substr( 0, target.find( ":" ) );
   if ( (target.find("#") == std::string::npos && _userManager->getFdFromNick( target ) == -1) \
   || ( target.find("#") != std::string::npos && !_channelManager->channelExists( target ) ) )
-    return serverResponse( ERR_NOSUCHNICK, "PRIVMSG" );
+    return serverResponse( ERR_NOSUCHNICK, target );
 
   unsigned int long pos = _args.find( ":" );
   if ( pos == std::string::npos )

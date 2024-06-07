@@ -25,12 +25,12 @@ PreparedResponse NamesCommand::execute() const {
   while ( _args[i] == ' ' )
     i++;
   if ( _args[i] != '#' ) {
-    return serverResponse( ERR_NOSUCHCHANNEL, "NAMES" );
+    return serverResponse( ERR_NOSUCHCHANNEL, &_args[i] );
   } else if ( _channelManager->channelExists( &_args[i] ) &&
   !_channelManager->isOperator( &_args[i], _userFD ) && !_channelManager->isUser( &_args[i], _userFD ) ) {
     return serverResponse( ERR_USERNOTINCHANNEL, &_args[i] );
   } else if ( !_channelManager->channelExists( &_args[i] ) ) {
-    return serverResponse( ERR_NOSUCHCHANNEL, "NAMES" );
+    return serverResponse( ERR_NOSUCHCHANNEL, &_args[i] );
   }
   std::vector<int> opers = _channelManager->getChannel( &_args[i] )->getAllOperators();
   std::vector<int> users = _channelManager->getChannel( &_args[i] )->getAllUsers();

@@ -30,7 +30,7 @@ PreparedResponse TopicCommand::execute() const {
     return serverResponse( ERR_NEEDMOREPARAMS, "TOPIC" );
 
   if ( channelName[0] != '#' || !_channelManager->channelExists( channelName ) )
-    return serverResponse( ERR_NOSUCHCHANNEL, "TOPIC" );
+    return serverResponse( ERR_NOSUCHCHANNEL, channelName );
 
   if ( !_channelManager->getChannel( channelName )->isUser( _userFD ) \
   && !_channelManager->getChannel( channelName )->isOperator( _userFD ) )
@@ -57,7 +57,7 @@ PreparedResponse TopicCommand::execute() const {
     return serverResponse( RPL_NOTOPIC, "" );
   else if ( topic.empty() && t.find(":") == std::string::npos  && \
    _channelManager->getChannel( channelName )->getTopic().size() > 0)
-    return serverResponse( RPL_TOPIC, _channelManager->getChannel( channelName )->getTopic() );
+    return serverResponse( RPL_TOPIC, channelName + " :" + _channelManager->getChannel( channelName )->getTopic() );
   else
     return serverResponse( ERR_NEEDMOREPARAMS, "TOPIC" );
 

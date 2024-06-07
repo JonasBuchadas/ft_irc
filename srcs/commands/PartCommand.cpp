@@ -27,7 +27,7 @@ PreparedResponse PartCommand::execute() const {
 
   argsStream >> channelName;
   if ( !_channelManager->channelExists( channelName ) )
-    return serverResponse( ERR_NOSUCHCHANNEL, "PART" );
+    return serverResponse( ERR_NOSUCHCHANNEL, channelName );
 
   if ( !_channelManager->getChannel( channelName )->isUser( _userFD ) && !_channelManager->getChannel( channelName )->isOperator( _userFD ) )
     return serverResponse( ERR_USERNOTINCHANNEL, channelName );

@@ -4,68 +4,68 @@ std::string getFixedParam( int code, std::string param ) {
   (void)param;
   switch ( code ) {
     // Dunno if we need them
-    case ERR_CANNOTSENDTOCHAN:
-      return ": You're not yet a '" + param + "' channel member";
-    case ERR_UNKNOWNCOMMAND:
-      return ": Unknown command '" + param + "'";
-    case ERR_KEYSET:
-      return ": Channel key already defined";
-    case ERR_CANTKILLSERVER:
-      return ": '" + param + "' command not available";
-    case ERR_USERSDONTMATCH:
-      return ": Invalid user operation";
+    // case ERR_CANNOTSENDTOCHAN:
+    //   return ": You're not yet a '" + param + "' channel member";
+    // case ERR_UNKNOWNCOMMAND:
+    //   return ": Unknown command '" + param + "'";
+    // case ERR_KEYSET:
+    //   return ": Channel key already defined";
+    // case ERR_CANTKILLSERVER:
+    //   return ": '" + param + "' command not available";
+    // case ERR_USERSDONTMATCH:
+    //   return ": Invalid user operation";
 
     // General Purpose
     case ERR_NOSUCHNICK:
-      return ": Invalid nickname in " + param + " command";
-    case ERR_TOOMANYTARGETS:
-      return ": Too many recipients in " + param + " command";
-    case ERR_NORECIPIENT:
-      return ": Invalid recipient in " + param + " command";
-    case ERR_NONICKNAMEGIVEN:
-      return ": No nickname given in " + param + " command";
+      return " :No such nick/channel";
+    // case ERR_TOOMANYTARGETS:
+    //   return ": Too many recipients in " + param + " command";
+    // case ERR_NORECIPIENT:
+    //   return ": Invalid recipient in " + param + " command";
+    // case ERR_NONICKNAMEGIVEN:
+    //   return ": No nickname given in " + param + " command";
     case ERR_NOTREGISTERED:
-      return ": " + param + " command reserved to authenticated users";
+      return ":You have not registered";
     case ERR_NEEDMOREPARAMS:
-      return ": " + param + " command lacks valid parameters";
+      return "" + param + ":Not enough parameters";
 
     // Channel
     case RPL_CHANNELMODEIS:
-      return ": Channel modes are " + param;
+      return param;
     case ERR_NOSUCHCHANNEL:
-      return ": Invalid channel name in " + param + " command";
+      return "" + param + ":No such channel";
     case ERR_USERNOTINCHANNEL:
-      return ": You are not a member of channel '" + param + "'";
+      return "" + param + ":You're not on that channel";
     case ERR_USERONCHANNEL:
-      return ": '" + param + "' already in the channel";
+      return "" + param + " :is already on channel";
     case ERR_INVITEONLYCHAN:
-      return ": '" + param + "' channel is invite only";
+      return "" + param + ":Cannot join channel (+i)";
     case ERR_BADCHANNELKEY:
-      return ": Incorrect channel access key";
+      return "" + param + ":Cannot join channel (+k)";
     case ERR_CHANOPRIVSNEEDED:
-      return ": " + param + " command only allowed to channel operators";
+      return "" + param + " :You're not channel operator";
 
     // Keyword specific commands
     case RPL_WELCOME:
-      return ":Successfully logged in!";
+      return ":Welcome to the server, " + param;
     case ERR_PASSWDMISMATCH:
-      return ": Incorrect password";
+      return ":Password incorrect";
     case ERR_ALREADYREGISTERED:
-      return ": user is already authenticated";
+      return ":You may not reregister";
     case ERR_ERRONEUSNICKNAME:
-      return ": Nickname contains invalid characters";
+      return ":Erroneous nickname";
     case ERR_NICKNAMEINUSE:
-      return ": Nickname is already in use";
+      return ":Nickname is already in use";
     case RPL_NOTOPIC:
-      return ": Channel has no set topic";
+      return ":No topic is set";
     case RPL_TOPIC:
-      return ": Channel topic is set to '" + param + "'";
+      return param;
     case ERR_UNKNOWNMODE:
-      return ": Unknown flag '" + param + "' in MODE command";
+      return param;
     case ERR_NOTEXTTOSEND:
-      return ": Message content not provided";
+      return ":No text to send";
     case RPL_NAMREPLY:
-      return "" + param + "";
+      return param;
 
     // Custom Msgs
     case UPD_AUTHELEM:

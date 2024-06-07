@@ -29,14 +29,14 @@ PreparedResponse InviteCommand::execute() const {
     return serverResponse( ERR_NEEDMOREPARAMS, "INVITE" );
 
   if ( !_userManager->nickNameExists( inviteeNick ) )
-    return serverResponse( ERR_NOSUCHNICK, channelName );
+    return serverResponse( ERR_NOSUCHNICK, inviteeNick );
 
   int inviteeFD = _userManager->getFdFromNick( inviteeNick );
   if ( !_userManager->isLoggedIn( inviteeFD ) )
     return serverResponse( ERR_TARGETNOTAUTH, "" );
 
   if ( !_channelManager->channelExists( channelName ) )
-    return serverResponse( ERR_NOSUCHCHANNEL, "INVITE" );
+    return serverResponse( ERR_NOSUCHCHANNEL, channelName );
 
   if ( !_channelManager->getChannel( channelName )->isUser( _userFD ) &&
        !_channelManager->getChannel( channelName )->isOperator( _userFD ) )

@@ -27,11 +27,11 @@ PreparedResponse ModeCommand::execute() const {
   while ( _args[pos] == ' ' && pos < _args.length() )
     pos++;
   if ( _args.length() > 1 && _args[pos] != '#' )
-    return serverResponse( ERR_NOSUCHCHANNEL, "MODE" );
+    return serverResponse( ERR_NOSUCHCHANNEL, &_args[pos] );
 
   std::string channelName = _args.substr( pos, _args.find( ' ', pos ) - pos );
   if ( !_channelManager->isOperator( channelName, _userFD ) )
-    return serverResponse( ERR_CHANOPRIVSNEEDED, "MODE" );
+    return serverResponse( ERR_CHANOPRIVSNEEDED, channelName );
 
   pos = _args.find( ' ', pos ) + 1;
 
@@ -39,7 +39,7 @@ PreparedResponse ModeCommand::execute() const {
 
   if ( pos >= _args.length()) {
     std::string modeResponse = _channelManager->getChannelModes( channelName );
-    return serverResponse( RPL_CHANNELMODEIS, modeResponse );
+    return serverResponse( RPL_CHANNELMODEIS, channelName + " " + modeResponse );
   }
   while ( pos < _args.length() ) {
     char mode = _args[pos++];
@@ -61,7 +61,7 @@ PreparedResponse ModeCommand::execute() const {
     }
     Channel *channel = _channelManager->getChannel( channelName );
     if ( !channel )
-      return serverResponse( ERR_NOSUCHCHANNEL, "MODE" );
+      return serverResponse( ERR_NOSUCHCHANNEL, channelName );
 
     std::string m = "";
     m += mode;
@@ -100,7 +100,7 @@ PreparedResponse ModeCommand::execute() const {
           channel->removeUser( _userManager->getFdFromNick( target ) );
           answer = genUserMsg( _userManager->getUser( _userFD ), "PRIVMSG " + \
           channelName + " :" + _userManager->getNick( _userFD ) + " gave operator status to " + target);
-          pr.allresponses[answer].push_back( _userManager->getFdFromNick( target ) );
+          pr.allresponses[answer] = _channelManager->getChannel( channelName )->getAllMembers();
         }
         else
         {
@@ -110,20 +110,20 @@ PreparedResponse ModeCommand::execute() const {
           channel->addUser( _userManager->getFdFromNick( target ) );
           answer = genUserMsg( _userManager->getUser( _userFD ), "PRIVMSG " + \
           channelName + " :" + _userManager->getNick( _userFD ) + " removed operator status of " + target);
-          pr.allresponses[answer].push_back( _userManager->getFdFromNick( target ) );
+          pr.allresponses[answer] = _channelManager->getChannel( channelName )->getAllMembers();
         }
         break;
       case 'i':
         channel->setInviteOnly( add );
         answer = genUserMsg( _userManager->getUser( _userFD ), "PRIVMSG " + \
         channelName + " :channel is now invite-only");
-        pr.allresponses[answer].push_back( _userManager->getFdFromNick( target ) );
+        pr.allresponses[answer] = _channelManager->getChannel( channelName )->getAllMembers();
         break;
       case 't':
         channel->setTopicProtected( add );
         break;
       default:
-        return serverResponse( ERR_UNKNOWNMODE, m );
+        return serverResponse( ERR_UNKNOWNMODE, m + ":is unknown mode char to me for" + channelName );
     }
   }
   pr.allresponses[genUserMsg( _userManager->getUser( _userFD ), "MODE" + _args )].push_back( _userFD );

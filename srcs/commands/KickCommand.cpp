@@ -37,14 +37,14 @@ PreparedResponse KickCommand::execute() const {
     return serverResponse( ERR_NEEDMOREPARAMS, "KICK" );
 
   if ( !_userManager->nickNameExists( kickedNick ) )
-    return serverResponse( ERR_NOSUCHNICK, "KICK" );
+    return serverResponse( ERR_NOSUCHNICK, kickedNick );
 
   int kickedFD = _userManager->getFdFromNick( kickedNick );
   if ( !_userManager->isLoggedIn( kickedFD ) )
     return serverResponse( ERR_TARGETNOTAUTH, "" );
 
   if ( !_channelManager->channelExists( channelName ) )
-    return serverResponse( ERR_NOSUCHCHANNEL, "KICK" );
+    return serverResponse( ERR_NOSUCHCHANNEL, channelName );
 
   if ( !_channelManager->getChannel( channelName )->isOperator( _userFD ) )
     return serverResponse( ERR_CHANOPRIVSNEEDED, "KICK" );

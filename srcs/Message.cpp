@@ -44,8 +44,6 @@ std::string getFixedParam( int code, std::string param ) {
       return "" + param + ":Cannot join channel (+k)";
     case ERR_CHANOPRIVSNEEDED:
       return "" + param + " :You're not channel operator";
-    case ERR_CHANNELISFULL:
-      return "" + param + ":Cannot join channel (+l)";
 
     // Keyword specific commands
     case RPL_WELCOME:

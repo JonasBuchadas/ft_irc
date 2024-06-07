@@ -84,6 +84,8 @@ std::string getFixedParam( int code, std::string param ) {
       return ": Command target not authenticated";
     case ERR_TARGETNOTINCHANNEL:
       return ": Command target not in channel";
+    case ERR_TARGETISOPER:
+      return ": Command target is already operator";
     case ERR_TARGETNOTOPER:
       return ": Command target is not operator";
     case ERR_TARGETALREADYINV:

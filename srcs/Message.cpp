@@ -47,7 +47,7 @@ std::string getFixedParam( int code, std::string param ) {
 
     // Keyword specific commands
     case RPL_WELCOME:
-      return ": Successfully logged in!";
+      return ":Successfully logged in!";
     case ERR_PASSWDMISMATCH:
       return ": Incorrect password";
     case ERR_ALREADYREGISTERED:

@@ -6,12 +6,10 @@
 #include <map>
 
 #include "ACommand.hpp"
-
+#include "botcmds/InvalidCommand.hpp"
 #include "botcmds/InviteCommand.hpp"
-#include "botcmds/NoCommand.hpp"
-#include "botcmds/ShootCommand.hpp"
 #include "botcmds/NamesCommand.hpp"
-
+#include "botcmds/ShootCommand.hpp"
 
 typedef ACommand *( *funcPtr )( std::string _args, std::string nick );
 

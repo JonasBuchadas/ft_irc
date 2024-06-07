@@ -2,8 +2,6 @@
 #ifndef __CHATBOT_HPP__
 #define __CHATBOT_HPP__
 
-#include <iostream>
-#include <map>
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <netinet/in.h>
@@ -11,9 +9,13 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <cstring>
+#include <unistd.h>
+
 #include <csignal>
+#include <cstring>
 #include <exception>
+#include <iostream>
+#include <map>
 
 #include "CommandFactory.hpp"
 
@@ -27,9 +29,9 @@ class Chatbot {
   ~Chatbot();
 
   std::string awaitInput( int sockfd );
-  void loginBossBot( int sockfd, char **av );
-  int connectToServer( char *port );
-  void listeningLoop( char **av );
+  void        loginBossBot( int sockfd, char **av );
+  int         connectToServer( char *port );
+  void        listeningLoop( char **av );
 
   class CouldntConnecttoServer : public std::exception {
    public:
@@ -45,7 +47,7 @@ class Chatbot {
     }
   };
 
-   class RecvFailException : public std::exception {
+  class RecvFailException : public std::exception {
    public:
     virtual const char *what() const throw() {
       return "failed to receive message";

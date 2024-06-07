@@ -15,8 +15,8 @@ CommandFactory &CommandFactory::operator=( CommandFactory const &src ) {
   return ( *this );
 }
 
-ACommand *makeNoCommand( std::string args, std::string nick ) {
-  return new NoCommand( args, nick );
+ACommand *makeInvalidCommand( std::string args, std::string nick ) {
+  return new InvalidCommand( args, nick );
 }
 
 ACommand *makeInviteCommand( std::string args, std::string nick ) {
@@ -31,7 +31,6 @@ ACommand *makeNamesCommand( std::string args, std::string nick ) {
   return new NamesCommand( args, nick );
 }
 
-
 ACommand *CommandFactory::makeCommand( std::string commandName, std::string args, std::string nick ) {
   const std::string enumBotCmd[]  = { "INVITE", "SHOOT", nick };
   const funcPtr     enumBotFunc[] = {
@@ -45,5 +44,5 @@ ACommand *CommandFactory::makeCommand( std::string commandName, std::string args
       return c;
     }
   }
-  return new NoCommand( args, nick );
+  return new InvalidCommand( args, nick );
 }

@@ -18,8 +18,8 @@ SRC_NAME=	main.cpp
 SRCS=		Chatbot.cpp \
 			ACommand.cpp \
 			CommandFactory.cpp \
+			botcmds/InvalidCommand.cpp \
 			botcmds/InviteCommand.cpp \
-			botcmds/NoCommand.cpp \
 			botcmds/ShootCommand.cpp \
 			botcmds/NamesCommand.cpp
 

@@ -102,5 +102,5 @@ ACommand *CommandFactory::makeCommand( int fd, std::string commandName, std::str
       return c;
     }
   }
-  return new NoCommand( _userManager, _channelManager, args, fd );
+  return new InvalidCommand( _userManager, _channelManager, commandName, fd );
 }

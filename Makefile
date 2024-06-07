@@ -25,7 +25,7 @@ SRCS=		Server.cpp \
 				Parser.cpp \
 				ACommand.cpp \
 				CommandFactory.cpp \
-				commands/NoCommand.cpp \
+				commands/InvalidCommand.cpp \
 				commands/UserCommand.cpp \
 				commands/PassCommand.cpp \
 				commands/NickCommand.cpp \

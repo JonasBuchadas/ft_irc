@@ -63,6 +63,10 @@ ACommand *makeModeCommand( UserManager *userManager, ChannelManager *channelMana
   return new ModeCommand( userManager, channelManager, args, fd );
 }
 
+ACommand *makeTopicCommand( UserManager *userManager, ChannelManager *channelManager, std::string args, int fd ) {
+  return new TopicCommand( userManager, channelManager, args, fd );
+}
+
 ACommand *makeLogoutCommand( UserManager *userManager, ChannelManager *channelManager, std::string args, int fd ) {
   return new LogoutCommand( userManager, channelManager, args, fd );
 }
@@ -70,7 +74,7 @@ ACommand *makeLogoutCommand( UserManager *userManager, ChannelManager *channelMa
 ACommand *CommandFactory::makeCommand( int fd, std::string commandName, std::string args, bool internal ) {
   const std::string enumInternalCommand[] = { "LOGOUT" };
   const funcPtr     enumInternalFunc[]    = { &makeLogoutCommand };
-  const std::string enumCommand[]         = { "USER", "PASS", "NICK", "PRIVMSG", "JOIN", "KICK", "INVITE", "PART", "NAMES", "MODE" };
+  const std::string enumCommand[]         = { "USER", "PASS", "NICK", "PRIVMSG", "JOIN", "KICK", "INVITE", "PART", "NAMES", "TOPIC", "MODE" };
   const funcPtr     enumFunc[]            = {
       &makeUserCommand,
       &makePassCommand,
@@ -81,6 +85,7 @@ ACommand *CommandFactory::makeCommand( int fd, std::string commandName, std::str
       &makeInviteCommand,
       &makePartCommand,
       &makeNamesCommand,
+      &makeTopicCommand,
       &makeModeCommand,
   };
   if ( internal ) {

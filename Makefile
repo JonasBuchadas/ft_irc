@@ -36,6 +36,7 @@ SRCS=		Server.cpp \
 				commands/NamesCommand.cpp \
 				commands/InviteCommand.cpp \
 				commands/LogoutCommand.cpp \
+				commands/TopicCommand.cpp \
 				commands/ModeCommand.cpp
 SRCS_NAME=	$(addprefix $(SRCS_PATH), $(SRC_NAME) $(SRCS))
 ### OBJECT FILES ###

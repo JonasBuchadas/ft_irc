@@ -75,6 +75,7 @@ struct ParsedMsg {
 #define ERR_TARGETNOTAUTH 606  // Use when: target of a command is not autheticated
 #define ERR_TARGETNOTINCHANNEL 607  // Use when: target of a command not in channel
 #define ERR_TARGETALREADYINV 608  // Use when: target of a command INVITE already invited
+#define ERR_TARGETNOTOPER 609  // Use when: target of a command not in channel
 
 
 

@@ -59,7 +59,7 @@ std::string getFixedParam( int code, std::string param ) {
     case RPL_NOTOPIC:
       return ": Channel has no set topic";
     case RPL_TOPIC:
-      return ": Channel topic set to '" + param + "'";
+      return ": Channel topic is set to '" + param + "'";
     case ERR_UNKNOWNMODE:
       return ": Unknown flag '" + param + "' in MODE command";
     case ERR_NOTEXTTOSEND:
@@ -82,6 +82,8 @@ std::string getFixedParam( int code, std::string param ) {
       return ": Command target not authenticated";
     case ERR_TARGETNOTINCHANNEL:
       return ": Command target not in channel";
+    case ERR_TARGETNOTOPER:
+      return ": Command target is not operator";
     case ERR_TARGETALREADYINV:
       return ": Invitee already invited";
     default:

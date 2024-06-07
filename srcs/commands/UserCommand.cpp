@@ -23,7 +23,7 @@ PreparedResponse UserCommand::execute() const {
 
   std::string str = _args.substr( 1, _args.find_first_of( " \n\r\0", 1 ) - 1 );
 
-  if ( !_userManager->isValidArg( str ) )
+  if ( str.empty() || !_userManager->isValidArg( str ) )
     return serverResponse( INVALIDAUTHELEM, "Username" );
 
   User *user = _userManager->getUser( _userFD );

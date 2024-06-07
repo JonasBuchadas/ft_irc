@@ -48,7 +48,7 @@ PreparedResponse ModeCommand::execute() const {
       continue;
     }
     std::string target;
-    if ( ( ( mode == 'k' || mode == 'l' ) && add ) || mode == 'o' ) {
+    if ( ( ( mode == 'k' || mode == 'l' || mode == 'o' ) && add ) ) {
       pos++;
       size_t spacePos = _args.find( ' ', pos );
       if ( spacePos != std::string::npos ) {
@@ -104,8 +104,8 @@ PreparedResponse ModeCommand::execute() const {
         }
         else
         {
-          if ( !channel->isUser( _userManager->getFdFromNick( target ) ) )
-            return serverResponse( ERR_TARGETNOTINCHANNEL, "MODE" );
+          if ( !channel->isOperator( _userManager->getFdFromNick( target ) ) )
+            return serverResponse( ERR_TARGETNOTOPER, "MODE" );
           channel->removeOperator( _userManager->getFdFromNick( target ) );
           channel->addUser( _userManager->getFdFromNick( target ) );
           answer = genUserMsg( _userManager->getUser( _userFD ), "PRIVMSG " + \

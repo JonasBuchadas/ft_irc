@@ -30,7 +30,8 @@ PreparedResponse PrivCommand::execute() const {
   std::string target = _args.substr( 1, _args.find_first_of( " \n\r\0", 1 ) - 1 );
   if ( target.find( ":" ) != std::string::npos )
     target = target.substr( 0, target.find( ":" ) );
-  if ( _userManager->getFdFromNick( target ) == -1 && !_channelManager->channelExists( target ) )
+  if ( (target.find("#") == std::string::npos && _userManager->getFdFromNick( target ) == -1) \
+  || ( target.find("#") != std::string::npos && !_channelManager->channelExists( target ) ) )
     return serverResponse( ERR_NOSUCHNICK, "PRIVMSG" );
 
   unsigned int long pos = _args.find( ":" );
@@ -51,19 +52,21 @@ PreparedResponse PrivCommand::execute() const {
       return serverResponse( ERR_USERNOTINCHANNEL, target );
     return pr;
   } else {
-    send = send.substr( pos + 8 );
+    send = send.substr( send.find("DCC SEND") + 9 );
     std::istringstream iss( send );
-    std::string        filename, ipStr, portStr, filesizeStr;
-    iss >> filename >> ipStr >> portStr >> filesizeStr;
+    std::string        filename, portStr, filesizeStr;
+    uint32_t ip;
+    iss >> filename;
+    iss >> ip;
+    iss >> portStr >> filesizeStr;
     struct sockaddr_in addr;
     socklen_t          userlen = sizeof( addr );
-    if ( getpeername( _userManager->getFdFromNick( target ), (struct sockaddr *)&addr, &userlen ) == -1 )
+    if ( getpeername( _userFD, (struct sockaddr *)&addr, &userlen ) == -1 )
       return serverResponse( ERR_USERNOTFOUND, "" );
-
-    if ( ntohl( addr.sin_addr.s_addr ) != _userManager->getUser( _userManager->getFdFromNick( target ) )->getIp() )
+    if ( ip != _userManager->getUser( _userFD )->getIp() )
       return serverResponse( ERR_IPNOTFOUND, "" );
-
-    pr.allresponses[genUserMsg( _userManager->getUser( _userFD ), "PRIVMSG" + _args )].push_back( _userFD );
+    pr.allresponses[genUserMsg( _userManager->getUser( _userFD ), "PRIVMSG" + _args )] \
+    = _channelManager->getChannel( target )->getAllMembersSansUser( _userFD );
     return pr;
   }
   return pr;

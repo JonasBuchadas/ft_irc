@@ -42,6 +42,7 @@ PreparedResponse UserCommand::execute() const {
   user->setName( str );
   PreparedResponse pr = serverResponse( UPD_AUTHELEM, "Username" );
   if ( _userManager->authenticateUser( _userFD ) ) {
+    _userManager->setUserIp( _userFD );
     pr.allresponses[genServerMsg( RPL_WELCOME, _userManager->getNick( _userFD ), "" )].push_back( _userFD );
   }
   return pr;

@@ -45,6 +45,7 @@ PreparedResponse PassCommand::execute() const {
     pr = serverResponse( UPD_AUTHELEM, "Password" );
   }
   if ( _userManager->authenticateUser( _userFD ) ) {
+    _userManager->setUserIp( _userFD );
     pr.allresponses[genServerMsg( RPL_WELCOME, _userManager->getNick( _userFD ), "" )].push_back( _userFD );
   }
   return pr;

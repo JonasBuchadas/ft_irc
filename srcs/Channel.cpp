@@ -69,6 +69,15 @@ std::vector<int> Channel::getAllOperators() {
   return _operators;
 }
 
+std::vector<int> Channel::getAllMembers() {
+  std::vector<int> allUsersAndOps;
+  for ( int i = 0; i < (int)_operators.size(); i++ )
+    allUsersAndOps.push_back( _operators[i] );
+  for ( int i = 0; i < (int)_users.size(); i++ )
+    allUsersAndOps.push_back( _users[i] );
+  return allUsersAndOps;
+}
+
 bool Channel::isInviteOnly( void ) {
   return _inviteOnly;
 }

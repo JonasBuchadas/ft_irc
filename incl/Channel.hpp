@@ -32,6 +32,7 @@ class Channel {
   std::vector<int> getAllMembersSansUser( int user, int target );
   std::vector<int> getAllUsers();
   std::vector<int> getAllOperators();
+  std::vector<int> getAllMembers();
   bool             isUser( int user );
   bool             isOperator( int user );
   bool             isInvitee( int user );

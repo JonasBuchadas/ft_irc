@@ -55,7 +55,7 @@ std::string getFixedParam( int code, std::string param ) {
     case ERR_ERRONEUSNICKNAME:
       return ": Nickname contains invalid characters";
     case ERR_NICKNAMEINUSE:
-      return ": Nickname already taken";
+      return ": Nickname is already in use";
     case RPL_NOTOPIC:
       return ": Channel has no set topic";
     case RPL_TOPIC:
@@ -73,7 +73,7 @@ std::string getFixedParam( int code, std::string param ) {
     case INVALIDAUTHELEM:
       return ": " + param + " contains invalid characters";
     case ERR_USERNAMEINUSE:
-      return ": Nickname already taken";
+      return ": Username is already in use";
     case ERR_USERNOTFOUND:
       return ": Couldn't find user";
     case ERR_IPNOTFOUND:

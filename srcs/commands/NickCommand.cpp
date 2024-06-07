@@ -26,10 +26,11 @@ PreparedResponse NickCommand::execute() const {
   if ( !_userManager->isValidArg( str ) )
     return serverResponse( ERR_ERRONEUSNICKNAME, "" );
 
-  if ( _userManager->nickNameExists( str ) && str != _userManager->getNick( _userFD ))
+  User *user = _userManager->getUser( _userFD );
+  
+  if ( _userManager->nickNameExists( str ) && (user == NULL || str != _userManager->getNick( _userFD )))
     return serverResponse( ERR_NICKNAMEINUSE, "" );
 
-  User *user = _userManager->getUser( _userFD );
   if ( user == NULL ) {
     user = new User();
     user->setNick( str );

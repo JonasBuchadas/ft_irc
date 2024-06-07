@@ -1,6 +1,6 @@
 #include "User.hpp"
 
-User::User() : _passOK(false), _loggedIn(false) {}
+User::User() : _serverName(""), _nickName(""), _passOK(false), _loggedIn(false) {}
 
 User::~User() {}
 

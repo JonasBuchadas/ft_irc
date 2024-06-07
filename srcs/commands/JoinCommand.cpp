@@ -56,8 +56,7 @@ PreparedResponse JoinCommand::execute() const {
   _channelManager->getChannel( channelName )->addUser( _userFD );
   if (_channelManager->getChannel( channelName )->isInvitee( _userFD ))
     _channelManager->getChannel( channelName )->removeInvitee( _userFD );
-  pr.allresponses[genUserMsg( _userManager->getUser( _userFD ), "JOIN " + channelName )].push_back( _userFD );
-  std::string answer = genUserMsg( _userManager->getUser( _userFD ), "PRIVMSG " + channelName + " :" + _userManager->getNick( _userFD ) + " just joined in!");
-  pr.allresponses[answer] = _channelManager->getChannel( channelName)->getAllMembersSansUser( _userFD );
+  pr.allresponses[genUserMsg( _userManager->getUser( _userFD ), "JOIN " + channelName )] \
+  = _channelManager->getChannel( channelName)->getAllMembers();
   return pr;
 }

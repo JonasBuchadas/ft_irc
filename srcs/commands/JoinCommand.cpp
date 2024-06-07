@@ -40,7 +40,7 @@ PreparedResponse JoinCommand::execute() const {
       _channelManager->getChannel( channelName )->setPassword( password );
     pr.allresponses[genUserMsg( _userManager->getUser( _userFD ), "JOIN " + channelName )].push_back( _userFD );
     std::string answer = genUserMsg( _userManager->getUser( _userFD ), "PRIVMSG " + channelName + " :" + _userManager->getNick( _userFD ) + " just joined in!");
-    pr.allresponses[answer] = _channelManager->getChannel( channelName)->getAllMembersSansUser( _userFD, 0 );
+    pr.allresponses[answer] = _channelManager->getChannel( channelName)->getAllMembersSansUser( _userFD );
     return pr;
   }
 
@@ -58,6 +58,6 @@ PreparedResponse JoinCommand::execute() const {
     _channelManager->getChannel( channelName )->removeInvitee( _userFD );
   pr.allresponses[genUserMsg( _userManager->getUser( _userFD ), "JOIN " + channelName )].push_back( _userFD );
   std::string answer = genUserMsg( _userManager->getUser( _userFD ), "PRIVMSG " + channelName + " :" + _userManager->getNick( _userFD ) + " just joined in!");
-  pr.allresponses[answer] = _channelManager->getChannel( channelName)->getAllMembersSansUser( _userFD, 0 );
+  pr.allresponses[answer] = _channelManager->getChannel( channelName)->getAllMembersSansUser( _userFD );
   return pr;
 }

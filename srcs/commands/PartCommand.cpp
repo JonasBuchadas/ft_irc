@@ -38,6 +38,6 @@ PreparedResponse PartCommand::execute() const {
     _channelManager->getChannel( channelName )->removeOperator( _userFD );
   pr.allresponses[genUserMsg( _userManager->getUser( _userFD ), "PART" + _args )].push_back( _userFD );
   std::string answer = genUserMsg( _userManager->getUser( _userFD ), "PRIVMSG " + channelName + " :" + _userManager->getNick( _userFD ) + " just left");
-  pr.allresponses[answer] = _channelManager->getChannel( channelName)->getAllMembersSansUser( _userFD, 0 );
+  pr.allresponses[answer] = _channelManager->getChannel( channelName)->getAllMembersSansUser( _userFD );
   return pr;
 }

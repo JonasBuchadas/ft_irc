@@ -29,7 +29,7 @@ class Channel {
   Channel( Channel const &src );
   Channel &operator=( Channel const &src );
 
-  std::vector<int> getAllMembersSansUser( int user, int target );
+  std::vector<int> getAllMembersSansUser( int user );
   std::vector<int> getAllUsers();
   std::vector<int> getAllOperators();
   std::vector<int> getAllMembers();

@@ -45,7 +45,7 @@ PreparedResponse PrivCommand::execute() const {
     else if (_channelManager->getChannel( target )->isUser( _userFD ) \
     || _channelManager->getChannel( target )->isOperator( _userFD )) {
       pr.allresponses[genUserMsg( _userManager->getUser( _userFD ), "PRIVMSG" + _args )] \
-      = _channelManager->getChannel( target )->getAllMembersSansUser( _userFD, 0 );
+      = _channelManager->getChannel( target )->getAllMembersSansUser( _userFD );
     }
     else
       return serverResponse( ERR_USERNOTINCHANNEL, target );

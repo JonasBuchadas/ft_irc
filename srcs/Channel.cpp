@@ -46,16 +46,16 @@ bool Channel::isInvitee( int user ) {
   return false;
 }
 
-std::vector<int> Channel::getAllMembersSansUser( int user, int target ) {
+std::vector<int> Channel::getAllMembersSansUser( int user ) {
   std::vector<int> members;
   for ( int i = 0; i < (int)_operators.size(); i++ )
   {
-    if (_operators[i] != user && _operators[i] != target)
+    if (_operators[i] != user)
       members.push_back( _operators[i] );
   }
   for ( int i = 0; i < (int)_users.size(); i++ )
   {
-    if (_users[i] != user && _users[i] != target)
+    if (_users[i] != user)
       members.push_back( _users[i] );
   }
   return members;

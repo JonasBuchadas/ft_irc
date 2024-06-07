@@ -80,7 +80,7 @@ PreparedResponse ModeCommand::execute() const {
           channel->setPassword( target );
           answer = genUserMsg( _userManager->getUser( _userFD ), "PRIVMSG " + \
           channelName + " :set channel password");
-          pr.allresponses[answer] = _channelManager->getChannel( channelName )->getAllMembersSansUser( _userFD, 0 );
+          pr.allresponses[answer] = _channelManager->getChannel( channelName )->getAllMembersSansUser( _userFD );
         }
         else
           channel->setPassword( "" );

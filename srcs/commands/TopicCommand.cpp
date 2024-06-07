@@ -63,6 +63,6 @@ PreparedResponse TopicCommand::execute() const {
 
   pr.allresponses[genUserMsg( _userManager->getUser( _userFD ), "TOPIC " + channelName + \
   " " + _channelManager->getChannel( channelName )->getTopic())] \
-   = _channelManager->getChannel( channelName)->getAllMembersSansUser( 0, 0 );
+   = _channelManager->getChannel( channelName)->getAllMembers();
   return pr;
 }

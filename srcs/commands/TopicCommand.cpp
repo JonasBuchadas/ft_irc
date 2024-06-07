@@ -54,7 +54,7 @@ PreparedResponse TopicCommand::execute() const {
   }
   else if ( topic.empty() && t.find(":") == std::string::npos  && \
    _channelManager->getChannel( channelName )->getTopic().size() == 0)
-    return serverResponse( RPL_NOTOPIC, "" );
+    return serverResponse( RPL_NOTOPIC, channelName );
   else if ( topic.empty() && t.find(":") == std::string::npos  && \
    _channelManager->getChannel( channelName )->getTopic().size() > 0)
     return serverResponse( RPL_TOPIC, channelName + " :" + _channelManager->getChannel( channelName )->getTopic() );

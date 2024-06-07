@@ -27,8 +27,8 @@ PreparedResponse NamesCommand::execute() const {
   if ( _args[i] != '#' ) {
     return serverResponse( ERR_NOSUCHCHANNEL, "NAMES" );
   } else if ( _channelManager->channelExists( &_args[i] ) &&
-              !( _channelManager->isOperator( &_args[i], _userFD ) || _channelManager->isUser( &_args[i], _userFD ) ) ) {
-    return serverResponse( ERR_USERNOTINCHANNEL, "NAMES" );
+  !_channelManager->isOperator( &_args[i], _userFD ) && !_channelManager->isUser( &_args[i], _userFD ) ) {
+    return serverResponse( ERR_USERNOTINCHANNEL, &_args[i] );
   } else if ( !_channelManager->channelExists( &_args[i] ) ) {
     return serverResponse( ERR_NOSUCHCHANNEL, "NAMES" );
   }

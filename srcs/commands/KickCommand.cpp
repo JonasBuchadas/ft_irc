@@ -23,13 +23,15 @@ PreparedResponse KickCommand::execute() const {
 
   std::stringstream argsStream( _args );
 
-  std::string       kickedNick, channelName, reason;
-  argsStream >> channelName >> kickedNick;
+  std::string       kickedNick, channelName, reason, check;
+  argsStream >> channelName >> kickedNick >> check;
   reason = "";
 
-  size_t colonPos = _args.find(':', argsStream.tellg() );
+  size_t colonPos = _args.find(':');
   if ( colonPos != std::string::npos)
     reason = _args.substr( colonPos + 1);
+  else if (!check.empty())
+    return serverResponse( ERR_NEEDMOREPARAMS, "KICK" );
 
   if ( kickedNick.empty() || channelName.empty() )
     return serverResponse( ERR_NEEDMOREPARAMS, "KICK" );
@@ -61,7 +63,7 @@ PreparedResponse KickCommand::execute() const {
   if ( reason == "" )
     answer = genUserMsg( _userManager->getUser( _userFD ), "PRIVMSG " + channelName + " :" + _userManager->getNick( kickedFD ) + " got kicked out by " + _userManager->getNick( _userFD ) );
   else
-    answer = genUserMsg( _userManager->getUser( _userFD ), "PRIVMSG " + channelName + " :" + _userManager->getNick( kickedFD ) + " got kicked out by " + _userManager->getNick( _userFD ) + " because" + reason );
+    answer = genUserMsg( _userManager->getUser( _userFD ), "PRIVMSG " + channelName + " :" + _userManager->getNick( kickedFD ) + " got kicked out by " + _userManager->getNick( _userFD ) + " because '" + reason + "'" );
   pr.allresponses[answer] = _channelManager->getChannel( channelName )->getAllMembers();
 
   return pr;

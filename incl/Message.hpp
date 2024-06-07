@@ -42,6 +42,7 @@ struct ParsedMsg {
 #define ERR_INVITEONLYCHAN 473    // Use when: user tries to join invite only channel
 #define ERR_BADCHANNELKEY 475     // Use when: user tries to join a key-needed-channel with an invalid key or no key
 #define ERR_CHANOPRIVSNEEDED 482  // Use when: regular user tries to use a command only allowed to channel operators
+#define ERR_CHANNELISFULL 471     // Use when: channel has a max user limit and can't receive a new user
 
 // Authentication
 #define RPL_WELCOME 1  // Use when: login is successful

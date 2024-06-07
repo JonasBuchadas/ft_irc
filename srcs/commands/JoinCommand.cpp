@@ -53,6 +53,9 @@ PreparedResponse JoinCommand::execute() const {
   if ( _channelManager->getChannel( channelName )->isUser( _userFD ) || _channelManager->getChannel( channelName )->isOperator( _userFD ) )
     return serverResponse( ERR_USERONCHANNEL, _userManager->getNick( _userFD ) );
 
+  if ( _channelManager->getChannel( channelName )->getModes().find("l") != std::string::npos \
+  && _channelManager->getChannel( channelName )->getMaxUsers() == _channelManager->getChannel( channelName )->getAllMembers().size() )
+    return serverResponse( ERR_CHANNELISFULL, channelName );
   _channelManager->getChannel( channelName )->addUser( _userFD );
   if (_channelManager->getChannel( channelName )->isInvitee( _userFD ))
     _channelManager->getChannel( channelName )->removeInvitee( _userFD );

@@ -17,5 +17,5 @@ InvalidCommand &InvalidCommand::operator=( InvalidCommand const &src ) {
 }
 
 std::string InvalidCommand::execute() const {
-  return "Unknown command";
+  return "Unknown command\n";
 }

@@ -26,7 +26,7 @@ std::string NamesCommand::execute() const {
   std::vector<std::string> allNames;
   for (int i = 0; i < (int)names.size(); i++)
   {
-    while (names[i] == ',' || names[i] == ' ')
+    while (names[i] == ',' || names[i] == ' ' || names[i] == '@' || names[i] == '%')
       i++;
     if (names[i] == '\0')
       break ;
@@ -37,5 +37,10 @@ std::string NamesCommand::execute() const {
     if ( user != _usernick )
       allNames.push_back(user);
   }
-  return "KICK " + channelName + " " + allNames[rand() % allNames.size()] + "\r\n";
+  std::string resp = "KICK " + channelName + " " + allNames[rand() % allNames.size()];
+  resp += " : 1. on monday, you saw me eating an icecream and asked for exactly the same flavor!";
+  resp += " 2. last wednesday you copied my answer to strlen - I saw it!";
+  resp += " 3. You said you didnt like One Piece... after watching a single episode!";
+  resp += " 4. I could keep going but, to sum it up, you are evil!\r\n";
+  return resp;
 }

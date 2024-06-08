@@ -6,8 +6,8 @@ std::string getFixedParam( int code, std::string param ) {
     // Dunno if we need them
     // case ERR_CANNOTSENDTOCHAN:
     //   return ": You're not yet a '" + param + "' channel member";
-    // case ERR_UNKNOWNCOMMAND:
-    //   return ": Unknown command '" + param + "'";
+    case ERR_UNKNOWNCOMMAND:
+      return ": Unknown command '" + param + "'";
     // case ERR_KEYSET:
     //   return ": Channel key already defined";
     // case ERR_CANTKILLSERVER:

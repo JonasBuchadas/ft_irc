@@ -30,7 +30,7 @@ class Chatbot {
 
   std::string awaitInput( int sockfd );
   void        loginBossBot( int sockfd, char **av );
-  int         connectToServer( char *port );
+  int         connectToServer( char *ip, char *port );
   void        listeningLoop( char **av );
 
   class CouldntConnecttoServer : public std::exception {

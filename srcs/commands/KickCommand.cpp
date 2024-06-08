@@ -53,11 +53,8 @@ PreparedResponse KickCommand::execute() const {
        !_channelManager->getChannel( channelName )->isOperator( kickedFD ) )
     return serverResponse( ERR_TARGETNOTINCHANNEL, "" );
 
-  _channelManager->getChannel( channelName )->removeUser( kickedFD );
-  _channelManager->getChannel( channelName )->removeOperator( kickedFD );
 
   PreparedResponse pr = PreparedResponse();
-  pr.allresponses[genUserMsg( _userManager->getUser( _userFD ), "KICK " + kickedNick )].push_back( kickedFD );
 
   std::string answer = "";
   if ( reason == "" )
@@ -66,5 +63,7 @@ PreparedResponse KickCommand::execute() const {
     answer = genUserMsg( _userManager->getUser( _userFD ), "PRIVMSG " + channelName + " :" + _userManager->getNick( kickedFD ) + " got kicked out by " + _userManager->getNick( _userFD ) + " because '" + reason + "'" );
   pr.allresponses[answer] = _channelManager->getChannel( channelName )->getAllMembers();
 
+  _channelManager->getChannel( channelName )->removeUser( kickedFD );
+  _channelManager->getChannel( channelName )->removeOperator( kickedFD );
   return pr;
 }

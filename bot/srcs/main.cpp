@@ -4,10 +4,10 @@
 
 int main(int ac, char **av)
 {
-  if ( ac != 3 )
+  if ( ac != 4 )
   {
     std::cerr << "Error: invalid number of arguments" << std::endl;
-    std::cerr << "Usage: [PORT] [PASSWORD]" << std::endl;
+    std::cerr << "Usage: [ip] [PORT] [PASSWORD]" << std::endl;
     return ( -1 );
   }
   (void) av;

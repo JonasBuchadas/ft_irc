@@ -38,14 +38,14 @@ PreparedResponse NamesCommand::execute() const {
   resp = &_args[i];
   resp += " = :";
   for ( int f = 0; f < (int)opers.size(); f++ ) {
-    resp += _userManager->getNick( opers[f] );
+    resp += "@" + _userManager->getNick( opers[f] );
     if ( f != (int)opers.size() - 1 )
       resp += ", ";
   }
   for ( int f = 0; f < (int)users.size(); f++ ) {
     if ( opers.size() > 0 || f > 0 )
       resp += ", ";
-    resp += _userManager->getNick( users[f] );
+    resp += "%" + _userManager->getNick( users[f] );
   }
   return serverResponse( RPL_NAMREPLY, resp );
 }

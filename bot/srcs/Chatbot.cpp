@@ -42,13 +42,13 @@ std::string Chatbot::awaitInput( int sockfd )
 
 void Chatbot::loginBossBot(int sockfd, char **av)
 {
-  std::string pass = av[2];
+  std::string pass = av[3];
   std::string manager = "PASS " + pass + "\nUSER BossBot\nNICK BossBot\r\n";
   if ( send(sockfd, manager.c_str(), manager.size(), 0) == -1 || awaitInput( sockfd ) == "" )
     throw CouldntLoginBot();
 }
 
-int Chatbot::connectToServer( char *port)
+int Chatbot::connectToServer( char *ip, char *port)
 {
   struct addrinfo hints, *res;
   int sockfd;
@@ -57,7 +57,7 @@ int Chatbot::connectToServer( char *port)
   hints.ai_family = AF_UNSPEC;
   hints.ai_socktype = SOCK_STREAM;
 
-  if (getaddrinfo("localhost", port, &hints, &res) != 0) {
+  if (getaddrinfo(ip, port, &hints, &res) != 0) {
       std::cerr << "getaddrinfo failed\n";
       throw CouldntConnecttoServer();
   }
@@ -80,7 +80,7 @@ int Chatbot::connectToServer( char *port)
 
 void Chatbot::listeningLoop( char **av )
 {
-    int sockfd = connectToServer( av[1] );
+    int sockfd = connectToServer( av[1], av[2] );
     loginBossBot(sockfd, av);
       
     mainFD = sockfd;

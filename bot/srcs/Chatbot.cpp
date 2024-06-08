@@ -7,6 +7,7 @@ int mainFD = 3;
 Chatbot::Chatbot() {}
 
 Chatbot::~Chatbot() {
+  close ( mainFD );
 }
 
 Chatbot::Chatbot( Chatbot const &src ) {

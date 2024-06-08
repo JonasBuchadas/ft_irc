@@ -65,7 +65,8 @@ PreparedResponse PrivCommand::execute() const {
       return serverResponse( ERR_USERNOTFOUND, "" );
     if ( ip != _userManager->getUser( _userFD )->getIp() )
       return serverResponse( ERR_IPNOTFOUND, "" );
-    pr.allresponses[genUserMsg( _userManager->getUser( _userFD ), "PRIVMSG" + _args )] \
+    if ( target.find( "#" ) != std::string::npos)
+      pr.allresponses[genUserMsg( _userManager->getUser( _userFD ), "PRIVMSG" + _args )] \
     = _channelManager->getChannel( target )->getAllMembersSansUser( _userFD );
     return pr;
   }

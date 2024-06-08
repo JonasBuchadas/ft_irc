@@ -41,7 +41,7 @@ class Server {
   int                        _listeningSocket;
   int                        _fdSize;
   std::vector<pollfd>        _pfds;
-  std::map<int, std::string> _unprocessedMsgs;
+  std::map<int, std::string> _unfinishedMsgs;
 
   Parser         _parser;
   CommandFactory _commandFactory;
@@ -62,6 +62,7 @@ class Server {
   void        acceptConnection( void ) throw( std::exception );
   void        processMessage( int i );
   UnparsedMsg receiveMessage( int i, int senderFD ) throw( std::exception );
+  UnparsedMsg composeUnfinishedMessage( int senderFD, UnparsedMsg message );
 
  public:
   static bool _stopServer;

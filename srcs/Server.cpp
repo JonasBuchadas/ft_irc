@@ -9,6 +9,7 @@ Server::Server() : _commandFactory( "invalid" ) {
 
 Server::~Server() {
   clearUsers();
+  _unfinishedMsgs.clear();
 }
 
 Server::Server( Server const &src ) : _commandFactory( src._commandFactory ) {
@@ -25,6 +26,7 @@ Server &Server::operator=( Server const &src ) {
   _messenger       = src._messenger;
   _fdSize          = src._fdSize;
   _pfds            = src._pfds;
+  _unfinishedMsgs  = src._unfinishedMsgs;
   return ( *this );
 }
 
@@ -145,14 +147,9 @@ void Server::processMessage( int i ) {
   PreparedResponse       pr;
 
   message = receiveMessage( i, senderFD );
-  if ( message.unfinished ) {
-    if ( _unprocessedMsgs.find( senderFD ) == _unprocessedMsgs.end() ) {
-      _unprocessedMsgs.insert( std::pair<int, std::string>( senderFD, message.message ) );
-      std::cout << _unprocessedMsgs[senderFD] << std::endl;
-      return;
-    }
-    _unprocessedMsgs[senderFD] += message.message;
-  }
+  if ( message.unfinished )
+    return;
+  message    = composeUnfinishedMessage( senderFD, message );
   parsedMsgs = _parser.parseMsg( message );
   for ( std::vector<ParsedMsg>::iterator it = parsedMsgs.begin(); it != parsedMsgs.end(); it++ ) {
     command = _commandFactory.makeCommand( senderFD, it->commandName, it->args, it->internal );
@@ -177,19 +174,16 @@ UnparsedMsg Server::receiveMessage( int i, int senderFD ) throw( std::exception 
     std::cout << "connection closed from " << senderFD << std::endl;
     close( senderFD );
     i -= delFromPfds( senderFD );
-    m.message  = "LOGOUT";
-    m.internal = true;
+    m.message                               = "LOGOUT";
+    m.internal                              = true;
+    std::map<int, std::string>::iterator it = _unfinishedMsgs.find( senderFD );
+    if ( it != _unfinishedMsgs.end() ) {
+      _unfinishedMsgs.erase( it );
+    }
     return m;
   }
-  buf[nbytes]     = '\0';
-  std::string tmp = buf;
-  if ( tmp.find( '\n' ) != std::string::npos && _unprocessedMsgs.find( senderFD ) != _unprocessedMsgs.end() ) {
-    std::cout << "Found unproccesedMSG" << std::endl;
-    m.message                  = _unprocessedMsgs[senderFD];
-    _unprocessedMsgs[senderFD] = "";
-    _unprocessedMsgs[senderFD].clear();
-  }
-  m.message += buf;
+  buf[nbytes] = '\0';
+  m.message   = buf;
   memset( buf, '\0', sizeof( buf ) );
   while ( nbytes >= 512 ) {
     nbytes = recv( senderFD, buf, 512, MSG_DONTWAIT );
@@ -198,9 +192,25 @@ UnparsedMsg Server::receiveMessage( int i, int senderFD ) throw( std::exception 
     m.message += buf;
     memset( buf, '\0', sizeof( buf ) );
   }
-  if ( m.message.find( '\n' ) == std::string::npos )
+  if ( m.message.find( '\n' ) == std::string::npos ) {
+    if ( _unfinishedMsgs.find( senderFD ) == _unfinishedMsgs.end() ) {
+      _unfinishedMsgs.insert( std::pair<int, std::string>( senderFD, m.message ) );
+    } else {
+      _unfinishedMsgs[senderFD] += m.message;
+    }
     m.unfinished = true;
+  }
   return m;
+}
+
+UnparsedMsg Server::composeUnfinishedMessage( int senderFD, UnparsedMsg message ) {
+  if ( _unfinishedMsgs.find( senderFD ) != _unfinishedMsgs.end() ) {
+    _unfinishedMsgs[senderFD] += message.message;
+    message.message           = _unfinishedMsgs[senderFD];
+    _unfinishedMsgs[senderFD] = "";
+    _unfinishedMsgs[senderFD].clear();
+  }
+  return message;
 }
 
 void Server::addToPfds( int fd ) {

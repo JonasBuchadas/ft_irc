@@ -10,6 +10,7 @@
 struct UnparsedMsg {
   std::string message;
   bool        internal;
+  bool        unfinished;
 };
 
 struct ParsedMsg {
@@ -68,18 +69,16 @@ struct ParsedMsg {
 #define ERR_NOTEXTTOSEND 412  // Use when: the PRIVMSG has no message
 
 // Custom Msgs
-#define UPD_AUTHELEM 601  // Use when: successfully updated an authentication element
-#define INVALIDAUTHELEM 602  // Use when: new authentication element has invalid characters
-#define ERR_USERNAMEINUSE 603  // Use when: username to (re)place is already taken
-#define ERR_USERNOTFOUND 604  // Use when: username is different than necessary in file transfer
-#define ERR_IPNOTFOUND 605  // Use when: user ip is different than necessary in file transfer
-#define ERR_TARGETNOTAUTH 606  // Use when: target of a command is not autheticated
+#define UPD_AUTHELEM 601            // Use when: successfully updated an authentication element
+#define INVALIDAUTHELEM 602         // Use when: new authentication element has invalid characters
+#define ERR_USERNAMEINUSE 603       // Use when: username to (re)place is already taken
+#define ERR_USERNOTFOUND 604        // Use when: username is different than necessary in file transfer
+#define ERR_IPNOTFOUND 605          // Use when: user ip is different than necessary in file transfer
+#define ERR_TARGETNOTAUTH 606       // Use when: target of a command is not autheticated
 #define ERR_TARGETNOTINCHANNEL 607  // Use when: target of a command not in channel
-#define ERR_TARGETALREADYINV 608  // Use when: target of a command INVITE already invited
-#define ERR_TARGETNOTOPER 609  // Use when: target of a command not in channel
-#define ERR_TARGETISOPER 610  // Use when: target of MODE +o is already operator
-
-
+#define ERR_TARGETALREADYINV 608    // Use when: target of a command INVITE already invited
+#define ERR_TARGETNOTOPER 609       // Use when: target of a command not in channel
+#define ERR_TARGETISOPER 610        // Use when: target of MODE +o is already operator
 
 std::string genServerMsg( int code, std::string nick, std::string param );
 std::string genUserMsg( User *userinfo, std::string msg );

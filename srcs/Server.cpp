@@ -144,7 +144,15 @@ void Server::processMessage( int i ) {
   ACommand              *command;
   PreparedResponse       pr;
 
-  message    = receiveMessage( i, senderFD );
+  message = receiveMessage( i, senderFD );
+  if ( message.unfinished ) {
+    if ( _unprocessedMsgs.find( senderFD ) == _unprocessedMsgs.end() ) {
+      _unprocessedMsgs.insert( std::pair<int, std::string>( senderFD, message.message ) );
+      std::cout << _unprocessedMsgs[senderFD] << std::endl;
+      return;
+    }
+    _unprocessedMsgs[senderFD] += message.message;
+  }
   parsedMsgs = _parser.parseMsg( message );
   for ( std::vector<ParsedMsg>::iterator it = parsedMsgs.begin(); it != parsedMsgs.end(); it++ ) {
     command = _commandFactory.makeCommand( senderFD, it->commandName, it->args, it->internal );
@@ -159,7 +167,8 @@ UnparsedMsg Server::receiveMessage( int i, int senderFD ) throw( std::exception 
   char        buf[514];
   UnparsedMsg m;
 
-  m.internal = false;
+  m.internal   = false;
+  m.unfinished = false;
 
   nbytes = recv( senderFD, buf, 512, 0 );
   if ( nbytes < 0 )
@@ -172,8 +181,15 @@ UnparsedMsg Server::receiveMessage( int i, int senderFD ) throw( std::exception 
     m.internal = true;
     return m;
   }
-  buf[nbytes] = '\0';
-  m.message   = buf;
+  buf[nbytes]     = '\0';
+  std::string tmp = buf;
+  if ( tmp.find( '\n' ) != std::string::npos && _unprocessedMsgs.find( senderFD ) != _unprocessedMsgs.end() ) {
+    std::cout << "Found unproccesedMSG" << std::endl;
+    m.message                  = _unprocessedMsgs[senderFD];
+    _unprocessedMsgs[senderFD] = "";
+    _unprocessedMsgs[senderFD].clear();
+  }
+  m.message += buf;
   memset( buf, '\0', sizeof( buf ) );
   while ( nbytes >= 512 ) {
     nbytes = recv( senderFD, buf, 512, MSG_DONTWAIT );
@@ -182,6 +198,8 @@ UnparsedMsg Server::receiveMessage( int i, int senderFD ) throw( std::exception 
     m.message += buf;
     memset( buf, '\0', sizeof( buf ) );
   }
+  if ( m.message.find( '\n' ) == std::string::npos )
+    m.unfinished = true;
   return m;
 }
 

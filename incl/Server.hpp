@@ -36,11 +36,12 @@ class UserManager;
 
 class Server {
  private:
-  const char         *_port;
-  std::string         _password;
-  int                 _listeningSocket;
-  int                 _fdSize;
-  std::vector<pollfd> _pfds;
+  const char                *_port;
+  std::string                _password;
+  int                        _listeningSocket;
+  int                        _fdSize;
+  std::vector<pollfd>        _pfds;
+  std::map<int, std::string> _unprocessedMsgs;
 
   Parser         _parser;
   CommandFactory _commandFactory;

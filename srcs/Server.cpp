@@ -204,11 +204,11 @@ UnparsedMsg Server::receiveMessage( int i, int senderFD ) throw( std::exception 
 }
 
 UnparsedMsg Server::composeUnfinishedMessage( int senderFD, UnparsedMsg message ) {
-  if ( _unfinishedMsgs.find( senderFD ) != _unfinishedMsgs.end() ) {
-    _unfinishedMsgs[senderFD] += message.message;
-    message.message           = _unfinishedMsgs[senderFD];
-    _unfinishedMsgs[senderFD] = "";
-    _unfinishedMsgs[senderFD].clear();
+  std::map<int, std::string>::iterator it = _unfinishedMsgs.find( senderFD );
+  if ( it != _unfinishedMsgs.end() ) {
+    it->second += message.message;
+    message.message = it->second;
+    _unfinishedMsgs.erase( it );
   }
   return message;
 }

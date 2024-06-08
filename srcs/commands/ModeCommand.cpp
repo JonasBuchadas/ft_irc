@@ -39,7 +39,7 @@ PreparedResponse ModeCommand::execute() const {
     return serverResponse( RPL_CHANNELMODEIS, channelName + " " + modeResponse );
   }
 
-  if ( (arg[0] == '+' || arg[0] == '-') && !arg[1] )
+  if ( ( (arg[0] == '+' || arg[0] == '-') && !arg[1] ) || (arg[0] != '+' && arg[0] != '-') )
     return serverResponse( ERR_NEEDMOREPARAMS, "MODE" );
   PreparedResponse pr = PreparedResponse();
 

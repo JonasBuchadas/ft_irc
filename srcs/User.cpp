@@ -55,24 +55,3 @@ bool User::getLoggedIn( void ) const {
 uint32_t User::getIp( void ) const {
   return _ip;
 }
-
-void User::join() {
-  // TODO Implement me!!
-}
-
-void User::kick() {
-  // TODO Implement me!!
-}
-
-void User::mode( char action ) {
-  (void)action;
-  // TODO Implement me!!
-}
-
-void User::invite() {
-  // TODO Implement me!!
-}
-
-void User::topic( std::string ) {
-  // TODO Implement me!!
-}

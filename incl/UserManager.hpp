@@ -19,17 +19,11 @@ class UserManager {
   typedef std::string ( UserManager::*CommandFunction )( const std::string&, int fd );
   std::map<std::string, CommandFunction> _command;
 
-  // std::string checkPasswd( const std::string& message, int fd );
-  // std::string setNickname( const std::string& message, int fd );
-  // std::string setUsername( const std::string& message, int fd );
-
  public:
   UserManager( UserManager const& src );
   UserManager& operator=( UserManager const& src );
   UserManager( const char* password );
   ~UserManager();
-
-  // std::string executeCommand( const std::string& command, const std::string& message, int fd );
 
   User*                getUser( int fd );
   bool                 getPass( int fd );

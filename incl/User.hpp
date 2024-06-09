@@ -31,12 +31,6 @@ class User {
   bool        getPassword( void ) const;
   bool        getLoggedIn( void ) const;
   uint32_t    getIp( void ) const;
-
-  void join();
-  void kick();
-  void mode( char action );
-  void invite();
-  void topic( std::string );
 };
 
 #endif

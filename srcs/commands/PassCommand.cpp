@@ -40,13 +40,15 @@ PreparedResponse PassCommand::execute() const {
     return serverResponse( ERR_ALREADYREGISTERED, "" );
 
   PreparedResponse pr;
+  std::string resp;
   if ( !user->getPassword() && str == _userManager->getServerPass() ) {
     user->setPassword( true );
-    pr = serverResponse( UPD_AUTHELEM, "Password" );
+    resp = genServerMsg( UPD_AUTHELEM, _userManager->getNick( _userFD ), "Password" );
   }
   if ( _userManager->authenticateUser( _userFD ) ) {
     _userManager->setUserIp( _userFD );
-    pr.allresponses[genServerMsg( RPL_WELCOME, _userManager->getNick( _userFD ), "" )].push_back( _userFD );
+    resp += genServerMsg( RPL_WELCOME, _userManager->getNick( _userFD ), _userManager->getNick( _userFD ) );
   }
+  pr.allresponses[resp].push_back( _userFD );
   return pr;
 }

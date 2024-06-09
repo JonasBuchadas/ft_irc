@@ -102,7 +102,7 @@ unsigned int ChannelManager::getMaxUsers( std::string channelName ) {
   return 0;
 }
 
-void ChannelManager::setOperator( std::string channelName, int user ) {  // Placeholder function
+void ChannelManager::setOperator( std::string channelName, int user ) {
   if ( channelExists( channelName ) )
     _channels[channelName]->addOperator( user );
 }

@@ -10,7 +10,6 @@ int main(int ac, char **av)
     std::cerr << "Usage: [ip] [PORT] [PASSWORD]" << std::endl;
     return ( -1 );
   }
-  (void) av;
   try
   {
     Chatbot bot;

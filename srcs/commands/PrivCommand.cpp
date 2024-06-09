@@ -21,7 +21,7 @@ PrivCommand &PrivCommand::operator=( PrivCommand const &src ) {
 
 PreparedResponse PrivCommand::execute() const {
   PreparedResponse pr = PreparedResponse();
-  if ( !_userManager->getUser( _userFD ) )
+  if ( !_userManager->getUser( _userFD )->getLoggedIn() )
     return serverResponse( ERR_NOTREGISTERED, "PRIVMSG" );
 
   if ( _args.length() <= 1 )
@@ -40,18 +40,7 @@ PreparedResponse PrivCommand::execute() const {
 
   std::string send = _args.substr( pos + 1 );
   pos              = _args.find( "DCC SEND" );
-  if ( pos == std::string::npos ) {
-    if ( target.find( "#" ) == std::string::npos )
-      pr.allresponses[genUserMsg( _userManager->getUser( _userFD ), "PRIVMSG" + _args )].push_back( _userManager->getFdFromNick( target ) );
-    else if (_channelManager->getChannel( target )->isUser( _userFD ) \
-    || _channelManager->getChannel( target )->isOperator( _userFD )) {
-      pr.allresponses[genUserMsg( _userManager->getUser( _userFD ), "PRIVMSG" + _args )] \
-      = _channelManager->getChannel( target )->getAllMembersSansUser( _userFD );
-    }
-    else
-      return serverResponse( ERR_USERNOTINCHANNEL, target );
-    return pr;
-  } else {
+  if ( pos != std::string::npos ) {
     send = send.substr( send.find("DCC SEND") + 9 );
     std::istringstream iss( send );
     std::string        filename, portStr, filesizeStr;
@@ -65,10 +54,17 @@ PreparedResponse PrivCommand::execute() const {
       return serverResponse( ERR_USERNOTFOUND, "" );
     if ( ip != _userManager->getUser( _userFD )->getIp() )
       return serverResponse( ERR_IPNOTFOUND, "" );
-    if ( target.find( "#" ) != std::string::npos)
-      pr.allresponses[genUserMsg( _userManager->getUser( _userFD ), "PRIVMSG" + _args )] \
-    = _channelManager->getChannel( target )->getAllMembersSansUser( _userFD );
-    return pr;
   }
+  if ( target.find( "#" ) == std::string::npos && _userManager->getUser(_userManager->getFdFromNick( target ))->getLoggedIn() )
+    pr.allresponses[genUserMsg( _userManager->getUser( _userFD ), "PRIVMSG" + _args )].push_back( _userManager->getFdFromNick( target ) );
+  else if (target.find( "#" ) != std::string::npos && (_channelManager->getChannel( target )->isUser( _userFD ) \
+  || _channelManager->getChannel( target )->isOperator( _userFD ))) {
+    pr.allresponses[genUserMsg( _userManager->getUser( _userFD ), "PRIVMSG" + _args )] \
+    = _channelManager->getChannel( target )->getAllMembersSansUser( _userFD );
+  }
+  else if ( target.find( "#" ) != std::string::npos )
+    return serverResponse( ERR_USERNOTINCHANNEL, target );
+  else
+    return serverResponse( ERR_TARGETNOTAUTH, target );
   return pr;
 }

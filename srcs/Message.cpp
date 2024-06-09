@@ -71,25 +71,25 @@ std::string getFixedParam( int code, std::string param ) {
 
     // Custom Msgs
     case UPD_AUTHELEM:
-      return ": " + param + " successfully registered";
+      return ":" + param + " successfully registered";
     case INVALIDAUTHELEM:
-      return ": " + param + " contains invalid characters";
+      return ":" + param + " contains invalid characters";
     case ERR_USERNAMEINUSE:
-      return ": Username is already in use";
+      return ":Username is already in use";
     case ERR_USERNOTFOUND:
-      return ": Couldn't find user";
+      return ":Couldn't find user";
     case ERR_IPNOTFOUND:
-      return ": Invalid ip address";
+      return ":Invalid ip address";
     case ERR_TARGETNOTAUTH:
-      return ": Command target not authenticated";
+      return ":Command target not authenticated";
     case ERR_TARGETNOTINCHANNEL:
-      return ": Command target not in channel";
+      return ":Command target not in channel";
     case ERR_TARGETISOPER:
-      return ": Command target is already operator";
+      return ":Command target is already operator";
     case ERR_TARGETNOTOPER:
-      return ": Command target is not operator";
+      return ":Command target is not operator";
     case ERR_TARGETALREADYINV:
-      return ": Invitee already invited";
+      return ":Invitee already invited";
     default:
       return "Unknown error code";
   }
